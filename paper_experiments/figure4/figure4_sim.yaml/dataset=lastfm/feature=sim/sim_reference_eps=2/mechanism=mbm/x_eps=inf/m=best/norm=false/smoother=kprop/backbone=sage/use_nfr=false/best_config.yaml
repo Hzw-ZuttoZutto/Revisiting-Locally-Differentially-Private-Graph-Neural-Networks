@@ -1,0 +1,84 @@
+schema_version: 1
+job_id: e76b827c8828
+best_rank: 1
+best_candidate:
+  candidate_id: 128
+  x_steps: 16
+  learning_rate: '0.001'
+  weight_decay: '0.001'
+  dropout: '0.5'
+  tao2: none
+fixed_params:
+  dataset: lastfm
+  feature: sim
+  sim_reference_eps: '2'
+  feature_dim: null
+  scale: null
+  random_normal_mean: null
+  random_normal_std: null
+  shared_value: null
+  degree_bucket_num_buckets: null
+  degree_bucket_range_max: null
+  deepwalk_walk_length: null
+  deepwalk_number_walks: null
+  deepwalk_window_size: null
+  deepwalk_workers: null
+  deepwalk_undirected: null
+  mechanism: mbm
+  x_eps: inf
+  m: best
+  norm: false
+  norm_scale: none
+  smoother: kprop
+  backbone: sage
+  use_nfr: false
+defaults:
+  dataset:
+    data_range:
+    - 0.0
+    - 1.0
+    val_ratio: 0.25
+    test_ratio: 0.25
+  model:
+    hidden_dim: 16
+  trainer:
+    optimizer: adam
+    collect_grad_stats: false
+    gradient_clip: false
+    gradient_clip_max_norm: 1.0
+    sim_epoch_refresh: false
+    show_progress: false
+    log_every_epoch: false
+  stage:
+    grid:
+      patience: 80
+      repeats: 1
+      max_epochs: 300
+    verify:
+      patience: 150
+      repeats: 5
+      max_epochs: 500
+verify_metrics:
+  val_acc:
+    mean: 87.46470947265625
+    std: 0.7153506921955928
+    min: 86.22247314453125
+    max: 87.972900390625
+    n: 5
+  test_acc:
+    mean: 86.64031524658203
+    std: 0.9300527726680741
+    min: 85.26255798339844
+    max: 87.57764434814453
+    n: 5
+artifacts:
+  verify_summary_csv: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure4/figure4_sim.yaml/dataset=lastfm/feature=sim/sim_reference_eps=2/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/verify_top5_summary.csv
+  recommended_command_txt: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure4/figure4_sim.yaml/dataset=lastfm/feature=sim/sim_reference_eps=2/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/recommended_command.txt
+recommended_command: /home/hzw/miniconda3/envs/HZWDP/bin/python main.py --dataset
+  lastfm --feature sim --mechanism mbm --x_eps inf --m best --model sage --hidden_dim
+  16 --smoother kprop --optimizer adam --device cuda --val_ratio 0.25 --test_ratio
+  0.25 --data_range 0.0 1.0 --sim_reference_eps 2 --norm false --collect_grad_stats
+  false --gradient_clip false --gradient_clip_max_norm 1.0 --sim_epoch_refresh false
+  --show_progress false --log_every_epoch false --x_steps 16 --learning_rate 0.001
+  --weight_decay 0.001 --dropout 0.5 --max_epochs 500 --patience 150 -s 12345 -r 5
+  -o /home/hzw/Rethinking_GNN_DP/paper_experiments/figure4/figure4_sim.yaml/dataset=lastfm/feature=sim/sim_reference_eps=2/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/final

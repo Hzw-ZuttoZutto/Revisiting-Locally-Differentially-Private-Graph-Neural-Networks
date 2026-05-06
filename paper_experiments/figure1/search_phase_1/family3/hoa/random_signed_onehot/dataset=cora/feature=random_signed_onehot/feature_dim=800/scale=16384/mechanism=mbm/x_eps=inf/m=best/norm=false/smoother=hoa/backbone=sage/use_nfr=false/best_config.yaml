@@ -1,0 +1,84 @@
+schema_version: 1
+job_id: c6bade0df26b
+best_rank: 1
+best_candidate:
+  candidate_id: 55
+  x_steps: 4
+  learning_rate: '0.001'
+  weight_decay: '0.001'
+  dropout: '0.25'
+  tao2: none
+fixed_params:
+  dataset: cora
+  feature: random_signed_onehot
+  sim_reference_eps: null
+  feature_dim: 800
+  scale: '16384'
+  random_normal_mean: null
+  random_normal_std: null
+  shared_value: null
+  degree_bucket_num_buckets: null
+  degree_bucket_range_max: null
+  deepwalk_walk_length: null
+  deepwalk_number_walks: null
+  deepwalk_window_size: null
+  deepwalk_workers: null
+  deepwalk_undirected: null
+  mechanism: mbm
+  x_eps: inf
+  m: best
+  norm: false
+  norm_scale: none
+  smoother: hoa
+  backbone: sage
+  use_nfr: false
+defaults:
+  dataset:
+    data_range:
+    - 0.0
+    - 1.0
+    val_ratio: 0.25
+    test_ratio: 0.25
+  model:
+    hidden_dim: 16
+  trainer:
+    optimizer: adam
+    collect_grad_stats: false
+    gradient_clip: false
+    gradient_clip_max_norm: 1.0
+    sim_epoch_refresh: false
+    show_progress: false
+    log_every_epoch: false
+  stage:
+    grid:
+      patience: 80
+      repeats: 1
+      max_epochs: 300
+    verify:
+      patience: 150
+      repeats: 5
+      max_epochs: 500
+verify_metrics:
+  val_acc:
+    mean: 76.39586486816407
+    std: 1.0874530297403684
+    min: 75.18463897705078
+    max: 77.54800415039062
+    n: 5
+  test_acc:
+    mean: 75.86410522460938
+    std: 1.4113895858919536
+    min: 74.44608306884766
+    max: 78.13884735107422
+    n: 5
+artifacts:
+  verify_summary_csv: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure1/search_phase_1/family3/hoa/random_signed_onehot/dataset=cora/feature=random_signed_onehot/feature_dim=800/scale=16384/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=hoa/backbone=sage/use_nfr=false/verify_top5_summary.csv
+  recommended_command_txt: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure1/search_phase_1/family3/hoa/random_signed_onehot/dataset=cora/feature=random_signed_onehot/feature_dim=800/scale=16384/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=hoa/backbone=sage/use_nfr=false/recommended_command.txt
+recommended_command: /home/hzw/miniconda3/envs/HZWDP/bin/python main.py --dataset
+  cora --feature random_signed_onehot --mechanism mbm --x_eps inf --m best --model
+  sage --hidden_dim 16 --smoother hoa --optimizer adam --device cuda --val_ratio 0.25
+  --test_ratio 0.25 --data_range 0.0 1.0 --feature_dim 800 --scale 16384 --norm false
+  --collect_grad_stats false --gradient_clip false --gradient_clip_max_norm 1.0 --sim_epoch_refresh
+  false --show_progress false --log_every_epoch false --x_steps 4 --learning_rate
+  0.001 --weight_decay 0.001 --dropout 0.25 --max_epochs 500 --patience 150 -s 12345
+  -r 5 -o /home/hzw/Rethinking_GNN_DP/paper_experiments/figure1/search_phase_1/family3/hoa/random_signed_onehot/dataset=cora/feature=random_signed_onehot/feature_dim=800/scale=16384/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=hoa/backbone=sage/use_nfr=false/final

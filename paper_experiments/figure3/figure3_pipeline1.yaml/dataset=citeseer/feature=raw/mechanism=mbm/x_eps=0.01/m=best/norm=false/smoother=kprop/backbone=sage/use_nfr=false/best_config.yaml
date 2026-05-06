@@ -1,0 +1,83 @@
+schema_version: 1
+job_id: ab9fa1874ca0
+best_rank: 1
+best_candidate:
+  candidate_id: 100
+  x_steps: 4
+  learning_rate: '0.0001'
+  weight_decay: '0.0001'
+  dropout: '0.25'
+  tao2: none
+fixed_params:
+  dataset: citeseer
+  feature: raw
+  sim_reference_eps: null
+  feature_dim: null
+  scale: null
+  random_normal_mean: null
+  random_normal_std: null
+  shared_value: null
+  degree_bucket_num_buckets: null
+  degree_bucket_range_max: null
+  deepwalk_walk_length: null
+  deepwalk_number_walks: null
+  deepwalk_window_size: null
+  deepwalk_workers: null
+  deepwalk_undirected: null
+  mechanism: mbm
+  x_eps: '0.01'
+  m: best
+  norm: false
+  norm_scale: none
+  smoother: kprop
+  backbone: sage
+  use_nfr: false
+defaults:
+  dataset:
+    data_range:
+    - 0.0
+    - 1.0
+    val_ratio: 0.25
+    test_ratio: 0.25
+  model:
+    hidden_dim: 16
+  trainer:
+    optimizer: adam
+    collect_grad_stats: false
+    gradient_clip: false
+    gradient_clip_max_norm: 1.0
+    sim_epoch_refresh: false
+    show_progress: false
+    log_every_epoch: false
+  stage:
+    grid:
+      patience: 80
+      repeats: 1
+      max_epochs: 300
+    verify:
+      patience: 150
+      repeats: 5
+      max_epochs: 500
+verify_metrics:
+  val_acc:
+    mean: 52.62019348144531
+    std: 2.7386970864702684
+    min: 49.75961685180664
+    max: 55.2884635925293
+    n: 5
+  test_acc:
+    mean: 51.562503051757815
+    std: 1.7582617091051318
+    min: 49.51923370361328
+    max: 54.20673370361328
+    n: 5
+artifacts:
+  verify_summary_csv: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure3/figure3_pipeline1.yaml/dataset=citeseer/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/verify_top5_summary.csv
+  recommended_command_txt: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure3/figure3_pipeline1.yaml/dataset=citeseer/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/recommended_command.txt
+recommended_command: /home/hzw/miniconda3/envs/HZWDP/bin/python main.py --dataset
+  citeseer --feature raw --mechanism mbm --x_eps 0.01 --m best --model sage --hidden_dim
+  16 --smoother kprop --optimizer adam --device cuda --val_ratio 0.25 --test_ratio
+  0.25 --data_range 0.0 1.0 --norm false --collect_grad_stats false --gradient_clip
+  false --gradient_clip_max_norm 1.0 --sim_epoch_refresh false --show_progress false
+  --log_every_epoch false --x_steps 4 --learning_rate 0.0001 --weight_decay 0.0001
+  --dropout 0.25 --max_epochs 500 --patience 150 -s 12345 -r 5 -o /home/hzw/Rethinking_GNN_DP/paper_experiments/figure3/figure3_pipeline1.yaml/dataset=citeseer/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/final

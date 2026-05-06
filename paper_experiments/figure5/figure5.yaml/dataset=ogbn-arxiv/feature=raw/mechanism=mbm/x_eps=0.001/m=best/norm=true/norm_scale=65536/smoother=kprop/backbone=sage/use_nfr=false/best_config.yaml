@@ -1,0 +1,83 @@
+schema_version: 1
+job_id: 5c3530253ffd
+best_rank: 1
+best_candidate:
+  candidate_id: 145
+  x_steps: 16
+  learning_rate: '0.01'
+  weight_decay: '0'
+  dropout: '0.25'
+  tao2: none
+fixed_params:
+  dataset: ogbn-arxiv
+  feature: raw
+  sim_reference_eps: null
+  feature_dim: null
+  scale: null
+  random_normal_mean: null
+  random_normal_std: null
+  shared_value: null
+  degree_bucket_num_buckets: null
+  degree_bucket_range_max: null
+  deepwalk_walk_length: null
+  deepwalk_number_walks: null
+  deepwalk_window_size: null
+  deepwalk_workers: null
+  deepwalk_undirected: null
+  mechanism: mbm
+  x_eps: '0.001'
+  m: best
+  norm: true
+  norm_scale: '65536'
+  smoother: kprop
+  backbone: sage
+  use_nfr: false
+defaults:
+  dataset:
+    data_range:
+    - 0.0
+    - 1.0
+    val_ratio: 0.25
+    test_ratio: 0.25
+  model:
+    hidden_dim: 16
+  trainer:
+    optimizer: adam
+    collect_grad_stats: false
+    gradient_clip: false
+    gradient_clip_max_norm: 1.0
+    sim_epoch_refresh: false
+    show_progress: false
+    log_every_epoch: false
+  stage:
+    grid:
+      patience: 80
+      repeats: 1
+      max_epochs: 300
+    verify:
+      patience: 150
+      repeats: 5
+      max_epochs: 500
+verify_metrics:
+  val_acc:
+    mean: 53.71031646728515
+    std: 0.5535609447459531
+    min: 52.80139923095703
+    max: 54.235164642333984
+    n: 5
+  test_acc:
+    mean: 53.75756072998047
+    std: 0.5020169145209978
+    min: 52.97383117675781
+    max: 54.192649841308594
+    n: 5
+artifacts:
+  verify_summary_csv: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure5/figure5.yaml/dataset=ogbn-arxiv/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=65536/smoother=kprop/backbone=sage/use_nfr=false/verify_top5_summary.csv
+  recommended_command_txt: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure5/figure5.yaml/dataset=ogbn-arxiv/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=65536/smoother=kprop/backbone=sage/use_nfr=false/recommended_command.txt
+recommended_command: /home/hzw/miniconda3/envs/HZWDP/bin/python main.py --dataset
+  ogbn-arxiv --feature raw --mechanism mbm --x_eps 0.001 --m best --model sage --hidden_dim
+  16 --smoother kprop --optimizer adam --device cuda --val_ratio 0.25 --test_ratio
+  0.25 --data_range 0.0 1.0 --norm true --norm_scale 65536 --collect_grad_stats false
+  --gradient_clip false --gradient_clip_max_norm 1.0 --sim_epoch_refresh false --show_progress
+  false --log_every_epoch false --x_steps 16 --learning_rate 0.01 --weight_decay 0
+  --dropout 0.25 --max_epochs 500 --patience 150 -s 12345 -r 5 -o /home/hzw/Rethinking_GNN_DP/paper_experiments/figure5/figure5.yaml/dataset=ogbn-arxiv/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=65536/smoother=kprop/backbone=sage/use_nfr=false/final

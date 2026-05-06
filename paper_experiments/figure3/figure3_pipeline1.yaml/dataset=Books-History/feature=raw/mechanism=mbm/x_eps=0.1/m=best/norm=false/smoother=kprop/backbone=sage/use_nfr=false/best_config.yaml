@@ -1,0 +1,83 @@
+schema_version: 1
+job_id: 30dbd3b74516
+best_rank: 1
+best_candidate:
+  candidate_id: 119
+  x_steps: 8
+  learning_rate: '0.01'
+  weight_decay: '0.01'
+  dropout: '0.5'
+  tao2: none
+fixed_params:
+  dataset: Books-History
+  feature: raw
+  sim_reference_eps: null
+  feature_dim: null
+  scale: null
+  random_normal_mean: null
+  random_normal_std: null
+  shared_value: null
+  degree_bucket_num_buckets: null
+  degree_bucket_range_max: null
+  deepwalk_walk_length: null
+  deepwalk_number_walks: null
+  deepwalk_window_size: null
+  deepwalk_workers: null
+  deepwalk_undirected: null
+  mechanism: mbm
+  x_eps: '0.1'
+  m: best
+  norm: false
+  norm_scale: none
+  smoother: kprop
+  backbone: sage
+  use_nfr: false
+defaults:
+  dataset:
+    data_range:
+    - 0.0
+    - 1.0
+    val_ratio: 0.25
+    test_ratio: 0.25
+  model:
+    hidden_dim: 16
+  trainer:
+    optimizer: adam
+    collect_grad_stats: false
+    gradient_clip: false
+    gradient_clip_max_norm: 1.0
+    sim_epoch_refresh: false
+    show_progress: false
+    log_every_epoch: false
+  stage:
+    grid:
+      patience: 80
+      repeats: 1
+      max_epochs: 300
+    verify:
+      patience: 150
+      repeats: 5
+      max_epochs: 500
+verify_metrics:
+  val_acc:
+    mean: 78.5675765991211
+    std: 0.2779706849594707
+    min: 78.19599151611328
+    max: 78.82171630859375
+    n: 5
+  test_acc:
+    mean: 78.90835723876953
+    std: 0.24075904705568676
+    min: 78.59068298339844
+    max: 79.20677947998047
+    n: 5
+artifacts:
+  verify_summary_csv: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure3/figure3_pipeline1.yaml/dataset=Books-History/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/verify_top5_summary.csv
+  recommended_command_txt: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure3/figure3_pipeline1.yaml/dataset=Books-History/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/recommended_command.txt
+recommended_command: /home/hzw/miniconda3/envs/HZWDP/bin/python main.py --dataset
+  Books-History --feature raw --mechanism mbm --x_eps 0.1 --m best --model sage --hidden_dim
+  16 --smoother kprop --optimizer adam --device cuda --val_ratio 0.25 --test_ratio
+  0.25 --data_range 0.0 1.0 --norm false --collect_grad_stats false --gradient_clip
+  false --gradient_clip_max_norm 1.0 --sim_epoch_refresh false --show_progress false
+  --log_every_epoch false --x_steps 8 --learning_rate 0.01 --weight_decay 0.01 --dropout
+  0.5 --max_epochs 500 --patience 150 -s 12345 -r 5 -o /home/hzw/Rethinking_GNN_DP/paper_experiments/figure3/figure3_pipeline1.yaml/dataset=Books-History/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/final

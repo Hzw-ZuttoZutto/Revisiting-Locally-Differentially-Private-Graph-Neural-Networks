@@ -1,0 +1,2 @@
+python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure4/figure4_ori.yaml --output_root_dir paper_experiments/figure4/figure4_ori.yaml 
+python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure4/figure4_sim.yaml --output_root_dir paper_experiments/figure4/figure4_sim.yaml

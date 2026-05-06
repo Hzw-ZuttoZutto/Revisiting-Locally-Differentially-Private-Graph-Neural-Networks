@@ -1,0 +1,248 @@
+import torch
+import torch.nn.functional as F
+from torch_geometric.nn.conv.gcn_conv import gcn_norm
+from torch.nn import Dropout, SELU
+from torch_geometric.nn import MessagePassing, SAGEConv, GCNConv, GATConv
+from torch_sparse import matmul
+
+try:
+    from torch_geometric.utils import accuracy as accuracy_1d
+except ImportError:
+    def accuracy_1d(pred, target):
+        if pred.numel() == 0:
+            return torch.tensor(0.0, device=pred.device)
+        return (pred == target).float().mean()
+
+
+class KProp(MessagePassing):
+    def __init__(self, steps, aggregator, add_self_loops, normalize, cached, transform=lambda x: x):
+        super().__init__(aggr=aggregator)
+        self.transform = transform
+        self.K = steps
+        self.add_self_loops = add_self_loops
+        self.normalize = normalize
+        self.cached = cached
+        self._cached_x = None
+
+    def forward(self, x, adj_t):
+        if self._cached_x is None or not self.cached:
+            self._cached_x = self.neighborhood_aggregation(x, adj_t)
+
+        return self._cached_x
+
+    def neighborhood_aggregation(self, x, adj_t):
+        if self.K <= 0:
+            return x
+
+        if self.normalize:
+            adj_t = gcn_norm(adj_t, add_self_loops=False)
+        if self.add_self_loops:
+            adj_t = adj_t.set_diag()
+
+        for k in range(self.K): # K次消息传播
+            x = self.propagate(adj_t, x=x)
+
+        x = self.transform(x)
+        return x
+
+    def message_and_aggregate(self, adj_t, x):  #消息传播的方式
+        return matmul(adj_t, x, reduce=self.aggr)
+
+
+class HOA(MessagePassing):
+    def __init__(self, steps, aggregator, add_self_loops, normalize, cached, transform=lambda x: x):
+        super().__init__(aggr=aggregator)
+        self.transform = transform
+        self.K = steps
+        self.add_self_loops = add_self_loops
+        self.normalize = normalize
+        self.cached = cached
+        self._cached_x = None
+
+    def forward(self, x, adj_t):
+        if self._cached_x is None or not self.cached:
+            self._cached_x = self.neighborhood_aggregation(x, adj_t)
+
+        return self._cached_x
+
+    def neighborhood_aggregation(self, x, adj_t):
+        if self.K <= 0:
+            return x
+
+        if self.normalize:
+            adj_t = gcn_norm(adj_t, add_self_loops=False)
+        if self.add_self_loops:
+            adj_t = adj_t.set_diag()
+
+        x_i = x
+        h = torch.zeros_like(x)
+
+        for _ in range(self.K):
+            x_i = self.propagate(adj_t, x=x_i)
+            h = h + x_i
+
+        out = h / self.K
+        out = self.transform(out)
+        return out
+
+    def message_and_aggregate(self, adj_t, x):  # noqa
+        return matmul(adj_t, x, reduce=self.aggr)
+
+
+class GNN(torch.nn.Module):
+    def __init__(self, dropout):
+        super().__init__()
+        self.conv1 = None
+        self.conv2 = None
+        self.dropout = Dropout(p=dropout)
+        self.activation = SELU(inplace=True)
+
+    def forward(self, x, adj_t):
+        x = self.conv1(x, adj_t)
+        x = self.activation(x)
+        x = self.dropout(x)
+        x = self.conv2(x, adj_t)
+        return x
+
+
+class GCN(GNN):
+    def __init__(self, input_dim, output_dim, hidden_dim, dropout):
+        super().__init__(dropout)
+        self.conv1 = GCNConv(input_dim, hidden_dim)
+        self.conv2 = GCNConv(hidden_dim, output_dim)
+
+
+class GAT(GNN):
+    def __init__(self, input_dim, output_dim, hidden_dim, dropout):
+        super().__init__(dropout)
+        heads = 4
+        self.conv1 = GATConv(input_dim, hidden_dim, heads=heads, concat=True)
+        self.conv2 = GATConv(heads * hidden_dim, output_dim, heads=1, concat=False)
+
+
+class GraphSAGE(GNN):
+    def __init__(self, input_dim, output_dim, hidden_dim, dropout):
+        super().__init__(dropout)
+        self.conv1 = SAGEConv(in_channels=input_dim, out_channels=hidden_dim, normalize=False, root_weight=True)
+        self.conv2 = SAGEConv(in_channels=hidden_dim, out_channels=output_dim, normalize=False, root_weight=True)
+
+
+class NodeClassifier(torch.nn.Module):
+    def __init__(self,
+                 input_dim,
+                 num_classes,
+                 model:                 dict(help='backbone GNN model', choices=['gcn', 'sage', 'gat']) = 'sage',
+                 hidden_dim:            dict(help='dimension of the hidden layers') = 16,
+                 dropout:               dict(help='dropout rate (between zero and one)') = 0.0,
+                 x_steps:               dict(help='feature smoother step parameter', option='-kx') = 0,
+                 smoother:              dict(help='feature smoother before GNN', choices=['kprop', 'hoa']) = 'kprop',
+                 ):
+        super().__init__()
+        smoother_to_cls = {
+            'kprop': KProp,
+            'hoa': HOA,
+        }
+        if smoother not in smoother_to_cls:
+            supported = sorted(smoother_to_cls)
+            raise ValueError(f"Unsupported smoother {smoother!r}; expected one of {supported}.")
+
+        self.smoother = smoother_to_cls[smoother](
+            steps=x_steps,
+            aggregator='add',
+            add_self_loops=False, # LPGNN论文说去掉自环对于性能会更好
+            normalize=True,
+            cached=True,
+        )
+
+        self.gnn = {'gcn': GCN, 'sage': GraphSAGE, 'gat': GAT}[model](
+            input_dim=input_dim,
+            output_dim=num_classes,
+            hidden_dim=hidden_dim,
+            dropout=dropout
+        )
+
+        self._cached_smoother_adj_id = None
+
+    def clear_cached_state(self):
+        self.smoother._cached_x = None
+        self._cached_smoother_adj_id = None
+
+    def _refresh_smoother_cache(self, smoother_adj_t):
+        smoother_adj_id = id(smoother_adj_t)
+        if self._cached_smoother_adj_id is None:
+            self._cached_smoother_adj_id = smoother_adj_id
+            return
+        if self._cached_smoother_adj_id != smoother_adj_id:
+            self.smoother._cached_x = None
+            self._cached_smoother_adj_id = smoother_adj_id
+
+    @torch.no_grad()
+    def refresh_smoother_cache(self, data, smoother_adj_t=None):
+        smoother_adj_t = data.adj_t if smoother_adj_t is None else smoother_adj_t
+        smoother_adj_id = id(smoother_adj_t)
+
+        self._cached_smoother_adj_id = smoother_adj_id
+        self.smoother._cached_x = None
+        return self._build_feature_representation(data, smoother_adj_t)
+
+    def _build_feature_representation(self, data, smoother_adj_t):
+        return self.smoother(data.x, smoother_adj_t)
+
+    def _forward_logits(self, data, gnn_adj_t=None, smoother_adj_t=None):
+        smoother_adj_t = data.adj_t if smoother_adj_t is None else smoother_adj_t
+        gnn_adj_t = data.adj_t if gnn_adj_t is None else gnn_adj_t
+
+        self._refresh_smoother_cache(smoother_adj_t)
+
+        x = self._build_feature_representation(data, smoother_adj_t)
+        return self.gnn(x, gnn_adj_t)
+
+    def forward(self, data, gnn_adj_t=None, smoother_adj_t=None):
+        logits = self._forward_logits(data, gnn_adj_t=gnn_adj_t, smoother_adj_t=smoother_adj_t)
+        return F.softmax(logits, dim=1)
+
+    @staticmethod
+    def _target_indices(y):
+        return y.argmax(dim=1) if y.dim() > 1 else y
+
+    def training_step(self, data, gnn_adj_t=None, smoother_adj_t=None):
+        logits = self._forward_logits(data, gnn_adj_t=gnn_adj_t, smoother_adj_t=smoother_adj_t)
+        target = self._target_indices(data.y)
+
+        train_logits = logits[data.train_mask]
+        train_target = target[data.train_mask]
+        loss = F.cross_entropy(train_logits, train_target)
+
+        metrics = {
+            'train/loss': loss.detach(),
+            'train/acc': self.accuracy(pred=train_logits, target=train_target) * 100,
+        }
+
+        return loss, metrics
+
+    def validation_step(self, data, gnn_adj_t=None, smoother_adj_t=None):
+        logits = self._forward_logits(data, gnn_adj_t=gnn_adj_t, smoother_adj_t=smoother_adj_t)
+        target = self._target_indices(data.y)
+
+        metrics = {
+            'val/loss': F.cross_entropy(logits[data.val_mask], target[data.val_mask]),
+            'val/acc': self.accuracy(pred=logits[data.val_mask], target=target[data.val_mask]) * 100,
+            'test/acc': self.accuracy(pred=logits[data.test_mask], target=target[data.test_mask]) * 100,
+        }
+
+        return metrics
+
+    @staticmethod
+    def accuracy(pred, target):
+        pred = pred.argmax(dim=1) if len(pred.size()) > 1 else pred
+        target = target.argmax(dim=1) if len(target.size()) > 1 else target
+        return accuracy_1d(pred=pred, target=target)
+
+    @staticmethod
+    def cross_entropy_loss(p_y, y, weighted=False):
+        target_idx = y.argmax(dim=1) if y.dim() > 1 else y
+        y_onehot = F.one_hot(target_idx, num_classes=p_y.size(1)).to(dtype=p_y.dtype)
+        loss = -torch.log(p_y + 1e-20) * y_onehot
+        loss *= y if weighted else 1
+        loss = loss.sum(dim=1).mean()
+        return loss

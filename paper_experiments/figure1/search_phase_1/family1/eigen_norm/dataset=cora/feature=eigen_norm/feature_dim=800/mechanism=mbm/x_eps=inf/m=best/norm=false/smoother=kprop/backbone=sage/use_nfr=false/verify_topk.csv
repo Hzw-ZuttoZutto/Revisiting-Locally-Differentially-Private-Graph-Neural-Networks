@@ -1,0 +1,6 @@
+rank,candidate_id,x_steps,learning_rate,weight_decay,dropout,tao2
+1,9,0,0.01,0.001,0.75,none
+2,7,0,0.01,0.001,0.25,none
+3,8,0,0.01,0.001,0.5,none
+4,10,0,0.01,0.01,0.25,none
+5,4,0,0.01,0.0001,0.25,none

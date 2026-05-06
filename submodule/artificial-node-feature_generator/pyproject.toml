@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "artificial-node-feature-generator"
+version = "0.2.0"
+description = "Standalone node feature rewriting utilities for PyG-style graph data."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "gensim>=4.0",
+  "networkx>=3.0",
+  "numpy>=1.24",
+  "pyyaml>=6.0",
+  "scipy>=1.10",
+  "six>=1.16",
+  "torch>=2.0",
+  "torch-geometric>=2.3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
