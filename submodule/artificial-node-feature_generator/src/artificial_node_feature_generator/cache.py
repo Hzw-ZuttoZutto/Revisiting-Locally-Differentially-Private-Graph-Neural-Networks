@@ -87,7 +87,10 @@ def atomic_torch_save(path: str | Path, payload: Any) -> None:
     tmp_path = Path(tmp_name)
     try:
         with tmp_path.open("wb") as handle:
-            torch.save(payload, handle)
+            # Large feature tensors have hit inline_container write failures with the
+            # default zipfile serializer on shared filesystems, so keep cache writes
+            # on the legacy stable format.
+            torch.save(payload, handle, _use_new_zipfile_serialization=False)
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(tmp_path, cache_file)

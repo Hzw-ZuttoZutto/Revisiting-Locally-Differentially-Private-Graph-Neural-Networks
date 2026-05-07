@@ -35,7 +35,7 @@ search_space:
     datasets:
       - cora
       - lastfm
-      - citeceer
+      - citeseer
       - Books-Children
       - Books-History
       - ogbn-arxiv

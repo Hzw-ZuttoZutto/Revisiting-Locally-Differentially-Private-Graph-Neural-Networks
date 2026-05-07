@@ -4,12 +4,140 @@ import math
 
 import networkx as nx
 import numpy as np
+import scipy.sparse as sp
 import torch
+from scipy.sparse.linalg import ArpackNoConvergence, eigsh
+from sklearn.utils.extmath import randomized_range_finder
 
-from artificial_node_feature_generator.graph import build_nx_graph, get_feature_device, get_feature_dtype
+from artificial_node_feature_generator.graph import (
+    build_nx_graph,
+    get_edge_index,
+    get_feature_device,
+    get_feature_dtype,
+    get_num_nodes,
+)
 from artificial_node_feature_generator.providers.basic import require_feature_dim
 from artificial_node_feature_generator.providers.base import BaseFeatureProvider
 from artificial_node_feature_generator.types import ProviderOutput
+
+SPARSE_EIGEN_NODE_THRESHOLD = 4096
+SPARSE_EIGEN_TOL = 1e-4
+RANDOMIZED_EIGEN_NODE_THRESHOLD = 20_000
+RANDOMIZED_EIGEN_N_ITER = 2
+RANDOMIZED_EIGEN_OVERSAMPLES = 32
+RANDOMIZED_EIGEN_RANDOM_STATE = 0
+
+
+def _build_sparse_adjacency_matrix(data) -> sp.csr_matrix:
+    num_nodes = get_num_nodes(data)
+    edge_index = get_edge_index(data).cpu().numpy()
+    if edge_index.size == 0:
+        return sp.csr_matrix((num_nodes, num_nodes), dtype=np.float64)
+
+    row = edge_index[0]
+    col = edge_index[1]
+    values = np.ones(row.shape[0], dtype=np.float64)
+    adjacency = sp.coo_matrix((values, (row, col)), shape=(num_nodes, num_nodes), dtype=np.float64).tocsr()
+    adjacency.sum_duplicates()
+    if adjacency.nnz > 0:
+        adjacency.data[:] = 1.0
+
+    # Mirror nx.Graph semantics used elsewhere in the provider set.
+    adjacency = adjacency.maximum(adjacency.transpose()).tocsr()
+    adjacency.sum_duplicates()
+    if adjacency.nnz > 0:
+        adjacency.data[:] = 1.0
+    return adjacency
+
+
+def _descending_dense_eigh(matrix: np.ndarray, dim: int) -> tuple[np.ndarray, np.ndarray]:
+    eigenvalues, eigenvectors = np.linalg.eigh(matrix)
+    order = np.argsort(eigenvalues)[::-1][:dim]
+    return eigenvalues[order], np.asarray(eigenvectors[:, order], dtype=np.float64)
+
+
+def _descending_sparse_eigsh(matrix: sp.csr_matrix, dim: int) -> tuple[np.ndarray, np.ndarray]:
+    num_nodes = matrix.shape[0]
+    if dim >= num_nodes:
+        raise ValueError(f"eigen feature dim ({dim}) must be < num_nodes ({num_nodes}) for sparse eigensolvers")
+
+    ncv = min(num_nodes, max(dim + 64, int(math.ceil(dim * 1.25))))
+    if ncv <= dim:
+        ncv = min(num_nodes, dim + 1)
+    v0 = np.linspace(1.0, 2.0, num_nodes, dtype=np.float64)
+
+    try:
+        eigenvalues, eigenvectors = eigsh(
+            matrix,
+            k=dim,
+            which="LA",
+            tol=SPARSE_EIGEN_TOL,
+            ncv=ncv,
+            maxiter=max(5 * num_nodes, 10000),
+            v0=v0,
+        )
+    except ArpackNoConvergence as exc:
+        if exc.eigenvalues is None or exc.eigenvectors is None or exc.eigenvectors.shape[1] < dim:
+            raise RuntimeError(
+                f"sparse eigen solver did not converge with enough eigenpairs (wanted {dim})"
+            ) from exc
+        eigenvalues = exc.eigenvalues
+        eigenvectors = exc.eigenvectors
+
+    order = np.argsort(eigenvalues)[::-1][:dim]
+    return np.asarray(eigenvalues[order], dtype=np.float64), np.asarray(eigenvectors[:, order], dtype=np.float64)
+
+
+def _descending_randomized_psd_eigh(
+    matrix: sp.csr_matrix,
+    dim: int,
+    *,
+    n_iter: int | None = None,
+    n_oversamples: int | None = None,
+    random_state: int | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    num_nodes = matrix.shape[0]
+    if dim > num_nodes:
+        raise ValueError(f"eigen feature dim ({dim}) cannot exceed num_nodes ({num_nodes})")
+
+    if dim == num_nodes:
+        eigenvalues, eigenvectors = np.linalg.eigh(matrix.toarray())
+        order = np.argsort(eigenvalues)[::-1][:dim]
+        return np.asarray(eigenvalues[order], dtype=np.float64), np.asarray(eigenvectors[:, order], dtype=np.float64)
+
+    if n_iter is None:
+        n_iter = RANDOMIZED_EIGEN_N_ITER
+    if n_oversamples is None:
+        n_oversamples = RANDOMIZED_EIGEN_OVERSAMPLES
+    if random_state is None:
+        random_state = RANDOMIZED_EIGEN_RANDOM_STATE
+
+    bounded_oversamples = max(1, min(int(n_oversamples), max(1, num_nodes - dim)))
+    basis_size = min(num_nodes, dim + bounded_oversamples)
+    matrix32 = matrix.astype(np.float32, copy=False)
+    basis = randomized_range_finder(
+        matrix32,
+        size=basis_size,
+        n_iter=max(0, int(n_iter)),
+        power_iteration_normalizer="QR",
+        random_state=int(random_state),
+    )
+    projected = basis.T @ (matrix32 @ basis)
+    projected = np.asarray((projected + projected.T) * 0.5, dtype=np.float64)
+    eigenvalues, eigenvectors = np.linalg.eigh(projected)
+    order = np.argsort(eigenvalues)[::-1][:dim]
+    selected_vectors = basis @ eigenvectors[:, order]
+    return (
+        np.asarray(eigenvalues[order], dtype=np.float64),
+        np.asarray(selected_vectors, dtype=np.float64),
+    )
+
+
+def _safe_inverse_sqrt(values: np.ndarray) -> np.ndarray:
+    inv_sqrt = np.zeros_like(values, dtype=np.float64)
+    positive = values > 0.0
+    inv_sqrt[positive] = np.power(values[positive], -0.5)
+    return inv_sqrt
 
 
 def _degree_values(data) -> torch.Tensor:
@@ -139,29 +267,71 @@ class EigenFeatureProvider(BaseFeatureProvider):
     def cache_seed(self, *, seed: int | None, params: dict) -> int | None:
         return None
 
-    def _build_matrix(self, data) -> np.ndarray:
-        graph = build_nx_graph(data)
-        return nx.to_numpy_array(graph, nodelist=range(graph.number_of_nodes()), dtype=float)
+    def _should_use_sparse_solver(self, *, num_nodes: int, dim: int) -> bool:
+        return num_nodes > SPARSE_EIGEN_NODE_THRESHOLD and dim < num_nodes - 1
 
-    def _transform_matrix(self, matrix: np.ndarray) -> np.ndarray:
-        return matrix
+    def _dense_feature_matrix(self, adjacency: sp.csr_matrix, dim: int) -> np.ndarray:
+        dense_matrix = self._dense_eigen_matrix(adjacency)
+        _, eigenvectors = _descending_dense_eigh(dense_matrix, dim)
+        return eigenvectors
+
+    def _sparse_feature_matrix(self, adjacency: sp.csr_matrix, dim: int) -> np.ndarray:
+        sparse_matrix = self._sparse_eigen_matrix(adjacency)
+        _, eigenvectors = _descending_sparse_eigsh(sparse_matrix, dim)
+        return eigenvectors
+
+    def _dense_eigen_matrix(self, adjacency: sp.csr_matrix) -> np.ndarray:
+        return adjacency.toarray()
+
+    def _sparse_eigen_matrix(self, adjacency: sp.csr_matrix) -> sp.csr_matrix:
+        return adjacency
 
     def build(self, data, *, params: dict, seed: int | None = None) -> ProviderOutput:
         dim = require_feature_dim(self.name, params)
-        matrix = self._transform_matrix(self._build_matrix(data))
-        if dim > matrix.shape[0]:
-            raise ValueError(f"eigen feature dim ({dim}) cannot exceed num_nodes ({matrix.shape[0]})")
-        eigenvalues, eigenvectors = np.linalg.eig(matrix)
-        order = np.argsort(eigenvalues.real)[::-1]
-        selected = np.asarray(eigenvectors[:, order[:dim]].real, dtype=np.float32)
-        features = torch.as_tensor(selected, dtype=get_feature_dtype(data), device=get_feature_device(data))
+        adjacency = _build_sparse_adjacency_matrix(data)
+        num_nodes = adjacency.shape[0]
+        if dim > num_nodes:
+            raise ValueError(f"eigen feature dim ({dim}) cannot exceed num_nodes ({num_nodes})")
+
+        if self._should_use_sparse_solver(num_nodes=num_nodes, dim=dim):
+            selected = self._sparse_feature_matrix(adjacency, dim)
+        else:
+            selected = self._dense_feature_matrix(adjacency, dim)
+
+        features = torch.as_tensor(
+            np.asarray(selected, dtype=np.float32),
+            dtype=get_feature_dtype(data),
+            device=get_feature_device(data),
+        )
         return ProviderOutput(features=features, source=self.source, cacheable=True)
 
 
 class EigenNormFeatureProvider(EigenFeatureProvider):
     name = "eigen_norm"
 
-    def _transform_matrix(self, matrix: np.ndarray) -> np.ndarray:
-        row_sums = matrix.sum(axis=1, keepdims=True)
-        safe_row_sums = np.where(row_sums == 0.0, 1.0, row_sums)
-        return matrix / safe_row_sums
+    def _should_use_randomized_solver(self, *, num_nodes: int, dim: int) -> bool:
+        return num_nodes >= RANDOMIZED_EIGEN_NODE_THRESHOLD and dim < num_nodes
+
+    def _dense_feature_matrix(self, adjacency: sp.csr_matrix, dim: int) -> np.ndarray:
+        dense_adjacency = adjacency.toarray()
+        degrees = dense_adjacency.sum(axis=1)
+        inv_sqrt_degree = _safe_inverse_sqrt(np.asarray(degrees, dtype=np.float64))
+        normalized = (inv_sqrt_degree[:, None] * dense_adjacency) * inv_sqrt_degree[None, :]
+        _, eigenvectors = _descending_dense_eigh(normalized, dim)
+        return inv_sqrt_degree[:, None] * eigenvectors
+
+    def _sparse_feature_matrix(self, adjacency: sp.csr_matrix, dim: int) -> np.ndarray:
+        degrees = np.asarray(adjacency.sum(axis=1), dtype=np.float64).reshape(-1)
+        inv_sqrt_degree = _safe_inverse_sqrt(degrees)
+        normalizer = sp.diags(inv_sqrt_degree, format="csr")
+        normalized = (normalizer @ adjacency @ normalizer).tocsr()
+        if self._should_use_randomized_solver(num_nodes=adjacency.shape[0], dim=dim):
+            # Shift the symmetric normalized adjacency into [0, 1] so randomized SVD
+            # targets the same top eigenspace as the original largest-algebraic solve.
+            shifted = (normalized.astype(np.float32, copy=False) * 0.5) + (
+                sp.eye(normalized.shape[0], format="csr", dtype=np.float32) * 0.5
+            )
+            _, eigenvectors = _descending_randomized_psd_eigh(shifted.tocsr(), dim)
+        else:
+            _, eigenvectors = _descending_sparse_eigsh(normalized, dim)
+        return inv_sqrt_degree[:, None] * eigenvectors

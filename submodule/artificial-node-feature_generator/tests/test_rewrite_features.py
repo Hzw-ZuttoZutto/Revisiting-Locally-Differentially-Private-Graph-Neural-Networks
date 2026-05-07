@@ -16,6 +16,7 @@ from artificial_node_feature_generator import get_provider, register_provider, r
 from artificial_node_feature_generator.cache import cache_root, feature_cache_dir, feature_cache_path
 from artificial_node_feature_generator.graph import graph_fingerprint
 from artificial_node_feature_generator.providers import BaseFeatureProvider
+from artificial_node_feature_generator.providers import structural as structural_providers
 from artificial_node_feature_generator.types import ProviderOutput
 
 
@@ -57,6 +58,55 @@ def make_variant_data():
         dtype=torch.float32,
     )
     return Data(x=x, edge_index=edge_index, num_nodes=4)
+
+
+def make_path_data():
+    edge_index = torch.tensor(
+        [
+            [0, 1, 1, 2, 2, 3],
+            [1, 0, 2, 1, 3, 2],
+        ],
+        dtype=torch.long,
+    )
+    x = torch.tensor(
+        [
+            [1.0, 0.0],
+            [0.0, 1.0],
+            [1.0, 1.0],
+            [0.5, 0.5],
+        ],
+        dtype=torch.float32,
+    )
+    return Data(x=x, edge_index=edge_index, num_nodes=4)
+
+
+def make_medium_graph_data(num_nodes: int = 48):
+    rows: list[int] = []
+    cols: list[int] = []
+    block_size = num_nodes // 3
+
+    def add_edge(u: int, v: int) -> None:
+        rows.append(u)
+        cols.append(v)
+        rows.append(v)
+        cols.append(u)
+
+    for block_start in range(0, block_size * 3, block_size):
+        block_nodes = list(range(block_start, block_start + block_size))
+        for offset, node in enumerate(block_nodes):
+            for step in (1, 2, 3, 5):
+                neighbor = block_nodes[(offset + step) % block_size]
+                add_edge(node, neighbor)
+
+    for block_idx in range(3):
+        left = block_idx * block_size
+        right = ((block_idx + 1) % 3) * block_size
+        add_edge(left, right)
+        add_edge(left + 1, right + 2)
+
+    edge_index = torch.tensor([rows, cols], dtype=torch.long)
+    x = torch.ones((num_nodes, 1), dtype=torch.float32)
+    return Data(x=x, edge_index=edge_index, num_nodes=num_nodes)
 
 
 class DuckData:
@@ -214,6 +264,64 @@ def test_eigen_and_eigen_norm_still_work():
     eigen_norm = rewrite_features(data, "eigen_norm", params={"feature_dim": 2}, seed=1)
     assert eigen.x.shape == (4, 2)
     assert eigen_norm.x.shape == (4, 2)
+
+
+def _assert_columns_match_up_to_sign(lhs: torch.Tensor, rhs: torch.Tensor, atol: float = 1e-5) -> None:
+    aligned = rhs.clone()
+    for column in range(lhs.size(1)):
+        if torch.dot(lhs[:, column], aligned[:, column]) < 0:
+            aligned[:, column] = -aligned[:, column]
+    assert torch.allclose(lhs, aligned, atol=atol)
+
+
+def test_sparse_and_dense_eigen_paths_match_on_small_graph(monkeypatch):
+    data = make_path_data()
+    provider = structural_providers.EigenFeatureProvider()
+    params = {"feature_dim": 2}
+
+    monkeypatch.setattr(structural_providers, "SPARSE_EIGEN_NODE_THRESHOLD", 10_000)
+    dense = provider.build(data, params=params).features.cpu()
+
+    monkeypatch.setattr(structural_providers, "SPARSE_EIGEN_NODE_THRESHOLD", 0)
+    sparse = provider.build(data, params=params).features.cpu()
+
+    _assert_columns_match_up_to_sign(dense, sparse)
+
+
+def test_sparse_and_dense_eigen_norm_paths_match_on_small_graph(monkeypatch):
+    data = make_path_data()
+    provider = structural_providers.EigenNormFeatureProvider()
+    params = {"feature_dim": 2}
+
+    monkeypatch.setattr(structural_providers, "SPARSE_EIGEN_NODE_THRESHOLD", 10_000)
+    dense = provider.build(data, params=params).features.cpu()
+
+    monkeypatch.setattr(structural_providers, "SPARSE_EIGEN_NODE_THRESHOLD", 0)
+    sparse = provider.build(data, params=params).features.cpu()
+
+    _assert_columns_match_up_to_sign(dense, sparse, atol=1e-4)
+
+
+def test_randomized_eigen_norm_tracks_dense_subspace_on_medium_graph(monkeypatch):
+    data = make_medium_graph_data()
+    provider = structural_providers.EigenNormFeatureProvider()
+    params = {"feature_dim": 8}
+
+    monkeypatch.setattr(structural_providers, "SPARSE_EIGEN_NODE_THRESHOLD", 10_000)
+    dense = provider.build(data, params=params).features.cpu()
+
+    monkeypatch.setattr(structural_providers, "SPARSE_EIGEN_NODE_THRESHOLD", 0)
+    monkeypatch.setattr(structural_providers, "RANDOMIZED_EIGEN_NODE_THRESHOLD", 0)
+    monkeypatch.setattr(structural_providers, "RANDOMIZED_EIGEN_N_ITER", 4)
+    monkeypatch.setattr(structural_providers, "RANDOMIZED_EIGEN_OVERSAMPLES", 8)
+    randomized = provider.build(data, params=params).features.cpu()
+
+    dense_basis = torch.linalg.qr(dense, mode="reduced").Q
+    randomized_basis = torch.linalg.qr(randomized, mode="reduced").Q
+    projector_gap = torch.linalg.matrix_norm(
+        dense_basis @ dense_basis.T - randomized_basis @ randomized_basis.T
+    ).item() / params["feature_dim"]
+    assert projector_gap < 0.20
 
 
 def test_eigen_cache_reuses_payload_across_seeds():
