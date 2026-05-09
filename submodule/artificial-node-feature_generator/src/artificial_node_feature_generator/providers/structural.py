@@ -300,16 +300,25 @@ class OperatorFeatureProvider(BaseFeatureProvider):
             features = torch.empty((0, 0), dtype=get_feature_dtype(data), device=get_feature_device(data))
             return ProviderOutput(features=features, source=self.source, cacheable=True)
 
+        # Existing operator caches created before the HOA-aligned x_steps semantics
+        # change must be cleared manually because the cache key is intentionally unchanged.
+        if x_steps == 0:
+            features = torch.eye(
+                num_nodes,
+                dtype=get_feature_dtype(data),
+                device=get_feature_device(data),
+            )
+            return ProviderOutput(features=features, source=self.source, cacheable=True)
+
         normalized_adjacency = _build_normalized_adjacency_dense(data)
-        operator_steps = x_steps + 1
         power = normalized_adjacency.clone()
         accumulated = torch.zeros_like(normalized_adjacency)
 
-        for _ in range(operator_steps):
+        for _ in range(x_steps):
             accumulated = accumulated + power
             power = power @ normalized_adjacency
 
-        features = (accumulated / float(operator_steps)).to(
+        features = (accumulated / float(x_steps)).to(
             dtype=get_feature_dtype(data),
             device=get_feature_device(data),
         )

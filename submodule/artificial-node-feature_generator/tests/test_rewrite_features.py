@@ -284,13 +284,39 @@ def test_pagerank_repeats_same_scalar_across_all_columns():
     assert torch.allclose(rewritten.x[:, 1], rewritten.x[:, 2])
 
 
-def test_operator_matches_expected_hoa_average_rows():
+def test_operator_x_steps_zero_returns_identity():
+    clear_cache()
+    data = make_path_data()
+    rewritten = rewrite_features(data, "operator", params={"x_steps": 0}, seed=9)
+    expected = torch.eye(data.num_nodes, dtype=rewritten.x.dtype)
+    assert rewritten.x.shape == (data.num_nodes, data.num_nodes)
+    assert torch.allclose(rewritten.x.cpu(), expected, atol=1e-6, rtol=0.0)
+
+
+def test_operator_x_steps_one_matches_normalized_adjacency():
+    clear_cache()
     data = make_path_data()
     rewritten = rewrite_features(data, "operator", params={"x_steps": 1}, seed=9)
+    normalized = normalized_adjacency_dense(data)
+    assert rewritten.x.shape == (data.num_nodes, data.num_nodes)
+    assert torch.allclose(rewritten.x.cpu(), normalized.to(dtype=rewritten.x.dtype), atol=1e-6, rtol=0.0)
+
+
+def test_operator_x_steps_two_matches_expected_hoa_average_rows():
+    clear_cache()
+    data = make_path_data()
+    rewritten = rewrite_features(data, "operator", params={"x_steps": 2}, seed=9)
     normalized = normalized_adjacency_dense(data)
     expected = (normalized + (normalized @ normalized)) / 2.0
     assert rewritten.x.shape == (data.num_nodes, data.num_nodes)
     assert torch.allclose(rewritten.x.cpu(), expected.to(dtype=rewritten.x.dtype), atol=1e-6, rtol=0.0)
+
+
+def test_operator_rejects_negative_x_steps():
+    clear_cache()
+    data = make_path_data()
+    with pytest.raises(ValueError, match='x_steps'):
+        rewrite_features(data, "operator", params={"x_steps": -1}, seed=9)
 
 
 def test_eigen_and_eigen_norm_still_work():
