@@ -18,10 +18,8 @@ except Exception:  # pragma: no cover - optional in minimal test envs
     validate_sim_args = None
 
 try:
-    from submodule_feature_rewrite import load_submodule_feature_rewrite_api
     from transforms import FeaturePerturbation, FeatureTransform
 except Exception:  # pragma: no cover - optional in minimal test envs
-    load_submodule_feature_rewrite_api = None
     FeaturePerturbation = None
     FeatureTransform = None
 
@@ -52,7 +50,7 @@ def make_graph_data():
 
 
 @unittest.skipIf(
-    torch is None or FeatureTransform is None or load_submodule_feature_rewrite_api is None,
+    torch is None or FeatureTransform is None,
     'artificial feature rewrite dependencies are unavailable.',
 )
 class ArtificialFeatureTransformTests(unittest.TestCase):
@@ -76,13 +74,20 @@ class ArtificialFeatureTransformTests(unittest.TestCase):
             ],
         )
 
-    def test_repo_local_loader_binds_to_current_submodule(self):
-        api = load_submodule_feature_rewrite_api()
+    def test_rewrite_path_binds_to_current_submodule(self):
+        data = make_graph_data()
+        FeatureTransform(
+            feature='shared',
+            feature_dim=2,
+            shared_value=1.0,
+        )(data)
+
+        module = sys.modules['artificial_node_feature_generator']
         self.assertIn(
             str((Path(__file__).resolve().parents[1] / 'submodule' / 'artificial-node-feature_generator').resolve()),
-            str(Path(api.module.__file__).resolve()),
+            str(Path(module.__file__).resolve()),
         )
-        self.assertNotIn('/home/placitudo/artificial-node-feature_generator', str(Path(api.module.__file__).resolve()))
+        self.assertNotIn('/home/placitudo/artificial-node-feature_generator', str(Path(module.__file__).resolve()))
 
     def test_shared_feature_rewrites_dimension(self):
         data = make_graph_data()

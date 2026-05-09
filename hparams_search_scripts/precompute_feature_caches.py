@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import importlib
 import json
 import math
 import os
@@ -25,7 +26,11 @@ except ModuleNotFoundError:
     import run_mechanism_hparam_search as search_runner  # type: ignore
 
 from datasets import load_dataset, resolve_dataset_name
-from submodule_feature_rewrite import load_submodule_feature_rewrite_api
+
+
+SUBMODULE_FEATURE_REWRITE_ROOT = REPO_ROOT / "submodule" / "artificial-node-feature_generator"
+SUBMODULE_FEATURE_REWRITE_SRC = SUBMODULE_FEATURE_REWRITE_ROOT / "src"
+_repo_local_feature_rewrite_module = None
 
 
 @dataclass(frozen=True)
@@ -45,6 +50,69 @@ class TaskResult:
     cache_path: str | None
     elapsed_sec: float
     detail: str | None = None
+
+
+def _module_origin_path(module_name: str, module: Any) -> Path:
+    module_path = getattr(module, "__file__", None)
+    if module_path is None:
+        raise RuntimeError(f"Imported {module_name} has no __file__; unable to verify import origin.")
+    return Path(module_path).resolve()
+
+
+def _assert_module_under_submodule_root(module_name: str, module: Any) -> None:
+    module_path = _module_origin_path(module_name, module)
+    submodule_root = SUBMODULE_FEATURE_REWRITE_ROOT.resolve()
+    if module_path != submodule_root and submodule_root not in module_path.parents:
+        raise RuntimeError(
+            f"Imported {module_name} from unexpected location: {module_path}. "
+            f"Expected path under {submodule_root}."
+        )
+
+
+def _purge_modules(prefix: str) -> None:
+    for module_name in list(sys.modules):
+        if module_name == prefix or module_name.startswith(f"{prefix}."):
+            del sys.modules[module_name]
+
+
+def _load_repo_local_feature_rewrite_module():
+    global _repo_local_feature_rewrite_module
+
+    if _repo_local_feature_rewrite_module is not None:
+        return _repo_local_feature_rewrite_module
+
+    if not SUBMODULE_FEATURE_REWRITE_ROOT.is_dir():
+        raise RuntimeError(
+            f"artificial-node-feature-generator repository root not found at {SUBMODULE_FEATURE_REWRITE_ROOT}. "
+            "Please initialize/update the repository checkout first."
+        )
+    if not SUBMODULE_FEATURE_REWRITE_SRC.is_dir():
+        raise RuntimeError(
+            f"artificial-node-feature-generator source directory not found at {SUBMODULE_FEATURE_REWRITE_SRC}. "
+            "Expected a repo-local source checkout."
+        )
+
+    submodule_src = str(SUBMODULE_FEATURE_REWRITE_SRC)
+    if submodule_src in sys.path:
+        sys.path.remove(submodule_src)
+    sys.path.insert(0, submodule_src)
+
+    _purge_modules("artificial_node_feature_generator")
+
+    try:
+        module = importlib.import_module("artificial_node_feature_generator")
+    except Exception as exc:
+        raise ImportError(
+            "Failed to import artificial_node_feature_generator from repo-local source path. "
+            f"Expected path: {SUBMODULE_FEATURE_REWRITE_SRC}"
+        ) from exc
+
+    _assert_module_under_submodule_root("artificial_node_feature_generator", module)
+    if not hasattr(module, "rewrite_features"):
+        raise RuntimeError("artificial_node_feature_generator is missing expected attribute: rewrite_features")
+
+    _repo_local_feature_rewrite_module = module
+    return _repo_local_feature_rewrite_module
 
 
 def _repo_root() -> Path:
@@ -204,7 +272,7 @@ def _task_key(dataset: str, feature: str, params: dict[str, Any], effective_seed
 
 
 def _collect_cache_tasks(config_paths: list[Path]) -> list[CacheTask]:
-    load_submodule_feature_rewrite_api()
+    _load_repo_local_feature_rewrite_module()
     from artificial_node_feature_generator.registry import get_provider
 
     task_map: dict[str, CacheTask] = {}
@@ -289,7 +357,7 @@ def _estimate_dense_matrix_gib(num_nodes: int) -> float:
 
 def _run_task(task: CacheTask, *, force: bool, max_eigen_dense_gib: float) -> TaskResult:
     started = time.time()
-    load_submodule_feature_rewrite_api()
+    _load_repo_local_feature_rewrite_module()
     from artificial_node_feature_generator.cache import feature_cache_path, save_cached_features
     from artificial_node_feature_generator.graph import graph_fingerprint
     from artificial_node_feature_generator.registry import get_provider
