@@ -56,6 +56,8 @@ SEARCH_FEATURE_KEYS = {
     "sim_reference_eps",
     "feature_dim",
     "scale",
+    "feature_preprojection",
+    "preprojection_output_dim",
     "random_normal_mean",
     "random_normal_std",
     "shared_value",
@@ -439,7 +441,7 @@ def _validate_search_space_section(raw: Any) -> dict[str, Any]:
     _expect_allowed_keys(
         feature,
         allowed=SEARCH_FEATURE_KEYS,
-        required=SEARCH_FEATURE_KEYS - {"scale"},
+        required=SEARCH_FEATURE_KEYS - {"scale", "feature_preprojection", "preprojection_output_dim"},
         path="search_space.feature_transformation",
     )
 
@@ -496,6 +498,18 @@ def _validate_search_space_section(raw: Any) -> dict[str, Any]:
                 feature.get("scale", []),
                 "search_space.feature_transformation.scale",
                 item_parser=_parse_scale_text,
+                allow_empty=True,
+            ),
+            "feature_preprojection": _parse_list(
+                feature.get("feature_preprojection", []),
+                "search_space.feature_transformation.feature_preprojection",
+                item_parser=_parse_bool,
+                allow_empty=True,
+            ),
+            "preprojection_output_dim": _parse_list(
+                feature.get("preprojection_output_dim", []),
+                "search_space.feature_transformation.preprojection_output_dim",
+                item_parser=_parse_positive_int,
                 allow_empty=True,
             ),
             "random_normal_mean": _parse_list(
@@ -567,6 +581,7 @@ def _validate_search_space_section(raw: Any) -> dict[str, Any]:
         and set(normalized_feature["feature_transformation"]["features"]) <= SUPPORTED_REWRITE_FEATURE_SET
     )
     sim_only_requested = set(normalized_feature["feature_transformation"]["features"]) == {"sim"}
+    operator_only_requested = set(normalized_feature["feature_transformation"]["features"]) == {"operator"}
     perturbation_raw = mapping["feature_perturbation"]
     if isinstance(perturbation_raw, list):
         if len(perturbation_raw) != 0:
@@ -654,7 +669,7 @@ def _validate_search_space_section(raw: Any) -> dict[str, Any]:
             item_parser=lambda value, path: _parse_choice(value, path, choices=SUPPORTED_SMOOTHERS),
             allow_empty=False,
         )
-    elif all(step == 0 for step in normalized_x_steps):
+    elif all(step == 0 for step in normalized_x_steps) or operator_only_requested:
         normalized_smoother = list(DEFAULT_ZERO_STEP_SMOOTHER)
     else:
         raise SearchError("search_space.calibrator is missing required fields: ['smoother']")
@@ -736,12 +751,13 @@ def _validate_cross_constraints(search_space: dict[str, Any]) -> None:
     nfr_cfg = search_space["nfr"]
     features = set(feature_cfg["features"])
     scale_values = feature_cfg["scale"]
-    scale_was_specified = bool(feature_cfg.get("_scale_was_specified", False))
+    feature_preprojection_values = set(feature_cfg["feature_preprojection"])
     norm_values = set(calibrator_cfg["norm"])
     use_nfr_values = set(nfr_cfg["use_nfr"])
     rewrite_only = len(features) > 0 and features <= SUPPORTED_REWRITE_FEATURE_SET
     sim_only = features == {"sim"}
-    contains_raw_or_sim = bool(features & {"raw", "sim"})
+    rewrite_features = features & SUPPORTED_REWRITE_FEATURE_SET
+    rewrite_features_requiring_dim = rewrite_features - {"operator"}
 
     if rewrite_only:
         for field_name, default_values in DEFAULT_REWRITE_PERTURBATION.items():
@@ -783,20 +799,10 @@ def _validate_cross_constraints(search_space: dict[str, Any]) -> None:
             "search_space.feature_transformation.sim_reference_eps",
         )
 
-    if contains_raw_or_sim:
-        if not scale_was_specified:
-            raise SearchError(
-                "search_space.feature_transformation.scale must be explicitly [] when features include raw or sim"
-            )
-        _require_empty(
-            scale_values,
-            "search_space.feature_transformation.scale",
-        )
-    elif rewrite_only and len(scale_values) == 0:
+    if len(scale_values) == 0:
         feature_cfg["scale"] = [mechanism_stage_utils.canonical_float_text(1.0)]
 
-    rewrite_features = features & SUPPORTED_REWRITE_FEATURE_SET
-    if rewrite_features:
+    if rewrite_features_requiring_dim:
         _require_non_empty(
             feature_cfg["feature_dim"],
             "search_space.feature_transformation.feature_dim",
@@ -805,6 +811,28 @@ def _validate_cross_constraints(search_space: dict[str, Any]) -> None:
         _require_empty(
             feature_cfg["feature_dim"],
             "search_space.feature_transformation.feature_dim",
+        )
+
+    if "operator" in features:
+        if len(feature_cfg["feature_preprojection"]) == 0:
+            feature_cfg["feature_preprojection"] = [False]
+    else:
+        _require_empty(
+            feature_cfg["feature_preprojection"],
+            "search_space.feature_transformation.feature_preprojection",
+        )
+
+    if True in feature_preprojection_values or (
+        "operator" in features and True in set(feature_cfg["feature_preprojection"])
+    ):
+        _require_non_empty(
+            feature_cfg["preprojection_output_dim"],
+            "search_space.feature_transformation.preprojection_output_dim",
+        )
+    else:
+        _require_empty(
+            feature_cfg["preprojection_output_dim"],
+            "search_space.feature_transformation.preprojection_output_dim",
         )
 
     if "random_normal" in features:
@@ -941,43 +969,29 @@ def load_search_config(config_path: Path) -> dict[str, Any]:
 
 def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]]:
     feature_cfg = search_space["feature_transformation"]
-    rewrite_scale_values = (
+    scale_values = (
         feature_cfg["scale"]
         if len(feature_cfg["scale"]) > 0
         else [mechanism_stage_utils.canonical_float_text(1.0)]
+    )
+    preprojection_values = (
+        feature_cfg["feature_preprojection"]
+        if len(feature_cfg["feature_preprojection"]) > 0
+        else [False]
     )
     variants: list[dict[str, Any]] = []
 
     for feature in feature_cfg["features"]:
         if feature == "raw":
-            variants.append(
-                {
-                    "feature": feature,
-                    "sim_reference_eps": None,
-                    "feature_dim": None,
-                    "scale": None,
-                    "random_normal_mean": None,
-                    "random_normal_std": None,
-                    "shared_value": None,
-                    "degree_bucket_num_buckets": None,
-                    "degree_bucket_range_max": None,
-                    "deepwalk_walk_length": None,
-                    "deepwalk_number_walks": None,
-                    "deepwalk_window_size": None,
-                    "deepwalk_workers": None,
-                    "deepwalk_undirected": None,
-                }
-            )
-            continue
-
-        if feature == "sim":
-            for sim_reference_eps in feature_cfg["sim_reference_eps"]:
+            for scale in scale_values:
                 variants.append(
                     {
                         "feature": feature,
-                        "sim_reference_eps": sim_reference_eps,
+                        "sim_reference_eps": None,
                         "feature_dim": None,
-                        "scale": None,
+                        "scale": scale,
+                        "feature_preprojection": None,
+                        "preprojection_output_dim": None,
                         "random_normal_mean": None,
                         "random_normal_std": None,
                         "shared_value": None,
@@ -992,9 +1006,64 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
                 )
             continue
 
+        if feature == "sim":
+            for sim_reference_eps in feature_cfg["sim_reference_eps"]:
+                for scale in scale_values:
+                    variants.append(
+                        {
+                            "feature": feature,
+                            "sim_reference_eps": sim_reference_eps,
+                            "feature_dim": None,
+                            "scale": scale,
+                            "feature_preprojection": None,
+                            "preprojection_output_dim": None,
+                            "random_normal_mean": None,
+                            "random_normal_std": None,
+                            "shared_value": None,
+                            "degree_bucket_num_buckets": None,
+                            "degree_bucket_range_max": None,
+                            "deepwalk_walk_length": None,
+                            "deepwalk_number_walks": None,
+                            "deepwalk_window_size": None,
+                            "deepwalk_workers": None,
+                            "deepwalk_undirected": None,
+                        }
+                    )
+            continue
+
+        if feature == "operator":
+            for scale in scale_values:
+                for feature_preprojection in preprojection_values:
+                    if feature_preprojection:
+                        output_dim_values = feature_cfg["preprojection_output_dim"]
+                    else:
+                        output_dim_values = [None]
+                    for output_dim in output_dim_values:
+                        variants.append(
+                            {
+                                "feature": feature,
+                                "sim_reference_eps": None,
+                                "feature_dim": None,
+                                "scale": scale,
+                                "feature_preprojection": bool(feature_preprojection),
+                                "preprojection_output_dim": output_dim,
+                                "random_normal_mean": None,
+                                "random_normal_std": None,
+                                "shared_value": None,
+                                "degree_bucket_num_buckets": None,
+                                "degree_bucket_range_max": None,
+                                "deepwalk_walk_length": None,
+                                "deepwalk_number_walks": None,
+                                "deepwalk_window_size": None,
+                                "deepwalk_workers": None,
+                                "deepwalk_undirected": None,
+                            }
+                        )
+            continue
+
         if feature == "random_normal":
             for feature_dim in feature_cfg["feature_dim"]:
-                for scale in rewrite_scale_values:
+                for scale in scale_values:
                     for mean_value in feature_cfg["random_normal_mean"]:
                         for std_value in feature_cfg["random_normal_std"]:
                             variants.append(
@@ -1003,6 +1072,8 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
                                     "sim_reference_eps": None,
                                     "feature_dim": feature_dim,
                                     "scale": scale,
+                                    "feature_preprojection": None,
+                                    "preprojection_output_dim": None,
                                     "random_normal_mean": mean_value,
                                     "random_normal_std": std_value,
                                     "shared_value": None,
@@ -1019,7 +1090,7 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
 
         if feature == "shared":
             for feature_dim in feature_cfg["feature_dim"]:
-                for scale in rewrite_scale_values:
+                for scale in scale_values:
                     for shared_value in feature_cfg["shared_value"]:
                         variants.append(
                             {
@@ -1027,6 +1098,8 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
                                 "sim_reference_eps": None,
                                 "feature_dim": feature_dim,
                                 "scale": scale,
+                                "feature_preprojection": None,
+                                "preprojection_output_dim": None,
                                 "random_normal_mean": None,
                                 "random_normal_std": None,
                                 "shared_value": shared_value,
@@ -1043,13 +1116,15 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
 
         if feature in {"random_signed_onehot", "node_degree", "pagerank", "eigen", "eigen_norm"}:
             for feature_dim in feature_cfg["feature_dim"]:
-                for scale in rewrite_scale_values:
+                for scale in scale_values:
                     variants.append(
                         {
                             "feature": feature,
                             "sim_reference_eps": None,
                             "feature_dim": feature_dim,
                             "scale": scale,
+                            "feature_preprojection": None,
+                            "preprojection_output_dim": None,
                             "random_normal_mean": None,
                             "random_normal_std": None,
                             "shared_value": None,
@@ -1066,7 +1141,7 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
 
         if feature == "degree_bucket_distribution":
             for feature_dim in feature_cfg["feature_dim"]:
-                for scale in rewrite_scale_values:
+                for scale in scale_values:
                     for num_buckets in feature_cfg["degree_bucket_num_buckets"]:
                         variants.append(
                             {
@@ -1074,6 +1149,8 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
                                 "sim_reference_eps": None,
                                 "feature_dim": feature_dim,
                                 "scale": scale,
+                                "feature_preprojection": None,
+                                "preprojection_output_dim": None,
                                 "random_normal_mean": None,
                                 "random_normal_std": None,
                                 "shared_value": None,
@@ -1090,7 +1167,7 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
 
         if feature == "degree_bucket_range":
             for feature_dim in feature_cfg["feature_dim"]:
-                for scale in rewrite_scale_values:
+                for scale in scale_values:
                     for num_buckets in feature_cfg["degree_bucket_num_buckets"]:
                         for range_max in feature_cfg["degree_bucket_range_max"]:
                             variants.append(
@@ -1099,6 +1176,8 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
                                     "sim_reference_eps": None,
                                     "feature_dim": feature_dim,
                                     "scale": scale,
+                                    "feature_preprojection": None,
+                                    "preprojection_output_dim": None,
                                     "random_normal_mean": None,
                                     "random_normal_std": None,
                                     "shared_value": None,
@@ -1115,7 +1194,7 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
 
         if feature == "deepwalk":
             for feature_dim in feature_cfg["feature_dim"]:
-                for scale in rewrite_scale_values:
+                for scale in scale_values:
                     for walk_length in feature_cfg["deepwalk_walk_length"]:
                         for number_walks in feature_cfg["deepwalk_number_walks"]:
                             for window_size in feature_cfg["deepwalk_window_size"]:
@@ -1127,6 +1206,8 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
                                                 "sim_reference_eps": None,
                                                 "feature_dim": feature_dim,
                                                 "scale": scale,
+                                                "feature_preprojection": None,
+                                                "preprojection_output_dim": None,
                                                 "random_normal_mean": None,
                                                 "random_normal_std": None,
                                                 "shared_value": None,
@@ -1179,7 +1260,12 @@ def build_batch_spec(
                                 search_space["calibrator"]["norm_scale"] if norm_enabled else ["none"]
                             )
                             for norm_scale in norm_scale_values:
-                                for smoother in search_space["calibrator"]["smoother"]:
+                                smoother_values = (
+                                    [None]
+                                    if feature_variant["feature"] == "operator"
+                                    else list(search_space["calibrator"]["smoother"])
+                                )
+                                for smoother in smoother_values:
                                     for backbone in search_space["model"]["backbones"]:
                                         for use_nfr in search_space["nfr"]["use_nfr"]:
                                             fixed_params = {

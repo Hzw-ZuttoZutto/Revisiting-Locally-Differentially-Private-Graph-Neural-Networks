@@ -51,6 +51,8 @@ def _job_spec() -> dict[str, object]:
             "sim_reference_eps": None,
             "feature_dim": None,
             "scale": None,
+            "feature_preprojection": None,
+            "preprojection_output_dim": None,
             "random_normal_mean": None,
             "random_normal_std": None,
             "shared_value": None,

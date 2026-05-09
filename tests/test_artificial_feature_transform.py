@@ -69,6 +69,7 @@ class ArtificialFeatureTransformTests(unittest.TestCase):
                 'degree_bucket_range',
                 'degree_bucket_distribution',
                 'pagerank',
+                'operator',
                 'eigen',
                 'eigen_norm',
                 'deepwalk',
@@ -95,7 +96,7 @@ class ArtificialFeatureTransformTests(unittest.TestCase):
         self.assertEqual(tuple(rewritten.x.shape), (4, 2))
         self.assertTrue(torch.allclose(rewritten.x, torch.full((4, 2), 3.0)))
 
-    def test_shared_feature_scale_applies_after_rewrite(self):
+    def test_shared_feature_scale_is_not_applied_during_rewrite(self):
         data = make_graph_data()
         transform = FeatureTransform(
             feature='shared',
@@ -104,7 +105,7 @@ class ArtificialFeatureTransformTests(unittest.TestCase):
             scale=2.5,
         )
         rewritten = transform(data)
-        self.assertTrue(torch.allclose(rewritten.x, torch.full((4, 2), 7.5)))
+        self.assertTrue(torch.allclose(rewritten.x, torch.full((4, 2), 3.0)))
 
     def test_random_normal_uses_repeat_seed(self):
         data = make_graph_data()
@@ -156,6 +157,7 @@ class ArtificialFeatureValidationTests(unittest.TestCase):
     def _build_parser(self):
         parser = argparse.ArgumentParser(prog='feature-args-test')
         add_parameters_as_argument(FeatureTransform, parser)
+        parser.add_argument('--mechanism', default='mbm')
         return parser
 
     def _validate(self, argv):
@@ -179,17 +181,43 @@ class ArtificialFeatureValidationTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self._validate(['--feature', 'raw', '--feature-dim', '4'])
 
-    def test_raw_rejects_scale(self):
-        with self.assertRaises(SystemExit):
-            self._validate(['--feature', 'raw', '--scale', '2'])
+    def test_raw_accepts_scale(self):
+        args = self._validate(['--feature', 'raw', '--scale', '2'])
+        self.assertEqual(args.scale, 2.0)
 
     def test_non_sim_rejects_sim_reference_eps(self):
         with self.assertRaises(SystemExit):
             self._validate(['--feature', 'shared', '--feature-dim', '4', '--sim-reference-eps', '1.0'])
 
-    def test_sim_rejects_scale(self):
+    def test_sim_accepts_scale(self):
+        args = self._validate(['--feature', 'sim', '--sim-reference-eps', '1.0', '--scale', '2'])
+        self.assertEqual(args.scale, 2.0)
+
+    def test_operator_does_not_require_feature_dim(self):
+        args = self._validate(['--feature', 'operator'])
+        self.assertEqual(args.feature, 'operator')
+        self.assertIsNone(args.feature_dim)
+
+    def test_operator_rejects_feature_dim(self):
         with self.assertRaises(SystemExit):
-            self._validate(['--feature', 'sim', '--sim-reference-eps', '1.0', '--scale', '2'])
+            self._validate(['--feature', 'operator', '--feature-dim', '4'])
+
+    def test_feature_preprojection_requires_operator(self):
+        with self.assertRaises(SystemExit):
+            self._validate(['--feature', 'shared', '--feature-dim', '4', '--feature-preprojection'])
+
+    def test_operator_preprojection_requires_output_dim(self):
+        with self.assertRaises(SystemExit):
+            self._validate(['--feature', 'operator', '--feature-preprojection'])
+
+    def test_operator_accepts_preprojection_args(self):
+        args = self._validate([
+            '--feature', 'operator',
+            '--feature-preprojection',
+            '--preprojection-output-dim', '8',
+        ])
+        self.assertTrue(args.feature_preprojection)
+        self.assertEqual(args.preprojection_output_dim, 8)
 
     def test_irrelevant_feature_specific_parameter_is_rejected(self):
         with self.assertRaises(SystemExit):
@@ -237,6 +265,7 @@ class CoraArtificialFeatureSmokeTests(unittest.TestCase):
             'degree_bucket_range': ['--feature-dim', '8', '--degree-bucket-num-buckets', '4', '--degree-bucket-range-max', '8'],
             'degree_bucket_distribution': ['--feature-dim', '8', '--degree-bucket-num-buckets', '4'],
             'pagerank': ['--feature-dim', '8'],
+            'operator': [],
             'eigen': ['--feature-dim', '8'],
             'eigen_norm': ['--feature-dim', '8'],
             'deepwalk': [
@@ -258,6 +287,56 @@ class CoraArtificialFeatureSmokeTests(unittest.TestCase):
                 '--dataset', 'cora',
                 '--feature', 'shared',
                 '--feature-dim', '8',
+                '--device', 'cpu',
+                '--max-epochs', '1',
+                '--patience', '1',
+                '--repeats', '1',
+                '--output-dir', tmpdir,
+            ]
+            completed = subprocess.run(
+                cmd,
+                cwd=self.repo_root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if completed.returncode != 0 and 'ModuleNotFoundError' in f'{completed.stdout}\n{completed.stderr}':
+                self.skipTest('runtime dependencies for main.py are unavailable in HZWDP')
+            self.assertEqual(completed.returncode, 0, msg=completed.stderr)
+
+    def test_operator_cora_invocation_without_projection_is_well_formed(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cmd = [
+                str(self.python_bin),
+                'main.py',
+                '--dataset', 'cora',
+                '--feature', 'operator',
+                '--device', 'cpu',
+                '--max-epochs', '1',
+                '--patience', '1',
+                '--repeats', '1',
+                '--output-dir', tmpdir,
+            ]
+            completed = subprocess.run(
+                cmd,
+                cwd=self.repo_root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if completed.returncode != 0 and 'ModuleNotFoundError' in f'{completed.stdout}\n{completed.stderr}':
+                self.skipTest('runtime dependencies for main.py are unavailable in HZWDP')
+            self.assertEqual(completed.returncode, 0, msg=completed.stderr)
+
+    def test_operator_cora_invocation_with_projection_is_well_formed(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cmd = [
+                str(self.python_bin),
+                'main.py',
+                '--dataset', 'cora',
+                '--feature', 'operator',
+                '--feature-preprojection',
+                '--preprojection-output-dim', '8',
                 '--device', 'cpu',
                 '--max-epochs', '1',
                 '--patience', '1',

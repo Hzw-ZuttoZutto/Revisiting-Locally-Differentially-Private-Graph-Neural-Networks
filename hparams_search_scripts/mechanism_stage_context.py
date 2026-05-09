@@ -78,9 +78,21 @@ def _append_bool(parts: list[str], name: str, value: bool) -> None:
 
 def _append_feature_specific_args(parts: list[str], fixed_params: dict[str, Any]) -> None:
     feature = str(fixed_params["feature"])
+    scale = fixed_params.get("scale")
+    if scale is not None and not stage_utils.is_default_rewrite_scale_value(scale):
+        _append_flag(parts, "scale", scale)
 
     if feature == "sim":
         _append_flag(parts, "sim_reference_eps", fixed_params["sim_reference_eps"])
+        return
+
+    if feature == "operator":
+        if bool(fixed_params.get("feature_preprojection")):
+            _append_bool(parts, "feature_preprojection", True)
+            _append_flag(parts, "preprojection_output_dim", fixed_params["preprojection_output_dim"])
+        return
+
+    if feature == "raw":
         return
 
     for field_name in (
@@ -98,10 +110,6 @@ def _append_feature_specific_args(parts: list[str], fixed_params: dict[str, Any]
         value = fixed_params.get(field_name)
         if value is not None:
             _append_flag(parts, field_name, value)
-
-    scale = fixed_params.get("scale")
-    if scale is not None and not stage_utils.is_default_rewrite_scale_value(scale):
-        _append_flag(parts, "scale", scale)
 
     if fixed_params.get("deepwalk_undirected") is not None:
         _append_bool(parts, "deepwalk_undirected", bool(fixed_params["deepwalk_undirected"]))
@@ -124,8 +132,6 @@ def build_main_base_args(ctx: JobContext) -> list[str]:
         str(ctx.fixed_params["backbone"]),
         "--hidden_dim",
         str(ctx.defaults["model"]["hidden_dim"]),
-        "--smoother",
-        str(ctx.fixed_params["smoother"]),
         "--optimizer",
         str(ctx.defaults["trainer"]["optimizer"]),
         "--device",
@@ -140,6 +146,8 @@ def build_main_base_args(ctx: JobContext) -> list[str]:
     parts.extend(["--data_range", str(data_range[0]), str(data_range[1])])
 
     _append_feature_specific_args(parts, ctx.fixed_params)
+    if ctx.fixed_params.get("smoother") is not None:
+        parts.extend(["--smoother", str(ctx.fixed_params["smoother"])])
 
     _append_bool(parts, "norm", bool(ctx.fixed_params["norm"]))
     if bool(ctx.fixed_params["norm"]) and str(ctx.fixed_params["norm_scale"]) != "none":

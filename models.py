@@ -1,7 +1,9 @@
+import math
+
 import torch
 import torch.nn.functional as F
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
-from torch.nn import Dropout, SELU
+from torch.nn import Dropout, Linear, SELU
 from torch_geometric.nn import MessagePassing, SAGEConv, GCNConv, GATConv
 from torch_sparse import matmul
 
@@ -131,13 +133,39 @@ class NodeClassifier(torch.nn.Module):
     def __init__(self,
                  input_dim,
                  num_classes,
+                 feature='raw',
                  model:                 dict(help='backbone GNN model', choices=['gcn', 'sage', 'gat']) = 'sage',
                  hidden_dim:            dict(help='dimension of the hidden layers') = 16,
                  dropout:               dict(help='dropout rate (between zero and one)') = 0.0,
+                 scale=1.0,
+                 feature_preprojection=False,
+                 preprojection_output_dim=None,
                  x_steps:               dict(help='feature smoother step parameter', option='-kx') = 0,
                  smoother:              dict(help='feature smoother before GNN', choices=['kprop', 'hoa']) = 'kprop',
                  ):
         super().__init__()
+        self.feature = str(feature).strip().lower()
+        self.scale = self._resolve_feature_scale(scale)
+        self.feature_preprojection = bool(feature_preprojection)
+        self.preprojection_output_dim = preprojection_output_dim
+
+        if self.feature_preprojection and self.feature != 'operator':
+            raise ValueError('feature_preprojection is only supported when feature="operator".')
+        if not self.feature_preprojection and preprojection_output_dim is not None:
+            raise ValueError('preprojection_output_dim requires feature_preprojection to be enabled.')
+        if self.feature_preprojection:
+            if preprojection_output_dim is None or int(preprojection_output_dim) <= 0:
+                raise ValueError('preprojection_output_dim must be a positive integer when feature_preprojection is enabled.')
+            self.feature_preprojection_layer = Linear(input_dim, int(preprojection_output_dim))
+            self.feature_preprojection_activation = SELU(inplace=True)
+            self.feature_preprojection_dropout = Dropout(p=dropout)
+            gnn_input_dim = int(preprojection_output_dim)
+        else:
+            self.feature_preprojection_layer = None
+            self.feature_preprojection_activation = None
+            self.feature_preprojection_dropout = None
+            gnn_input_dim = input_dim
+
         smoother_to_cls = {
             'kprop': KProp,
             'hoa': HOA,
@@ -155,7 +183,7 @@ class NodeClassifier(torch.nn.Module):
         )
 
         self.gnn = {'gcn': GCN, 'sage': GraphSAGE, 'gat': GAT}[model](
-            input_dim=input_dim,
+            input_dim=gnn_input_dim,
             output_dim=num_classes,
             hidden_dim=hidden_dim,
             dropout=dropout
@@ -167,7 +195,29 @@ class NodeClassifier(torch.nn.Module):
         self.smoother._cached_x = None
         self._cached_smoother_adj_id = None
 
+    @staticmethod
+    def _resolve_feature_scale(scale):
+        resolved = float(scale)
+        if not math.isfinite(resolved) or resolved <= 0:
+            raise ValueError('scale must be > 0.')
+        return resolved
+
+    def _apply_scale(self, x):
+        if self.scale == 1.0:
+            return x
+        return x * self.scale
+
+    def _apply_operator_projection(self, x):
+        if self.feature_preprojection_layer is None:
+            return x
+        x = self.feature_preprojection_layer(x)
+        x = self.feature_preprojection_activation(x)
+        x = self.feature_preprojection_dropout(x)
+        return x
+
     def _refresh_smoother_cache(self, smoother_adj_t):
+        if self.feature == 'operator':
+            return
         smoother_adj_id = id(smoother_adj_t)
         if self._cached_smoother_adj_id is None:
             self._cached_smoother_adj_id = smoother_adj_id
@@ -178,6 +228,8 @@ class NodeClassifier(torch.nn.Module):
 
     @torch.no_grad()
     def refresh_smoother_cache(self, data, smoother_adj_t=None):
+        if self.feature == 'operator':
+            return self._build_feature_representation(data, smoother_adj_t)
         smoother_adj_t = data.adj_t if smoother_adj_t is None else smoother_adj_t
         smoother_adj_id = id(smoother_adj_t)
 
@@ -186,7 +238,12 @@ class NodeClassifier(torch.nn.Module):
         return self._build_feature_representation(data, smoother_adj_t)
 
     def _build_feature_representation(self, data, smoother_adj_t):
-        return self.smoother(data.x, smoother_adj_t)
+        if self.feature == 'operator':
+            x = self._apply_operator_projection(data.x)
+            return self._apply_scale(x)
+
+        x = self.smoother(data.x, smoother_adj_t)
+        return self._apply_scale(x)
 
     def _forward_logits(self, data, gnn_adj_t=None, smoother_adj_t=None):
         smoother_adj_t = data.adj_t if smoother_adj_t is None else smoother_adj_t

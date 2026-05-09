@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import math
-
 from artificial_node_feature_generator.cache import (
     cache_publication_lock,
     feature_cache_path,
@@ -11,26 +9,13 @@ from artificial_node_feature_generator.cache import (
 from artificial_node_feature_generator.graph import clone_data, get_feature_device, get_feature_dtype, graph_fingerprint
 from artificial_node_feature_generator.registry import get_provider
 
-
-def _resolve_scale(scale: float | None) -> float:
-    if scale is None:
-        return 1.0
-
-    resolved = float(scale)
-    if not math.isfinite(resolved) or resolved <= 0:
-        raise ValueError(f"scale must be finite and > 0, got {scale!r}.")
-    return resolved
-
-
 def rewrite_features(
     data,
     feature: str,
     params: dict | None = None,
     seed: int | None = None,
-    scale: float | None = 1.0,
 ):
     params = {} if params is None else dict(params)
-    resolved_scale = _resolve_scale(scale)
     target = clone_data(data)
     provider = get_provider(feature)
     graph_key = graph_fingerprint(target)
@@ -75,7 +60,5 @@ def rewrite_features(
         dtype=get_feature_dtype(target),
         device=get_feature_device(target),
     )
-    if feature != "raw":
-        features = features * resolved_scale
     target.x = features
     return target

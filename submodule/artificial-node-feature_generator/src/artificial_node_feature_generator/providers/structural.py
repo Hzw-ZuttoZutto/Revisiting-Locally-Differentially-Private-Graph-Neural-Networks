@@ -8,6 +8,8 @@ import scipy.sparse as sp
 import torch
 from scipy.sparse.linalg import ArpackNoConvergence, eigsh
 from sklearn.utils.extmath import randomized_range_finder
+from torch_geometric.nn.conv.gcn_conv import gcn_norm
+from torch_sparse import SparseTensor
 
 from artificial_node_feature_generator.graph import (
     build_nx_graph,
@@ -173,6 +175,25 @@ def _bucket_indices(degrees: torch.Tensor, boundaries: list[float], num_buckets:
     return idx.clamp(max=num_buckets - 1).long()
 
 
+def _build_normalized_adjacency_dense(data) -> torch.Tensor:
+    num_nodes = get_num_nodes(data)
+    edge_index = get_edge_index(data).cpu()
+    if edge_index.numel() == 0:
+        return torch.zeros((num_nodes, num_nodes), dtype=torch.float64)
+
+    adj_t = SparseTensor(
+        row=edge_index[0].long(),
+        col=edge_index[1].long(),
+        value=torch.ones(edge_index.size(1), dtype=torch.float64),
+        sparse_sizes=(num_nodes, num_nodes),
+    )
+    adj_t = gcn_norm(adj_t, add_self_loops=False)
+    row, col, value = adj_t.coo()
+    dense = torch.zeros((num_nodes, num_nodes), dtype=torch.float64)
+    dense[row.long(), col.long()] = value.to(dtype=dense.dtype)
+    return dense
+
+
 class NodeDegreeFeatureProvider(BaseFeatureProvider):
     name = "node_degree"
     cacheable = True
@@ -257,6 +278,41 @@ class PageRankFeatureProvider(BaseFeatureProvider):
         pagerank = nx.pagerank(graph)
         scores = torch.tensor([float(pagerank[idx]) for idx in range(graph.number_of_nodes())], dtype=get_feature_dtype(data))
         features = scores.unsqueeze(1).repeat(1, dim).to(device=get_feature_device(data))
+        return ProviderOutput(features=features, source=self.source, cacheable=True)
+
+
+class OperatorFeatureProvider(BaseFeatureProvider):
+    name = "operator"
+    cacheable = True
+
+    def cache_seed(self, *, seed: int | None, params: dict) -> int | None:
+        _ = seed
+        return None
+
+    def build(self, data, *, params: dict, seed: int | None = None) -> ProviderOutput:
+        _ = seed
+        x_steps = int(params.get("x_steps", 0))
+        if x_steps < 0:
+            raise ValueError(f'feature "{self.name}" requires params["x_steps"] to be >= 0.')
+
+        num_nodes = get_num_nodes(data)
+        if num_nodes == 0:
+            features = torch.empty((0, 0), dtype=get_feature_dtype(data), device=get_feature_device(data))
+            return ProviderOutput(features=features, source=self.source, cacheable=True)
+
+        normalized_adjacency = _build_normalized_adjacency_dense(data)
+        operator_steps = x_steps + 1
+        power = normalized_adjacency.clone()
+        accumulated = torch.zeros_like(normalized_adjacency)
+
+        for _ in range(operator_steps):
+            accumulated = accumulated + power
+            power = power @ normalized_adjacency
+
+        features = (accumulated / float(operator_steps)).to(
+            dtype=get_feature_dtype(data),
+            device=get_feature_device(data),
+        )
         return ProviderOutput(features=features, source=self.source, cacheable=True)
 
 

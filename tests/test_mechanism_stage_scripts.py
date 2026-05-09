@@ -54,6 +54,8 @@ def _build_job_spec() -> dict[str, object]:
             "sim_reference_eps": None,
             "feature_dim": None,
             "scale": None,
+            "feature_preprojection": None,
+            "preprojection_output_dim": None,
             "random_normal_mean": None,
             "random_normal_std": None,
             "shared_value": None,
@@ -140,6 +142,34 @@ class MechanismStageScriptTests(unittest.TestCase):
         self.assertIn("--scale", command_parts)
         scale_index = command_parts.index("--scale") + 1
         self.assertEqual(command_parts[scale_index], "2")
+
+    def test_operator_recommended_command_includes_preprojection_and_omits_smoother(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            job_dir = Path(tmp)
+            job_spec = _build_job_spec()
+            fixed_params = dict(job_spec["fixed_params"])  # type: ignore[arg-type]
+            fixed_params.update(
+                {
+                    "feature": "operator",
+                    "scale": "2",
+                    "feature_preprojection": True,
+                    "preprojection_output_dim": 32,
+                    "smoother": None,
+                }
+            )
+            job_spec["fixed_params"] = fixed_params
+            mechanism_stage_utils.write_yaml_file(
+                mechanism_stage_utils.job_spec_path(job_dir),
+                job_spec,
+            )
+            ctx = resolve_job_context(job_dir)
+            candidate = mechanism_stage_utils.job_candidates(job_spec)[0]
+
+            command_parts = build_recommended_command_parts(ctx, candidate)
+
+        self.assertIn("--feature_preprojection", command_parts)
+        self.assertIn("--preprojection_output_dim", command_parts)
+        self.assertNotIn("--smoother", command_parts)
 
     def test_grid_rank_writes_topk_file(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -16,7 +16,7 @@ from utils import str2bool
 
 
 class FeatureTransform:
-    rewrite_common_arg_names = ('scale',)
+    rewrite_common_arg_names = ()
     rewrite_supported_features = [
         'random_normal',
         'random_signed_onehot',
@@ -25,6 +25,7 @@ class FeatureTransform:
         'degree_bucket_range',
         'degree_bucket_distribution',
         'pagerank',
+        'operator',
         'eigen',
         'eigen_norm',
         'deepwalk',
@@ -44,6 +45,7 @@ class FeatureTransform:
         'degree_bucket_range': ('feature_dim', 'degree_bucket_num_buckets', 'degree_bucket_range_max'),
         'degree_bucket_distribution': ('feature_dim', 'degree_bucket_num_buckets'),
         'pagerank': ('feature_dim',),
+        'operator': (),
         'eigen': ('feature_dim',),
         'eigen_norm': ('feature_dim',),
         'deepwalk': (
@@ -80,8 +82,15 @@ class FeatureTransform:
                      type=int,
                  ) = None,
                  scale: dict(
-                     help='post-rewrite multiplicative scaling for artificial rewrite features (defaults to 1.0 when omitted)',
+                     help='global multiplicative scaling applied immediately before the GNN (defaults to 1.0 when omitted)',
                      type=float,
+                 ) = None,
+                 feature_preprojection: dict(
+                     help='enable a learnable Linear -> SELU -> Dropout preprojection before scale when --feature operator is selected',
+                 ) = False,
+                 preprojection_output_dim: dict(
+                     help='output dimension for --feature-preprojection with --feature operator',
+                     type=int,
                  ) = None,
                  random_normal_mean: dict(help='mean for --feature random_normal', type=float) = None,
                  random_normal_std: dict(help='standard deviation for --feature random_normal', type=float) = None,
@@ -101,7 +110,8 @@ class FeatureTransform:
                  deepwalk_undirected: dict(
                      help='whether deepwalk should treat the graph as undirected',
                      type=str2bool,
-                 ) = None):
+                 ) = None,
+                 x_steps=0):
 
         self.feature = feature
         self.sim_reference_eps = sim_reference_eps
@@ -112,6 +122,8 @@ class FeatureTransform:
         self.norm_scale = norm_scale
         self.feature_dim = feature_dim
         self.scale = scale
+        self.feature_preprojection = bool(feature_preprojection)
+        self.preprojection_output_dim = preprojection_output_dim
         self.random_normal_mean = random_normal_mean
         self.random_normal_std = random_normal_std
         self.shared_value = shared_value
@@ -122,6 +134,7 @@ class FeatureTransform:
         self.deepwalk_window_size = deepwalk_window_size
         self.deepwalk_workers = deepwalk_workers
         self.deepwalk_undirected = deepwalk_undirected
+        self.x_steps = x_steps
         self._rewrite_seed = None
 
     def set_rewrite_seed(self, seed):
@@ -135,16 +148,6 @@ class FeatureTransform:
         if not np.isfinite(sim_reference_eps) or sim_reference_eps <= 0:
             raise ValueError(f'sim_reference_eps must be finite and > 0, got {sim_reference_eps}.')
         return float(sim_reference_eps)
-
-    @staticmethod
-    def _resolve_rewrite_scale(scale):
-        if scale is None:
-            return 1.0
-
-        resolved = float(scale)
-        if not math.isfinite(resolved) or resolved <= 0:
-            raise ValueError(f'scale must be finite and > 0, got {scale}.')
-        return resolved
 
     @staticmethod
     def _sample_sim_mask(x, m):
@@ -279,6 +282,8 @@ class FeatureTransform:
                 params['workers'] = int(self.deepwalk_workers)
             if self.deepwalk_undirected is not None:
                 params['undirected'] = bool(self.deepwalk_undirected)
+        elif self.feature == 'operator':
+            params['x_steps'] = int(self.x_steps)
 
         return params
 
@@ -289,7 +294,6 @@ class FeatureTransform:
             feature=self.feature,
             params=self._build_rewrite_params(),
             seed=self._rewrite_seed,
-            scale=self._resolve_rewrite_scale(self.scale),
         )
 
     def __call__(self, data):

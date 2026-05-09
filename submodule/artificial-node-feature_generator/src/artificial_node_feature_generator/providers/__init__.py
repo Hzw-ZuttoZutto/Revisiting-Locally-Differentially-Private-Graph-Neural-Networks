@@ -12,6 +12,7 @@ from artificial_node_feature_generator.providers.structural import (
     EigenFeatureProvider,
     EigenNormFeatureProvider,
     NodeDegreeFeatureProvider,
+    OperatorFeatureProvider,
     PageRankFeatureProvider,
 )
 
@@ -23,6 +24,7 @@ __all__ = [
     "EigenFeatureProvider",
     "EigenNormFeatureProvider",
     "NodeDegreeFeatureProvider",
+    "OperatorFeatureProvider",
     "PageRankFeatureProvider",
     "RandomNormalFeatureProvider",
     "RandomSignedOnehotFeatureProvider",

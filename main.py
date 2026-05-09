@@ -81,24 +81,24 @@ def validate_feature_rewrite_args(parser, args):
                 f'{_cli_flag(provided_rewrite_args[0])} is only available for artificial rewrite features, '
                 f'got --feature {feature}'
             )
-        return
+    elif feature != 'operator':
+        if args.feature_dim is None:
+            parser.error(f'--feature-dim is required when --feature {feature} is selected')
+        if int(args.feature_dim) <= 0:
+            parser.error('--feature-dim must be > 0')
 
-    if args.feature_dim is None:
-        parser.error(f'--feature-dim is required when --feature {feature} is selected')
-    if int(args.feature_dim) <= 0:
-        parser.error('--feature-dim must be > 0')
-
-    allowed_args = set(FeatureTransform.rewrite_common_arg_names) | set(
-        FeatureTransform.rewrite_feature_arg_names[feature]
-    )
-    disallowed = [
-        arg_name for arg_name in provided_rewrite_args
-        if arg_name not in allowed_args
-    ]
-    if disallowed:
-        parser.error(
-            f'{_cli_flag(disallowed[0])} is not valid when --feature {feature} is selected'
+    if feature in rewrite_features:
+        allowed_args = set(FeatureTransform.rewrite_common_arg_names) | set(
+            FeatureTransform.rewrite_feature_arg_names[feature]
         )
+        disallowed = [
+            arg_name for arg_name in provided_rewrite_args
+            if arg_name not in allowed_args
+        ]
+        if disallowed:
+            parser.error(
+                f'{_cli_flag(disallowed[0])} is not valid when --feature {feature} is selected'
+            )
 
     if args.scale is not None:
         if not np.isfinite(args.scale) or args.scale <= 0:
@@ -106,6 +106,23 @@ def validate_feature_rewrite_args(parser, args):
         args.scale = float(args.scale)
     else:
         args.scale = 1.0
+
+    if args.feature_preprojection:
+        if feature != 'operator':
+            parser.error('--feature-preprojection is only available when --feature operator is selected')
+        if args.preprojection_output_dim is None:
+            parser.error('--preprojection-output-dim is required when --feature-preprojection is enabled')
+    elif args.preprojection_output_dim is not None:
+        parser.error('--preprojection-output-dim requires --feature-preprojection')
+
+    if feature == 'operator':
+        if args.feature_dim is not None:
+            parser.error('--feature-dim is not valid when --feature operator is selected')
+        if args.preprojection_output_dim is not None and int(args.preprojection_output_dim) <= 0:
+            parser.error('--preprojection-output-dim must be > 0')
+    else:
+        if args.preprojection_output_dim is not None and int(args.preprojection_output_dim) <= 0:
+            parser.error('--preprojection-output-dim must be > 0')
 
     if feature == 'random_normal' and args.random_normal_std is not None and args.random_normal_std <= 0:
         parser.error('--random-normal-std must be > 0')
@@ -314,6 +331,8 @@ def main():
         'sim_reference_eps',
         'feature_dim',
         'scale',
+        'feature_preprojection',
+        'preprojection_output_dim',
         'random_normal_mean',
         'random_normal_std',
         'shared_value',

@@ -60,6 +60,71 @@ class SmootherRoutingTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             NodeClassifier(input_dim=4, num_classes=3, smoother="invalid")
 
+    def test_operator_feature_bypasses_smoother(self):
+        x = torch.tensor(
+            [[1.0, 0.0], [0.0, 1.0]],
+            dtype=torch.float32,
+        )
+        adj_t = SparseTensor.from_dense(torch.eye(2, dtype=torch.float32))
+        model = NodeClassifier(input_dim=2, num_classes=2, feature="operator", x_steps=2)
+
+        def _unexpected(*args, **kwargs):
+            raise AssertionError("smoother should not run for feature=operator")
+
+        model.smoother.forward = _unexpected
+        data = type("Data", (), {"x": x, "adj_t": adj_t})()
+        observed = model._build_feature_representation(data, adj_t)
+        self.assertTrue(torch.equal(observed, x))
+
+    def test_non_operator_scale_is_applied_after_smoother(self):
+        x = torch.tensor(
+            [[1.0], [2.0], [3.0]],
+            dtype=torch.float32,
+        )
+        dense_adj = torch.tensor(
+            [
+                [0.0, 1.0, 0.0],
+                [1.0, 0.0, 1.0],
+                [0.0, 0.0, 1.0],
+            ],
+            dtype=torch.float32,
+        )
+        adj_t = SparseTensor.from_dense(dense_adj)
+        model = NodeClassifier(
+            input_dim=1,
+            num_classes=2,
+            feature="raw",
+            smoother="hoa",
+            x_steps=2,
+            scale=2.5,
+        )
+        data = type("Data", (), {"x": x, "adj_t": adj_t})()
+
+        observed = model._build_feature_representation(data, adj_t)
+        expected = model.smoother.neighborhood_aggregation(x, adj_t) * 2.5
+        self.assertTrue(torch.allclose(observed, expected, atol=1e-6, rtol=0.0))
+
+    def test_operator_preprojection_changes_feature_dimension_before_gnn(self):
+        x = torch.tensor(
+            [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
+            dtype=torch.float32,
+        )
+        adj_t = SparseTensor.from_dense(torch.eye(2, dtype=torch.float32))
+        model = NodeClassifier(
+            input_dim=3,
+            num_classes=2,
+            feature="operator",
+            feature_preprojection=True,
+            preprojection_output_dim=2,
+            dropout=0.0,
+        )
+        data = type("Data", (), {"x": x, "adj_t": adj_t})()
+
+        observed = model._build_feature_representation(data, adj_t)
+        self.assertEqual(tuple(observed.shape), (2, 2))
+        self.assertEqual(model.feature_preprojection_layer.in_features, 3)
+        self.assertEqual(model.feature_preprojection_layer.out_features, 2)
+
 
 class HoaMathTests(unittest.TestCase):
     def test_hoa_matches_manual_average_without_x0(self):

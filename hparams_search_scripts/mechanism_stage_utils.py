@@ -34,6 +34,8 @@ OUTER_AXIS_NAMES = (
     "sim_reference_eps",
     "feature_dim",
     "scale",
+    "feature_preprojection",
+    "preprojection_output_dim",
     "random_normal_mean",
     "random_normal_std",
     "shared_value",
@@ -232,6 +234,10 @@ def is_default_rewrite_scale_value(value: Any) -> bool:
         return False
 
 
+def is_default_feature_preprojection_value(value: Any) -> bool:
+    return value in (None, False)
+
+
 def normalized_outer_fixed_params(fixed_params: dict[str, Any]) -> dict[str, Any]:
     ordered: dict[str, Any] = {}
     for name in OUTER_AXIS_NAMES:
@@ -239,6 +245,12 @@ def normalized_outer_fixed_params(fixed_params: dict[str, Any]) -> dict[str, Any
         if name == "norm_scale" and not bool(fixed_params.get("norm")):
             value = None
         if name == "scale" and is_default_rewrite_scale_value(value):
+            value = None
+        if name == "feature_preprojection" and is_default_feature_preprojection_value(value):
+            value = None
+        if name == "preprojection_output_dim" and not bool(fixed_params.get("feature_preprojection")):
+            value = None
+        if name == "smoother" and str(fixed_params.get("feature", "")).strip().lower() == "operator":
             value = None
         ordered[name] = value
     return ordered

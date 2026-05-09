@@ -11,6 +11,8 @@ import pytest
 import torch
 from torch_geometric.data import Data
 from torch_geometric.transforms import ToSparseTensor
+from torch_sparse import SparseTensor
+from torch_geometric.nn.conv.gcn_conv import gcn_norm
 
 from artificial_node_feature_generator import get_provider, register_provider, rewrite_features
 from artificial_node_feature_generator.cache import cache_root, feature_cache_dir, feature_cache_path
@@ -120,6 +122,22 @@ def clear_cache():
     shutil.rmtree(cache_root(), ignore_errors=True)
 
 
+def normalized_adjacency_dense(data: Data) -> torch.Tensor:
+    edge_index = data.edge_index.cpu()
+    num_nodes = data.num_nodes
+    adj_t = SparseTensor(
+        row=edge_index[0].long(),
+        col=edge_index[1].long(),
+        value=torch.ones(edge_index.size(1), dtype=torch.float64),
+        sparse_sizes=(num_nodes, num_nodes),
+    )
+    adj_t = gcn_norm(adj_t, add_self_loops=False)
+    row, col, value = adj_t.coo()
+    dense = torch.zeros((num_nodes, num_nodes), dtype=torch.float64)
+    dense[row.long(), col.long()] = value.to(dtype=dense.dtype)
+    return dense
+
+
 class SlowCountingProvider(BaseFeatureProvider):
     name = "slow_counting"
     source = "generated"
@@ -179,18 +197,26 @@ def test_random_normal_uses_seed_and_feature_dim():
     assert not torch.allclose(first.x, third.x)
 
 
-def test_random_normal_scale_one_is_noop():
+def test_random_normal_applies_feature_dim_normalization():
     data = make_data()
-    base = rewrite_features(data, "random_normal", params={"feature_dim": 5}, seed=7)
-    scaled = rewrite_features(data, "random_normal", params={"feature_dim": 5}, seed=7, scale=1.0)
-    assert torch.allclose(base.x, scaled.x)
+    dim = 5
+    rewritten = rewrite_features(data, "random_normal", params={"feature_dim": dim}, seed=7)
+    generator = torch.Generator(device="cpu")
+    generator.manual_seed(7)
+    expected = torch.normal(
+        mean=0.0,
+        std=1.0,
+        size=(data.num_nodes, dim),
+        generator=generator,
+        device=torch.device("cpu"),
+    ).to(dtype=rewritten.x.dtype) / (dim ** 0.5)
+    assert torch.allclose(rewritten.x.cpu(), expected)
 
 
-def test_random_normal_scale_multiplies_generated_features():
+def test_legacy_scale_argument_is_rejected():
     data = make_data()
-    base = rewrite_features(data, "random_normal", params={"feature_dim": 5}, seed=7)
-    scaled = rewrite_features(data, "random_normal", params={"feature_dim": 5}, seed=7, scale=2.5)
-    assert torch.allclose(scaled.x, base.x * 2.5)
+    with pytest.raises(TypeError):
+        rewrite_features(data, "random_normal", params={"feature_dim": 5}, seed=7, scale=2.5)
 
 
 def test_random_signed_onehot_uses_seed_and_signed_onehot_structure():
@@ -256,6 +282,15 @@ def test_pagerank_repeats_same_scalar_across_all_columns():
     assert rewritten.x.shape == (4, 3)
     assert torch.allclose(rewritten.x[:, 0], rewritten.x[:, 1])
     assert torch.allclose(rewritten.x[:, 1], rewritten.x[:, 2])
+
+
+def test_operator_matches_expected_hoa_average_rows():
+    data = make_path_data()
+    rewritten = rewrite_features(data, "operator", params={"x_steps": 1}, seed=9)
+    normalized = normalized_adjacency_dense(data)
+    expected = (normalized + (normalized @ normalized)) / 2.0
+    assert rewritten.x.shape == (data.num_nodes, data.num_nodes)
+    assert torch.allclose(rewritten.x.cpu(), expected.to(dtype=rewritten.x.dtype), atol=1e-6, rtol=0.0)
 
 
 def test_eigen_and_eigen_norm_still_work():
@@ -420,18 +455,33 @@ def test_internal_cache_serializes_concurrent_cache_publication(tmp_path):
     assert len(marker_lines) == 1
 
 
-def test_internal_cache_reuses_unscaled_payload_across_scales():
+def test_operator_cache_reuses_payload_for_same_x_steps():
     clear_cache()
     data = make_data()
     graph_key = graph_fingerprint(data)
-    params = {"feature_dim": 3}
-    cache_file = feature_cache_path("pagerank", 11, params, graph_key)
-    base = rewrite_features(data, "pagerank", params=params, seed=11)
+    params = {"x_steps": 1}
+    cache_file = feature_cache_path("operator", None, params, graph_key)
+    base = rewrite_features(data, "operator", params=params, seed=11)
     base_mtime = cache_file.stat().st_mtime_ns
-    scaled = rewrite_features(data, "pagerank", params=params, seed=11, scale=3.0)
-    scaled_mtime = cache_file.stat().st_mtime_ns
-    assert torch.allclose(scaled.x, base.x * 3.0)
-    assert base_mtime == scaled_mtime
+    cached = rewrite_features(data, "operator", params=params, seed=99)
+    cached_mtime = cache_file.stat().st_mtime_ns
+    assert torch.allclose(cached.x, base.x)
+    assert base_mtime == cached_mtime
+
+
+def test_operator_cache_miss_when_x_steps_changes():
+    clear_cache()
+    data = make_data()
+    graph_key = graph_fingerprint(data)
+    params_a = {"x_steps": 0}
+    params_b = {"x_steps": 1}
+    path_a = feature_cache_path("operator", None, params_a, graph_key)
+    path_b = feature_cache_path("operator", None, params_b, graph_key)
+    rewrite_features(data, "operator", params=params_a, seed=11)
+    rewrite_features(data, "operator", params=params_b, seed=11)
+    assert path_a.exists()
+    assert path_b.exists()
+    assert path_a != path_b
 
 
 def test_internal_cache_miss_when_seed_changes():

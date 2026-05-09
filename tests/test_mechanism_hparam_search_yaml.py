@@ -48,6 +48,8 @@ def _base_config() -> dict[str, object]:
                 "sim_reference_eps": [],
                 "feature_dim": [],
                 "scale": [],
+                "feature_preprojection": [],
+                "preprojection_output_dim": [],
                 "random_normal_mean": [],
                 "random_normal_std": [],
                 "shared_value": [],
@@ -193,23 +195,31 @@ class MechanismHparamSearchYamlTests(unittest.TestCase):
 
         self.assertEqual(parsed["search_space"]["feature_perturbation"]["x_eps"], ["inf"])
 
-    def test_load_search_config_requires_explicit_empty_scale_for_raw(self):
+    def test_load_search_config_defaults_missing_scale_to_one_for_raw(self):
         config = _base_config()
         del config["search_space"]["feature_transformation"]["scale"]  # type: ignore[index]
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             path = _write_config(tmp_dir, config)
-            with self.assertRaisesRegex(search_script.SearchError, "scale"):
-                search_script.load_search_config(path)
+            parsed = search_script.load_search_config(path)
 
-    def test_load_search_config_rejects_nonempty_scale_when_raw_selected(self):
+        self.assertEqual(parsed["search_space"]["feature_transformation"]["scale"], ["1"])
+
+    def test_load_search_config_allows_nondefault_scale_when_raw_selected(self):
         config = _base_config()
         config["search_space"]["feature_transformation"]["scale"] = ["2"]  # type: ignore[index]
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             path = _write_config(tmp_dir, config)
-            with self.assertRaisesRegex(search_script.SearchError, "scale"):
-                search_script.load_search_config(path)
+            parsed = search_script.load_search_config(path)
+            batch = search_script.build_batch_spec(
+                search_config=parsed,
+                output_root=Path(tmp_dir) / "out",
+                config_copy_source=path,
+            )
+
+        self.assertEqual(batch.jobs[0].job_spec["fixed_params"]["scale"], "2")
+        self.assertIn("scale=2", str(batch.jobs[0].job_dir))
 
     def test_load_search_config_allows_feature_perturbation_shortcut_for_rewrite_features(self):
         config = _base_config()
@@ -325,8 +335,54 @@ class MechanismHparamSearchYamlTests(unittest.TestCase):
             job.job_spec["fixed_params"]["feature"]: job.job_spec["fixed_params"]
             for job in batch.jobs
         }
-        self.assertIsNone(jobs_by_feature["raw"]["scale"])
+        self.assertEqual(jobs_by_feature["raw"]["scale"], "1")
         self.assertEqual(jobs_by_feature["shared"]["scale"], "1")
+
+    def test_operator_search_does_not_require_feature_dim(self):
+        config = _base_config()
+        config["search_space"]["feature_transformation"]["features"] = ["operator"]  # type: ignore[index]
+        config["search_space"]["feature_perturbation"] = []  # type: ignore[assignment]
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = _write_config(tmp_dir, config)
+            parsed = search_script.load_search_config(path)
+            batch = search_script.build_batch_spec(
+                search_config=parsed,
+                output_root=Path(tmp_dir) / "out",
+                config_copy_source=path,
+            )
+
+        self.assertEqual(len(batch.jobs), 1)
+        self.assertEqual(batch.jobs[0].job_spec["fixed_params"]["feature"], "operator")
+        self.assertIsNone(batch.jobs[0].job_spec["fixed_params"]["feature_dim"])
+        self.assertEqual(batch.jobs[0].job_spec["fixed_params"]["scale"], "1")
+
+    def test_operator_preprojection_axes_expand_outer_variants_and_dedup_smoother(self):
+        config = _base_config()
+        config["search_space"]["feature_transformation"]["features"] = ["operator"]  # type: ignore[index]
+        config["search_space"]["feature_transformation"]["feature_preprojection"] = [False, True]  # type: ignore[index]
+        config["search_space"]["feature_transformation"]["preprojection_output_dim"] = [8, 16]  # type: ignore[index]
+        config["search_space"]["feature_perturbation"] = []  # type: ignore[assignment]
+        config["search_space"]["calibrator"]["x_steps"] = [0, 2]  # type: ignore[index]
+        config["search_space"]["calibrator"]["smoother"] = ["kprop", "hoa"]  # type: ignore[index]
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = _write_config(tmp_dir, config)
+            parsed = search_script.load_search_config(path)
+            batch = search_script.build_batch_spec(
+                search_config=parsed,
+                output_root=Path(tmp_dir) / "out",
+                config_copy_source=path,
+            )
+
+        self.assertEqual(len(batch.jobs), 3)
+        fixed_params = [job.job_spec["fixed_params"] for job in batch.jobs]
+        preprojection_values = sorted(
+            (params["feature_preprojection"], params["preprojection_output_dim"])
+            for params in fixed_params
+        )
+        self.assertEqual(preprojection_values, [(False, None), (True, 8), (True, 16)])
+        self.assertTrue(all(params["smoother"] is None for params in fixed_params))
 
     def test_load_search_config_allows_missing_norm_fields_for_rewrite_features(self):
         config = _base_config()
@@ -367,6 +423,25 @@ class MechanismHparamSearchYamlTests(unittest.TestCase):
         self.assertEqual(parsed["search_space"]["calibrator"]["smoother"], ["kprop"])
         self.assertEqual(len(batch.jobs), 1)
         self.assertEqual(batch.jobs[0].job_spec["fixed_params"]["smoother"], "kprop")
+
+    def test_operator_search_allows_missing_smoother_even_with_positive_x_steps(self):
+        config = _base_config()
+        config["search_space"]["feature_transformation"]["features"] = ["operator"]  # type: ignore[index]
+        config["search_space"]["feature_perturbation"] = []  # type: ignore[assignment]
+        config["search_space"]["calibrator"]["x_steps"] = [2]  # type: ignore[index]
+        del config["search_space"]["calibrator"]["smoother"]  # type: ignore[index]
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = _write_config(tmp_dir, config)
+            parsed = search_script.load_search_config(path)
+            batch = search_script.build_batch_spec(
+                search_config=parsed,
+                output_root=Path(tmp_dir) / "out",
+                config_copy_source=path,
+            )
+
+        self.assertEqual(parsed["search_space"]["calibrator"]["smoother"], ["kprop"])
+        self.assertEqual(batch.jobs[0].job_spec["fixed_params"]["smoother"], None)
 
     def test_load_search_config_still_requires_feature_perturbation_for_raw(self):
         config = _base_config()

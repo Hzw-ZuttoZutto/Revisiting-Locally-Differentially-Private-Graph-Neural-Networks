@@ -8,6 +8,7 @@ from artificial_node_feature_generator.providers import (
     EigenFeatureProvider,
     EigenNormFeatureProvider,
     NodeDegreeFeatureProvider,
+    OperatorFeatureProvider,
     PageRankFeatureProvider,
     RandomNormalFeatureProvider,
     RandomSignedOnehotFeatureProvider,
@@ -44,6 +45,7 @@ register_provider("node_degree", NodeDegreeFeatureProvider)
 register_provider("degree_bucket_range", DegreeBucketRangeFeatureProvider)
 register_provider("degree_bucket_distribution", DegreeBucketDistributionFeatureProvider)
 register_provider("pagerank", PageRankFeatureProvider)
+register_provider("operator", OperatorFeatureProvider)
 register_provider("eigen", EigenFeatureProvider)
 register_provider("eigen_norm", EigenNormFeatureProvider)
 register_provider("deepwalk", DeepWalkFeatureProvider)

@@ -135,7 +135,11 @@ def _is_rewrite_feature(feature: str) -> bool:
     return feature in set(search_runner.SUPPORTED_REWRITE_FEATURES)
 
 
-def _rewrite_params_from_fixed_params(fixed_params: dict[str, Any]) -> dict[str, Any]:
+def _rewrite_params_from_fixed_params(
+    fixed_params: dict[str, Any],
+    *,
+    candidate_x_steps: int | None = None,
+) -> dict[str, Any]:
     feature = str(fixed_params["feature"])
     params: dict[str, Any] = {}
 
@@ -169,6 +173,10 @@ def _rewrite_params_from_fixed_params(fixed_params: dict[str, Any]) -> dict[str,
             params["workers"] = int(fixed_params["deepwalk_workers"])
         if fixed_params.get("deepwalk_undirected") is not None:
             params["undirected"] = bool(fixed_params["deepwalk_undirected"])
+    elif feature == "operator":
+        if candidate_x_steps is None:
+            raise RuntimeError("operator cache precompute requires candidate_x_steps")
+        params["x_steps"] = int(candidate_x_steps)
 
     return params
 
@@ -222,32 +230,45 @@ def _collect_cache_tasks(config_paths: list[Path]) -> list[CacheTask]:
                 continue
 
             dataset_name = resolve_dataset_name(str(fixed_params["dataset"]))
-            params = _rewrite_params_from_fixed_params(fixed_params)
+            if feature == "operator":
+                raw_candidates = job.job_spec.get("candidates")
+                if not isinstance(raw_candidates, list):
+                    raise RuntimeError("job_spec.candidates must be a list for operator cache precompute")
+                candidate_x_steps_values = sorted({int(candidate["x_steps"]) for candidate in raw_candidates})
+                rewrite_seeds = [None]
+            else:
+                candidate_x_steps_values = [None]
+                rewrite_seeds = _rewrite_seeds_for_job(job.job_spec)
 
-            for rewrite_seed in _rewrite_seeds_for_job(job.job_spec):
-                effective_seed = provider.cache_seed(seed=rewrite_seed, params=params)
-                key = _task_key(dataset_name, feature, params, effective_seed)
-                if key not in task_map:
-                    task_map[key] = CacheTask(
-                        dataset=dataset_name,
-                        feature=feature,
-                        params=dict(params),
-                        rewrite_seed=rewrite_seed,
-                        effective_seed=effective_seed,
-                        source_configs=(str(config_path),),
-                    )
-                else:
-                    merged_sources = tuple(
-                        sorted(set(task_map[key].source_configs) | {str(config_path)})
-                    )
-                    task_map[key] = CacheTask(
-                        dataset=task_map[key].dataset,
-                        feature=task_map[key].feature,
-                        params=dict(task_map[key].params),
-                        rewrite_seed=task_map[key].rewrite_seed,
-                        effective_seed=task_map[key].effective_seed,
-                        source_configs=merged_sources,
-                    )
+            for candidate_x_steps in candidate_x_steps_values:
+                params = _rewrite_params_from_fixed_params(
+                    fixed_params,
+                    candidate_x_steps=candidate_x_steps,
+                )
+                for rewrite_seed in rewrite_seeds:
+                    effective_seed = provider.cache_seed(seed=rewrite_seed, params=params)
+                    key = _task_key(dataset_name, feature, params, effective_seed)
+                    if key not in task_map:
+                        task_map[key] = CacheTask(
+                            dataset=dataset_name,
+                            feature=feature,
+                            params=dict(params),
+                            rewrite_seed=rewrite_seed,
+                            effective_seed=effective_seed,
+                            source_configs=(str(config_path),),
+                        )
+                    else:
+                        merged_sources = tuple(
+                            sorted(set(task_map[key].source_configs) | {str(config_path)})
+                        )
+                        task_map[key] = CacheTask(
+                            dataset=task_map[key].dataset,
+                            feature=task_map[key].feature,
+                            params=dict(task_map[key].params),
+                            rewrite_seed=task_map[key].rewrite_seed,
+                            effective_seed=task_map[key].effective_seed,
+                            source_configs=merged_sources,
+                        )
 
     tasks = list(task_map.values())
     tasks.sort(

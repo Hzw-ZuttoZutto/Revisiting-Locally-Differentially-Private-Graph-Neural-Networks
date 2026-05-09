@@ -104,6 +104,8 @@ class MainCliCleanupTests(unittest.TestCase):
 
         self.assertIn("--feature", sections["feature transformation arguments"])
         self.assertIn("--scale", sections["feature transformation arguments"])
+        self.assertIn("--feature-preprojection", sections["feature transformation arguments"])
+        self.assertIn("--preprojection-output-dim", sections["feature transformation arguments"])
         self.assertIn("--deepwalk-undirected", sections["feature transformation arguments"])
         self.assertNotIn("--inf-eps-unit-map", sections["feature transformation arguments"])
 
