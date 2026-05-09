@@ -1,0 +1,84 @@
+schema_version: 1
+job_id: f148ccd58ae1
+best_rank: 1
+best_candidate:
+  candidate_id: 214
+  x_steps: 64
+  learning_rate: '0.0001'
+  weight_decay: '0.01'
+  dropout: '0.25'
+  tao2: none
+fixed_params:
+  dataset: citeseer
+  feature: random_normal
+  sim_reference_eps: null
+  feature_dim: 3200
+  scale: '1024'
+  random_normal_mean: '0'
+  random_normal_std: '0.5'
+  shared_value: null
+  degree_bucket_num_buckets: null
+  degree_bucket_range_max: null
+  deepwalk_walk_length: null
+  deepwalk_number_walks: null
+  deepwalk_window_size: null
+  deepwalk_workers: null
+  deepwalk_undirected: null
+  mechanism: mbm
+  x_eps: inf
+  m: best
+  norm: false
+  norm_scale: none
+  smoother: kprop
+  backbone: sage
+  use_nfr: false
+defaults:
+  dataset:
+    data_range:
+    - 0.0
+    - 1.0
+    val_ratio: 0.25
+    test_ratio: 0.25
+  model:
+    hidden_dim: 16
+  trainer:
+    optimizer: adam
+    collect_grad_stats: false
+    gradient_clip: false
+    gradient_clip_max_norm: 1.0
+    sim_epoch_refresh: false
+    show_progress: false
+    log_every_epoch: false
+  stage:
+    grid:
+      patience: 80
+      repeats: 1
+      max_epochs: 300
+    verify:
+      patience: 150
+      repeats: 5
+      max_epochs: 500
+verify_metrics:
+  val_acc:
+    mean: 58.48557891845703
+    std: 2.6037658715556553
+    min: 55.64904022216797
+    max: 62.62019348144531
+    n: 5
+  test_acc:
+    mean: 57.23557739257812
+    std: 2.082486469872762
+    min: 54.56730651855469
+    max: 59.73557662963867
+    n: 5
+artifacts:
+  verify_summary_csv: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure1/search_phase_2/family3/kprop/normal_random/dataset=citeseer/feature=random_normal/feature_dim=3200/scale=1024/random_normal_mean=0/random_normal_std=0.5/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/verify_top5_summary.csv
+  recommended_command_txt: /home/hzw/Rethinking_GNN_DP/paper_experiments/figure1/search_phase_2/family3/kprop/normal_random/dataset=citeseer/feature=random_normal/feature_dim=3200/scale=1024/random_normal_mean=0/random_normal_std=0.5/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/recommended_command.txt
+recommended_command: /home/hzw/miniconda3/envs/HZWDP/bin/python main.py --dataset
+  citeseer --feature random_normal --mechanism mbm --x_eps inf --m best --model sage
+  --hidden_dim 16 --smoother kprop --optimizer adam --device cuda --val_ratio 0.25
+  --test_ratio 0.25 --data_range 0.0 1.0 --feature_dim 3200 --random_normal_mean 0
+  --random_normal_std 0.5 --scale 1024 --norm false --collect_grad_stats false --gradient_clip
+  false --gradient_clip_max_norm 1.0 --sim_epoch_refresh false --show_progress false
+  --log_every_epoch false --x_steps 64 --learning_rate 0.0001 --weight_decay 0.01
+  --dropout 0.25 --max_epochs 500 --patience 150 -s 12345 -r 5 -o /home/hzw/Rethinking_GNN_DP/paper_experiments/figure1/search_phase_2/family3/kprop/normal_random/dataset=citeseer/feature=random_normal/feature_dim=3200/scale=1024/random_normal_mean=0/random_normal_std=0.5/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=kprop/backbone=sage/use_nfr=false/final
