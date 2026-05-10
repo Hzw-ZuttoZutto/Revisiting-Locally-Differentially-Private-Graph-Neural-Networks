@@ -235,11 +235,12 @@ def run_single_repeat(args, repeat_id, run_id, logger=None):
     data = dataset.clone().to(args.device)      # 将训练数据搬到gpu
     data = preprocess_data(data, args, rewrite_seed=current_seed)          # feature重写 + feature扰动 
     data = apply_nfr_if_enabled(data, args)
+    input_dim = int(getattr(data, 'operator_num_features', data.num_features))
 
     model = from_args(
         NodeClassifier,
         args,
-        input_dim=data.num_features,
+        input_dim=input_dim,
         num_classes=data.num_classes,
     )
     trainer = from_args(Trainer, args, logger=logger if args.log_mode == LogMode.INDIVIDUAL else None)

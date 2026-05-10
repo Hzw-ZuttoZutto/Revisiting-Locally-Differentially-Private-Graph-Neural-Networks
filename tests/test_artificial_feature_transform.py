@@ -131,6 +131,18 @@ class ArtificialFeatureTransformTests(unittest.TestCase):
         self.assertTrue(torch.allclose(first.x.abs().sum(dim=1), torch.ones(4, dtype=first.x.dtype)))
         self.assertTrue(bool(torch.all((first.x == 0) | (first.x == 1) | (first.x == -1)).item()))
 
+    def test_operator_attaches_lazy_sparse_state_and_preserves_raw_features(self):
+        data = make_graph_data()
+        original_x = data.x.clone()
+        transformed = FeatureTransform(feature='operator', x_steps=4)(data)
+
+        self.assertTrue(torch.equal(transformed.x, original_x))
+        self.assertEqual(getattr(transformed, 'operator_feature_mode', None), 'lazy_sparse')
+        self.assertEqual(getattr(transformed, 'operator_x_steps', None), 4)
+        self.assertEqual(getattr(transformed, 'operator_num_features', None), 4)
+        self.assertTrue(hasattr(transformed, 'operator_normalized_adj_t'))
+        self.assertTrue(hasattr(transformed, 'operator_cache_path'))
+
 
 @unittest.skipIf(
     torch is None or FeaturePerturbation is None,

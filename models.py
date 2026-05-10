@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch.nn import Dropout, Linear, SELU
 from torch_geometric.nn import MessagePassing, SAGEConv, GCNConv, GATConv
-from torch_sparse import matmul
+from torch_sparse import SparseTensor, matmul
 
 try:
     from torch_geometric.utils import accuracy as accuracy_1d
@@ -145,9 +145,11 @@ class NodeClassifier(torch.nn.Module):
                  ):
         super().__init__()
         self.feature = str(feature).strip().lower()
+        self.backbone = str(model).strip().lower()
         self.scale = self._resolve_feature_scale(scale)
         self.feature_preprojection = bool(feature_preprojection)
         self.preprojection_output_dim = preprojection_output_dim
+        self.operator_x_steps = int(x_steps)
 
         if self.feature_preprojection and self.feature != 'operator':
             raise ValueError('feature_preprojection is only supported when feature="operator".')
@@ -207,13 +209,122 @@ class NodeClassifier(torch.nn.Module):
             return x
         return x * self.scale
 
-    def _apply_operator_projection(self, x):
+    @staticmethod
+    def _sparse_tensor_device(adj_t):
+        row, _, value = adj_t.coo()
+        if value is not None:
+            return value.device
+        return row.device
+
+    @classmethod
+    def _move_sparse_tensor(cls, adj_t, device):
+        if cls._sparse_tensor_device(adj_t) == device:
+            return adj_t
+        row, col, value = adj_t.coo()
+        if value is None:
+            value = torch.ones(row.numel(), dtype=torch.float32, device=row.device)
+        return SparseTensor(
+            row=row.to(device),
+            col=col.to(device),
+            value=value.to(device=device, dtype=torch.float32),
+            sparse_sizes=adj_t.sparse_sizes(),
+        ).coalesce()
+
+    @staticmethod
+    def _graphsage_mean_aggregate(adj_t, x):
+        adj_t = adj_t.set_value(None, layout=None)
+        return matmul(adj_t, x, reduce='mean')
+
+    @staticmethod
+    def _apply_operator_to_matrix(operator_adj_t, matrix, *, x_steps):
+        if x_steps <= 0:
+            return matrix
+
+        current = matrix
+        accumulated = None
+        for _ in range(int(x_steps)):
+            current = matmul(operator_adj_t, current, reduce='add')
+            accumulated = current if accumulated is None else accumulated + current
+        return accumulated / float(x_steps)
+
+    def _has_lazy_operator_input(self, data):
+        return (
+            self.feature == 'operator'
+            and getattr(data, 'operator_feature_mode', None) == 'lazy_sparse'
+            and hasattr(data, 'operator_normalized_adj_t')
+        )
+
+    def _operator_steps(self, data):
+        return int(getattr(data, 'operator_x_steps', self.operator_x_steps))
+
+    def _operator_adj_t(self, data, *, device):
+        operator_adj_t = getattr(data, 'operator_normalized_adj_t', None)
+        if operator_adj_t is None:
+            raise ValueError('lazy operator input requires data.operator_normalized_adj_t')
+        return self._move_sparse_tensor(operator_adj_t, device)
+
+    def _apply_operator_projection(self, x, data=None):
         if self.feature_preprojection_layer is None:
+            return x
+        if data is not None and self._has_lazy_operator_input(data):
+            operator_adj_t = self._operator_adj_t(
+                data,
+                device=self.feature_preprojection_layer.weight.device,
+            )
+            x = self._apply_operator_to_matrix(
+                operator_adj_t,
+                self.feature_preprojection_layer.weight.t(),
+                x_steps=self._operator_steps(data),
+            )
+            if self.feature_preprojection_layer.bias is not None:
+                x = x + self.feature_preprojection_layer.bias
+            x = self.feature_preprojection_activation(x)
+            x = self.feature_preprojection_dropout(x)
             return x
         x = self.feature_preprojection_layer(x)
         x = self.feature_preprojection_activation(x)
         x = self.feature_preprojection_dropout(x)
         return x
+
+    def _forward_sparse_operator_sage_direct(self, data, *, gnn_adj_t):
+        if not isinstance(self.gnn, GraphSAGE):
+            raise ValueError(
+                'lazy sparse operator direct mode currently supports model="sage". '
+                'Use --feature-preprojection for other backbones.'
+            )
+        if not isinstance(gnn_adj_t, SparseTensor):
+            raise TypeError('lazy sparse operator direct mode requires SparseTensor adjacency')
+
+        operator_adj_t = self._operator_adj_t(
+            data,
+            device=self.gnn.conv1.lin_l.weight.device,
+        )
+        x_steps = self._operator_steps(data)
+
+        conv1 = self.gnn.conv1
+        neighbor_features = self._apply_operator_to_matrix(
+            operator_adj_t,
+            conv1.lin_l.weight.t(),
+            x_steps=x_steps,
+        )
+        root_features = self._apply_operator_to_matrix(
+            operator_adj_t,
+            conv1.lin_r.weight.t(),
+            x_steps=x_steps,
+        )
+        neighbor_features = self._apply_scale(neighbor_features)
+        root_features = self._apply_scale(root_features)
+
+        hidden = self._graphsage_mean_aggregate(gnn_adj_t, neighbor_features)
+        if conv1.lin_l.bias is not None:
+            hidden = hidden + conv1.lin_l.bias
+        hidden = hidden + root_features
+        if conv1.normalize:
+            hidden = F.normalize(hidden, p=2.0, dim=-1)
+
+        hidden = self.gnn.activation(hidden)
+        hidden = self.gnn.dropout(hidden)
+        return self.gnn.conv2(hidden, gnn_adj_t)
 
     def _refresh_smoother_cache(self, smoother_adj_t):
         if self.feature == 'operator':
@@ -239,7 +350,15 @@ class NodeClassifier(torch.nn.Module):
 
     def _build_feature_representation(self, data, smoother_adj_t):
         if self.feature == 'operator':
-            x = self._apply_operator_projection(data.x)
+            if self._has_lazy_operator_input(data):
+                if not self.feature_preprojection:
+                    raise RuntimeError(
+                        'lazy sparse operator direct mode is consumed via _forward_logits '
+                        'and cannot be materialized as a dense feature matrix.'
+                    )
+                x = self._apply_operator_projection(None, data=data)
+            else:
+                x = self._apply_operator_projection(data.x)
             return self._apply_scale(x)
 
         x = self.smoother(data.x, smoother_adj_t)
@@ -248,6 +367,9 @@ class NodeClassifier(torch.nn.Module):
     def _forward_logits(self, data, gnn_adj_t=None, smoother_adj_t=None):
         smoother_adj_t = data.adj_t if smoother_adj_t is None else smoother_adj_t
         gnn_adj_t = data.adj_t if gnn_adj_t is None else gnn_adj_t
+
+        if self.feature == 'operator' and self._has_lazy_operator_input(data) and not self.feature_preprojection:
+            return self._forward_sparse_operator_sage_direct(data, gnn_adj_t=gnn_adj_t)
 
         self._refresh_smoother_cache(smoother_adj_t)
 

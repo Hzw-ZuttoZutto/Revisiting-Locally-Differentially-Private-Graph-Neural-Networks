@@ -1,10 +1,15 @@
+import contextlib
 import importlib
 import math
+import os
 from pathlib import Path
 import sys
+import tempfile
 import numpy as np
 import torch
+from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch_geometric.utils import subgraph
+from torch_sparse import SparseTensor
 from mechanisms import (
     HighDimSquareWave,
     MultiBit,
@@ -16,11 +21,17 @@ from mechanisms import (
 )
 from utils import str2bool
 
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - non-POSIX fallback
+    fcntl = None
+
 
 REPO_ROOT = Path(__file__).resolve().parent
 SUBMODULE_FEATURE_REWRITE_ROOT = REPO_ROOT / 'submodule' / 'artificial-node-feature_generator'
 SUBMODULE_FEATURE_REWRITE_SRC = SUBMODULE_FEATURE_REWRITE_ROOT / 'src'
 _repo_local_feature_rewrite_module = None
+OPERATOR_NORMALIZED_CACHE_VERSION = 1
 
 
 def _module_origin_path(module_name, module):
@@ -84,6 +95,189 @@ def _load_repo_local_feature_rewrite_module():
 
     _repo_local_feature_rewrite_module = module
     return _repo_local_feature_rewrite_module
+
+
+def _operator_cache_path(data):
+    _load_repo_local_feature_rewrite_module()
+    from artificial_node_feature_generator.cache import cache_root
+    from artificial_node_feature_generator.graph import graph_fingerprint
+
+    return cache_root() / 'operator_normalized' / f'{graph_fingerprint(data)}.pt'
+
+
+def _operator_sparse_sizes(adj_t):
+    sizes = adj_t.sparse_sizes()
+    return int(sizes[0]), int(sizes[1])
+
+
+def _build_operator_normalized_adj(data):
+    _load_repo_local_feature_rewrite_module()
+    from artificial_node_feature_generator.graph import get_edge_index, get_num_nodes
+
+    num_nodes = int(get_num_nodes(data))
+    edge_index = get_edge_index(data).cpu()
+    if edge_index.numel() == 0:
+        return SparseTensor(
+            row=torch.empty(0, dtype=torch.long),
+            col=torch.empty(0, dtype=torch.long),
+            value=torch.empty(0, dtype=torch.float32),
+            sparse_sizes=(num_nodes, num_nodes),
+        )
+
+    base_adj_t = SparseTensor(
+        row=edge_index[0].long(),
+        col=edge_index[1].long(),
+        value=torch.ones(edge_index.size(1), dtype=torch.float32),
+        sparse_sizes=(num_nodes, num_nodes),
+    )
+    return gcn_norm(base_adj_t, add_self_loops=False).coalesce()
+
+
+def _operator_cache_payload(adj_t):
+    row, col, value = adj_t.coo()
+    if value is None:
+        value = torch.ones(row.numel(), dtype=torch.float32)
+    return {
+        'version': OPERATOR_NORMALIZED_CACHE_VERSION,
+        'sparse_sizes': _operator_sparse_sizes(adj_t),
+        'row': row.cpu(),
+        'col': col.cpu(),
+        'value': value.cpu().to(dtype=torch.float32),
+    }
+
+
+def _operator_adj_from_payload(payload):
+    if not isinstance(payload, dict):
+        raise ValueError('operator normalized adjacency cache payload must be a mapping')
+    if int(payload.get('version', -1)) != OPERATOR_NORMALIZED_CACHE_VERSION:
+        raise ValueError(f'unsupported operator normalized adjacency cache version: {payload.get("version")!r}')
+
+    sparse_sizes = payload.get('sparse_sizes')
+    if not isinstance(sparse_sizes, (tuple, list)) or len(sparse_sizes) != 2:
+        raise ValueError('operator normalized adjacency cache payload is missing sparse_sizes')
+
+    row = payload.get('row')
+    col = payload.get('col')
+    value = payload.get('value')
+    if not isinstance(row, torch.Tensor) or not isinstance(col, torch.Tensor) or not isinstance(value, torch.Tensor):
+        raise ValueError('operator normalized adjacency cache payload is missing row/col/value tensors')
+
+    return SparseTensor(
+        row=row.long(),
+        col=col.long(),
+        value=value.to(dtype=torch.float32),
+        sparse_sizes=(int(sparse_sizes[0]), int(sparse_sizes[1])),
+    ).coalesce()
+
+
+@contextlib.contextmanager
+def _operator_cache_lock(path):
+    lock_path = path.parent / f'.{path.name}.lock'
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    with lock_path.open('a+b') as handle:
+        if fcntl is not None:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            if fcntl is not None:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def _atomic_torch_save(path, payload):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(
+        dir=str(path.parent),
+        prefix=f'.{path.name}.',
+        suffix='.tmp',
+    )
+    os.close(fd)
+    tmp_path = Path(tmp_name)
+    try:
+        with tmp_path.open('wb') as handle:
+            torch.save(payload, handle, _use_new_zipfile_serialization=False)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_path, path)
+    finally:
+        try:
+            tmp_path.unlink()
+        except FileNotFoundError:
+            pass
+
+
+def _move_sparse_tensor(adj_t, device):
+    row, col, value = adj_t.coo()
+    if value is None:
+        value = torch.ones(row.numel(), dtype=torch.float32, device=row.device)
+    if row.device == device and col.device == device and value.device == device:
+        return adj_t
+    return SparseTensor(
+        row=row.to(device),
+        col=col.to(device),
+        value=value.to(device=device, dtype=torch.float32),
+        sparse_sizes=_operator_sparse_sizes(adj_t),
+    ).coalesce()
+
+
+def _operator_target_device(data):
+    adj_t = getattr(data, 'adj_t', None)
+    if isinstance(adj_t, SparseTensor):
+        row, _, value = adj_t.coo()
+        if value is not None:
+            return value.device
+        return row.device
+    x = getattr(data, 'x', None)
+    if isinstance(x, torch.Tensor):
+        return x.device
+    return torch.device('cpu')
+
+
+def load_or_build_operator_normalized_adj(data, *, force=False):
+    cache_path = _operator_cache_path(data)
+    built = False
+
+    def _load_cached():
+        payload = torch.load(cache_path, map_location='cpu')
+        return _operator_adj_from_payload(payload)
+
+    if cache_path.is_file() and not force:
+        try:
+            adj_t = _load_cached()
+        except Exception:
+            try:
+                cache_path.unlink()
+            except FileNotFoundError:
+                pass
+        else:
+            return _move_sparse_tensor(adj_t, _operator_target_device(data)), cache_path, built
+
+    with _operator_cache_lock(cache_path):
+        if cache_path.is_file() and not force:
+            try:
+                adj_t = _load_cached()
+            except Exception:
+                try:
+                    cache_path.unlink()
+                except FileNotFoundError:
+                    pass
+            else:
+                return _move_sparse_tensor(adj_t, _operator_target_device(data)), cache_path, built
+
+        adj_t = _build_operator_normalized_adj(data)
+        _atomic_torch_save(cache_path, _operator_cache_payload(adj_t))
+        built = True
+        return _move_sparse_tensor(adj_t, _operator_target_device(data)), cache_path, built
+
+
+def attach_operator_lazy_state(data, *, x_steps):
+    operator_adj_t, cache_path, _ = load_or_build_operator_normalized_adj(data)
+    data.operator_feature_mode = 'lazy_sparse'
+    data.operator_x_steps = int(x_steps)
+    data.operator_num_features = int(getattr(data, 'num_nodes'))
+    data.operator_normalized_adj_t = operator_adj_t
+    data.operator_cache_path = str(cache_path)
+    return data
 
 
 class FeatureTransform:
@@ -370,6 +564,8 @@ class FeatureTransform:
     def __call__(self, data):
         if self.feature == 'sim':
             return self.refresh_sim_features(data)
+        if self.feature == 'operator':
+            return attach_operator_lazy_state(data, x_steps=self.x_steps)
         if self.feature in self.rewrite_supported_features:
             return self._rewrite_features(data)
 

@@ -26,6 +26,7 @@ except ModuleNotFoundError:
     import run_mechanism_hparam_search as search_runner  # type: ignore
 
 from datasets import load_dataset, resolve_dataset_name
+from transforms import load_or_build_operator_normalized_adj
 
 
 SUBMODULE_FEATURE_REWRITE_ROOT = REPO_ROOT / "submodule" / "artificial-node-feature_generator"
@@ -299,20 +300,20 @@ def _collect_cache_tasks(config_paths: list[Path]) -> list[CacheTask]:
 
             dataset_name = resolve_dataset_name(str(fixed_params["dataset"]))
             if feature == "operator":
-                raw_candidates = job.job_spec.get("candidates")
-                if not isinstance(raw_candidates, list):
-                    raise RuntimeError("job_spec.candidates must be a list for operator cache precompute")
-                candidate_x_steps_values = sorted({int(candidate["x_steps"]) for candidate in raw_candidates})
+                candidate_x_steps_values = [None]
                 rewrite_seeds = [None]
             else:
                 candidate_x_steps_values = [None]
                 rewrite_seeds = _rewrite_seeds_for_job(job.job_spec)
 
             for candidate_x_steps in candidate_x_steps_values:
-                params = _rewrite_params_from_fixed_params(
-                    fixed_params,
-                    candidate_x_steps=candidate_x_steps,
-                )
+                if feature == "operator":
+                    params = {"cache_kind": "normalized_adjacency"}
+                else:
+                    params = _rewrite_params_from_fixed_params(
+                        fixed_params,
+                        candidate_x_steps=candidate_x_steps,
+                    )
                 for rewrite_seed in rewrite_seeds:
                     effective_seed = provider.cache_seed(seed=rewrite_seed, params=params)
                     key = _task_key(dataset_name, feature, params, effective_seed)
@@ -357,12 +358,21 @@ def _estimate_dense_matrix_gib(num_nodes: int) -> float:
 
 def _run_task(task: CacheTask, *, force: bool, max_eigen_dense_gib: float) -> TaskResult:
     started = time.time()
+    data = load_dataset(task.dataset)
+    if task.feature == "operator":
+        _, cache_path, built = load_or_build_operator_normalized_adj(data, force=force)
+        return TaskResult(
+            task=task,
+            status="built" if built else "hit",
+            cache_path=str(cache_path),
+            elapsed_sec=time.time() - started,
+        )
+
     _load_repo_local_feature_rewrite_module()
     from artificial_node_feature_generator.cache import feature_cache_path, save_cached_features
     from artificial_node_feature_generator.graph import graph_fingerprint
     from artificial_node_feature_generator.registry import get_provider
 
-    data = load_dataset(task.dataset)
     provider = get_provider(task.feature)
     graph_key = graph_fingerprint(data)
     cache_path = feature_cache_path(
