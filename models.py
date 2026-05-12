@@ -16,6 +16,39 @@ except ImportError:
         return (pred == target).float().mean()
 
 
+class _ExactOperatorPowerSeries(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, matrix, operator_adj_t, operator_adj_t_transpose, x_steps):
+        steps = int(x_steps)
+        ctx.x_steps = steps
+        ctx.operator_adj_t_transpose = operator_adj_t_transpose
+
+        if steps <= 0:
+            return matrix
+
+        current = matrix
+        accumulated = None
+        for _ in range(steps):
+            current = matmul(operator_adj_t, current, reduce='add')
+            accumulated = current if accumulated is None else accumulated + current
+        return accumulated / float(steps)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        steps = ctx.x_steps
+        if steps <= 0:
+            return grad_output, None, None, None
+
+        current = grad_output
+        accumulated = None
+        for _ in range(steps):
+            current = matmul(ctx.operator_adj_t_transpose, current, reduce='add')
+            accumulated = current if accumulated is None else accumulated + current
+
+        grad_matrix = accumulated / float(steps)
+        return grad_matrix, None, None, None
+
+
 class KProp(MessagePassing):
     def __init__(self, steps, aggregator, add_self_loops, normalize, cached, transform=lambda x: x):
         super().__init__(aggr=aggregator)
@@ -192,10 +225,14 @@ class NodeClassifier(torch.nn.Module):
         )
 
         self._cached_smoother_adj_id = None
+        self._cached_operator_adj_t_key = None
+        self._cached_operator_adj_t_transpose = None
 
     def clear_cached_state(self):
         self.smoother._cached_x = None
         self._cached_smoother_adj_id = None
+        self._cached_operator_adj_t_key = None
+        self._cached_operator_adj_t_transpose = None
 
     @staticmethod
     def _resolve_feature_scale(scale):
@@ -231,6 +268,19 @@ class NodeClassifier(torch.nn.Module):
         ).coalesce()
 
     @staticmethod
+    def _transpose_sparse_tensor(adj_t):
+        row, col, value = adj_t.coo()
+        sparse_rows, sparse_cols = adj_t.sparse_sizes()
+        if value is None:
+            value = torch.ones(row.numel(), dtype=torch.float32, device=row.device)
+        return SparseTensor(
+            row=col,
+            col=row,
+            value=value,
+            sparse_sizes=(sparse_cols, sparse_rows),
+        ).coalesce()
+
+    @staticmethod
     def _graphsage_mean_aggregate(adj_t, x):
         adj_t = adj_t.set_value(None, layout=None)
         return matmul(adj_t, x, reduce='mean')
@@ -246,6 +296,27 @@ class NodeClassifier(torch.nn.Module):
             current = matmul(operator_adj_t, current, reduce='add')
             accumulated = current if accumulated is None else accumulated + current
         return accumulated / float(x_steps)
+
+    @classmethod
+    def _apply_operator_to_matrix_exact_backward(
+        cls,
+        operator_adj_t,
+        matrix,
+        *,
+        x_steps,
+        operator_adj_t_transpose=None,
+    ):
+        if not torch.is_grad_enabled() or not matrix.requires_grad:
+            return cls._apply_operator_to_matrix(operator_adj_t, matrix, x_steps=x_steps)
+
+        if operator_adj_t_transpose is None:
+            operator_adj_t_transpose = cls._transpose_sparse_tensor(operator_adj_t)
+        return _ExactOperatorPowerSeries.apply(
+            matrix,
+            operator_adj_t,
+            operator_adj_t_transpose,
+            int(x_steps),
+        )
 
     def _has_lazy_operator_input(self, data):
         return (
@@ -263,18 +334,27 @@ class NodeClassifier(torch.nn.Module):
             raise ValueError('lazy operator input requires data.operator_normalized_adj_t')
         return self._move_sparse_tensor(operator_adj_t, device)
 
+    def _operator_adj_t_transpose(self, data, *, device):
+        operator_adj_t = self._operator_adj_t(data, device=device)
+        cache_key = (id(operator_adj_t), device)
+        if self._cached_operator_adj_t_key != cache_key:
+            self._cached_operator_adj_t_key = cache_key
+            self._cached_operator_adj_t_transpose = self._transpose_sparse_tensor(operator_adj_t)
+        return operator_adj_t, self._cached_operator_adj_t_transpose
+
     def _apply_operator_projection(self, x, data=None):
         if self.feature_preprojection_layer is None:
             return x
         if data is not None and self._has_lazy_operator_input(data):
-            operator_adj_t = self._operator_adj_t(
+            operator_adj_t, operator_adj_t_transpose = self._operator_adj_t_transpose(
                 data,
                 device=self.feature_preprojection_layer.weight.device,
             )
-            x = self._apply_operator_to_matrix(
+            x = self._apply_operator_to_matrix_exact_backward(
                 operator_adj_t,
                 self.feature_preprojection_layer.weight.t(),
                 x_steps=self._operator_steps(data),
+                operator_adj_t_transpose=operator_adj_t_transpose,
             )
             if self.feature_preprojection_layer.bias is not None:
                 x = x + self.feature_preprojection_layer.bias
