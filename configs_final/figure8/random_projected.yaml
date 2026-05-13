@@ -3,7 +3,7 @@ seed: 12345
 device:
   device: gpu
   cpu_worker_count: null
-  gpu_ids: [2,3,4,5]
+  gpu_ids: [0,1,2,3,4,5]
   max_parallel_per_gpu: 4
   gpu_launch_interval_sec: 0.1
 
@@ -44,7 +44,7 @@ search_space:
       - random_normal
     sim_reference_eps: []
     feature_dim: 
-      - 3200
+      - 1600
     scale: [0.0625,0.25,1,4,16,64,256,1024,4096,16384]
     random_normal_mean: 
       - 0
