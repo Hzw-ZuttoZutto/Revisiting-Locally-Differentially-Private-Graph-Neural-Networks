@@ -12,6 +12,7 @@ from torch_geometric.transforms import Compose
 
 from datasets import load_dataset
 from models import NodeClassifier
+from sanity_diagnostics import compute_sanity_e_pg
 from trainer import Trainer
 from transforms import FeatureTransform, FeaturePerturbation, NFR
 from utils import print_args, WandbLogger, add_parameters_as_argument, \
@@ -147,6 +148,52 @@ def validate_feature_rewrite_args(parser, args):
                 parser.error(f'{_cli_flag(arg_name)} must be > 0')
 
 
+def validate_sanity_check_args(parser, args):
+    sanity_check = bool(getattr(args, 'sanity_check', False))
+    node_ratio = getattr(args, 'node_ratio', None)
+
+    if node_ratio is not None:
+        if not np.isfinite(node_ratio) or node_ratio <= 0.0 or node_ratio > 1.0:
+            parser.error('--node-ratio must satisfy 0 < node_ratio <= 1')
+
+    if not sanity_check:
+        if node_ratio is not None:
+            parser.error('--node-ratio requires --sanity-check')
+        return
+
+    if node_ratio is None:
+        parser.error('--node-ratio must be provided when --sanity-check is enabled')
+
+    feature = str(getattr(args, 'feature', '')).strip().lower()
+    if feature not in {'raw', 'random_normal'}:
+        parser.error('--sanity-check currently supports only --feature raw or --feature random_normal')
+
+    if bool(getattr(args, 'norm', False)):
+        parser.error('--sanity-check does not support --norm true')
+    if str(getattr(args, 'norm_scale', 'none')).strip().lower() != 'none':
+        parser.error('--sanity-check does not support --norm-scale')
+    if bool(getattr(args, 'use_nfr', False)):
+        parser.error('--sanity-check does not support --use-nfr')
+
+    if feature == 'raw':
+        mechanism = str(getattr(args, 'mechanism', '')).strip().lower()
+        if mechanism != 'mbm':
+            parser.error('--sanity-check with --feature raw requires --mechanism mbm')
+        if str(getattr(args, 'm', '')).strip().lower() != 'best':
+            parser.error('--sanity-check with --feature raw requires --m best')
+        x_eps = float(getattr(args, 'x_eps'))
+        if not np.isfinite(x_eps) or x_eps <= 0.0:
+            parser.error('--sanity-check with --feature raw requires finite --x-eps > 0')
+        return
+
+    mean = 0.0 if args.random_normal_mean is None else float(args.random_normal_mean)
+    std = 1.0 if args.random_normal_std is None else float(args.random_normal_std)
+    if not np.isclose(mean, 0.0):
+        parser.error('--sanity-check with --feature random_normal requires --random-normal-mean to be 0')
+    if not np.isclose(std, 1.0):
+        parser.error('--sanity-check with --feature random_normal requires --random-normal-std to be 1')
+
+
 def configure_determinism():
     os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
     torch.backends.cudnn.deterministic = True
@@ -233,7 +280,21 @@ def run_single_repeat(args, repeat_id, run_id, logger=None):
 
     dataset = from_args(load_dataset, args)     # 加载数据
     data = dataset.clone().to(args.device)      # 将训练数据搬到gpu
+    original_input_dim = int(data.num_features)
     data = preprocess_data(data, args, rewrite_seed=current_seed)          # feature重写 + feature扰动 
+    sanity_e_pg = None
+    if bool(getattr(args, 'sanity_check', False)):
+        sanity_e_pg = compute_sanity_e_pg(
+            data,
+            feature=args.feature,
+            smoother=args.smoother,
+            x_steps=args.x_steps,
+            node_ratio=args.node_ratio,
+            mechanism=args.mechanism,
+            x_eps=args.x_eps,
+            original_input_dim=original_input_dim,
+            sampling_seed=current_seed,
+        )
     data = apply_nfr_if_enabled(data, args)
     input_dim = int(getattr(data, 'operator_num_features', data.num_features))
 
@@ -253,6 +314,10 @@ def run_single_repeat(args, repeat_id, run_id, logger=None):
         epoch_end_data_refresh_fn=sim_epoch_refresh_fn,
     )
     metrics = to_scalar_metrics(best_metrics)
+    if sanity_e_pg is not None:
+        metrics['sanity_e_pg'] = float(sanity_e_pg)
+        if logger is not None:
+            logger.log_summary({'sanity_e_pg': float(sanity_e_pg)})
     return metrics, metrics['test/acc']
 
 
@@ -399,6 +464,24 @@ def main():
         help='NFR soft-threshold hyperparameter',
     )
 
+    group_diagnostics = init_parser.add_argument_group('diagnostic arguments')
+    group_diagnostics.add_argument(
+        '--sanity_check', '--sanity-check',
+        dest='sanity_check',
+        type=str2bool,
+        nargs='?',
+        const=True,
+        default=False,
+        help='compute the E_PG sanity diagnostic before training starts',
+    )
+    group_diagnostics.add_argument(
+        '--node_ratio', '--node-ratio',
+        dest='node_ratio',
+        type=float,
+        default=None,
+        help='fraction of nodes to sample for sanity_check, with 0 < node_ratio <= 1',
+    )
+
     # trainer arguments (depends on perturbation)
     group_trainer = init_parser.add_argument_group('trainer arguments')
     add_parameters_as_argument(Trainer, group_trainer)
@@ -424,6 +507,7 @@ def main():
     validate_feature_rewrite_args(parser, args)
     if args.use_nfr and args.tao2 is None:
         parser.error('--tao2 must be provided when --use_nfr is enabled')
+    validate_sanity_check_args(parser, args)
 
     if args.device == 'cuda' and not torch.cuda.is_available():
         parser.error('CUDA is required but not available in the current environment')

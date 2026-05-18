@@ -54,6 +54,14 @@ OUTER_AXIS_NAMES = (
     "smoother",
     "backbone",
     "use_nfr",
+    "sanity_check",
+    "node_ratio",
+)
+
+SUMMARY_METRICS = (
+    ("val/acc", "val_acc", True),
+    ("test/acc", "test_acc", True),
+    ("sanity_e_pg", "sanity_e_pg", False),
 )
 
 GRID_STAGE_DIRNAME = "grid"
@@ -251,6 +259,10 @@ def normalized_outer_fixed_params(fixed_params: dict[str, Any]) -> dict[str, Any
         if name == "preprojection_output_dim" and not bool(fixed_params.get("feature_preprojection")):
             value = None
         if name == "smoother" and str(fixed_params.get("feature", "")).strip().lower() == "operator":
+            value = None
+        if name == "sanity_check" and not bool(fixed_params.get("sanity_check")):
+            value = None
+        if name == "node_ratio" and not bool(fixed_params.get("sanity_check")):
             value = None
         ordered[name] = value
     return ordered
@@ -529,6 +541,75 @@ def _metric_summary(values: list[float]) -> dict[str, Any]:
     }
 
 
+def _summary_fieldnames() -> list[str]:
+    return [
+        "rank",
+        "candidate_id",
+        *CANDIDATE_AXIS_NAMES,
+        "val_acc_mean",
+        "val_acc_std",
+        "val_acc_min",
+        "val_acc_max",
+        "test_acc_mean",
+        "test_acc_std",
+        "test_acc_min",
+        "test_acc_max",
+        "n",
+        "sanity_e_pg_mean",
+        "sanity_e_pg_std",
+        "sanity_e_pg_min",
+        "sanity_e_pg_max",
+        "sanity_e_pg_n",
+    ]
+
+
+def _metric_value_from_row(row: dict[str, str], column_name: str, *, required: bool) -> str | None:
+    raw_value = row.get(column_name)
+    if raw_value is None:
+        if required:
+            raise StageError(f"Result CSV rows must contain numeric {column_name!r} values")
+        return None
+
+    text = str(raw_value).strip()
+    if text == "":
+        if required:
+            raise StageError(f"Result CSV rows must contain numeric {column_name!r} values")
+        return None
+    return text
+
+
+def _metric_summaries_from_rows(rows: list[dict[str, str]]) -> dict[str, dict[str, Any] | None]:
+    summaries: dict[str, dict[str, Any] | None] = {}
+    for column_name, metric_name, required in SUMMARY_METRICS:
+        values: list[float] = []
+        missing_optional = False
+        for row in rows:
+            raw_value = _metric_value_from_row(row, column_name, required=required)
+            if raw_value is None:
+                missing_optional = True
+                continue
+            try:
+                values.append(float(raw_value))
+            except ValueError as exc:
+                raise StageError(
+                    f"Result CSV rows must contain numeric {column_name!r} values"
+                ) from exc
+
+        if required:
+            summaries[metric_name] = _metric_summary(values)
+            continue
+
+        if len(values) == 0:
+            summaries[metric_name] = None
+            continue
+        if missing_optional or len(values) != len(rows):
+            raise StageError(
+                f"Optional metric {column_name!r} must be present for every row of a candidate or absent for every row"
+            )
+        summaries[metric_name] = _metric_summary(values)
+    return summaries
+
+
 def _sorted_aggregate_rows(
     grouped_rows: dict[tuple[str, str, str, str, str], list[dict[str, str]]],
     *,
@@ -541,17 +622,11 @@ def _sorted_aggregate_rows(
         candidate = candidate_lookup.get(candidate_key)
         if candidate is None:
             raise StageError(f"Result rows contain an unknown candidate key: {candidate_key}")
-
-        try:
-            val_values = [float(row["val/acc"]) for row in rows]
-            test_values = [float(row["test/acc"]) for row in rows]
-        except (KeyError, ValueError) as exc:
-            raise StageError(
-                "Result CSV rows must contain numeric 'val/acc' and 'test/acc' columns"
-            ) from exc
-
-        val_summary = _metric_summary(val_values)
-        test_summary = _metric_summary(test_values)
+        metric_summaries = _metric_summaries_from_rows(rows)
+        val_summary = metric_summaries["val_acc"]
+        test_summary = metric_summaries["test_acc"]
+        if val_summary is None or test_summary is None:
+            raise StageError("Required metrics are missing from summary rows")
         aggregated.append(
             {
                 "candidate_id": candidate.candidate_id,
@@ -571,6 +646,27 @@ def _sorted_aggregate_rows(
                 "n": int(val_summary["n"]),
             }
         )
+        sanity_summary = metric_summaries["sanity_e_pg"]
+        if sanity_summary is None:
+            aggregated[-1].update(
+                {
+                    "sanity_e_pg_mean": None,
+                    "sanity_e_pg_std": None,
+                    "sanity_e_pg_min": None,
+                    "sanity_e_pg_max": None,
+                    "sanity_e_pg_n": None,
+                }
+            )
+        else:
+            aggregated[-1].update(
+                {
+                    "sanity_e_pg_mean": sanity_summary["mean"],
+                    "sanity_e_pg_std": sanity_summary["std"],
+                    "sanity_e_pg_min": sanity_summary["min"],
+                    "sanity_e_pg_max": sanity_summary["max"],
+                    "sanity_e_pg_n": int(sanity_summary["n"]),
+                }
+            )
 
     aggregated.sort(
         key=lambda row: (
@@ -602,43 +698,44 @@ def aggregate_verify_results(job_spec: dict[str, Any], job_dir: Path) -> list[di
 def write_grid_ranking(job_dir: Path, ranking_rows: list[dict[str, Any]]) -> None:
     ranking_path = grid_ranking_path(job_dir)
     with ranking_path.open("w", encoding="utf-8", newline="") as handle:
-        fieldnames = [
-            "rank",
-            "candidate_id",
-            *CANDIDATE_AXIS_NAMES,
-            "val_acc_mean",
-            "val_acc_std",
-            "val_acc_min",
-            "val_acc_max",
-            "test_acc_mean",
-            "test_acc_std",
-            "test_acc_min",
-            "test_acc_max",
-            "n",
-        ]
+        fieldnames = _summary_fieldnames()
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         for index, row in enumerate(ranking_rows, start=1):
-            writer.writerow(
-                {
-                    "rank": index,
-                    "candidate_id": row["candidate_id"],
-                    "x_steps": row["x_steps"],
-                    "learning_rate": row["learning_rate"],
-                    "weight_decay": row["weight_decay"],
-                    "dropout": row["dropout"],
-                    "tao2": row["tao2"],
-                    "val_acc_mean": canonical_float_text(row["val_acc_mean"]),
-                    "val_acc_std": canonical_float_text(row["val_acc_std"]),
-                    "val_acc_min": canonical_float_text(row["val_acc_min"]),
-                    "val_acc_max": canonical_float_text(row["val_acc_max"]),
-                    "test_acc_mean": canonical_float_text(row["test_acc_mean"]),
-                    "test_acc_std": canonical_float_text(row["test_acc_std"]),
-                    "test_acc_min": canonical_float_text(row["test_acc_min"]),
-                    "test_acc_max": canonical_float_text(row["test_acc_max"]),
-                    "n": row["n"],
-                }
-            )
+            payload = {
+                "rank": index,
+                "candidate_id": row["candidate_id"],
+                "x_steps": row["x_steps"],
+                "learning_rate": row["learning_rate"],
+                "weight_decay": row["weight_decay"],
+                "dropout": row["dropout"],
+                "tao2": row["tao2"],
+                "val_acc_mean": canonical_float_text(row["val_acc_mean"]),
+                "val_acc_std": canonical_float_text(row["val_acc_std"]),
+                "val_acc_min": canonical_float_text(row["val_acc_min"]),
+                "val_acc_max": canonical_float_text(row["val_acc_max"]),
+                "test_acc_mean": canonical_float_text(row["test_acc_mean"]),
+                "test_acc_std": canonical_float_text(row["test_acc_std"]),
+                "test_acc_min": canonical_float_text(row["test_acc_min"]),
+                "test_acc_max": canonical_float_text(row["test_acc_max"]),
+                "n": row["n"],
+                "sanity_e_pg_mean": "",
+                "sanity_e_pg_std": "",
+                "sanity_e_pg_min": "",
+                "sanity_e_pg_max": "",
+                "sanity_e_pg_n": "",
+            }
+            if row.get("sanity_e_pg_mean") is not None:
+                payload.update(
+                    {
+                        "sanity_e_pg_mean": canonical_float_text(row["sanity_e_pg_mean"]),
+                        "sanity_e_pg_std": canonical_float_text(row["sanity_e_pg_std"]),
+                        "sanity_e_pg_min": canonical_float_text(row["sanity_e_pg_min"]),
+                        "sanity_e_pg_max": canonical_float_text(row["sanity_e_pg_max"]),
+                        "sanity_e_pg_n": row["sanity_e_pg_n"],
+                    }
+                )
+            writer.writerow(payload)
 
 
 def write_verify_topk(job_dir: Path, ranking_rows: list[dict[str, Any]], *, topk: int) -> None:
@@ -668,43 +765,44 @@ def write_verify_topk(job_dir: Path, ranking_rows: list[dict[str, Any]], *, topk
 def write_verify_summary(job_dir: Path, summary_rows: list[dict[str, Any]]) -> None:
     path = verify_summary_path(job_dir)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        fieldnames = [
-            "rank",
-            "candidate_id",
-            *CANDIDATE_AXIS_NAMES,
-            "val_acc_mean",
-            "val_acc_std",
-            "val_acc_min",
-            "val_acc_max",
-            "test_acc_mean",
-            "test_acc_std",
-            "test_acc_min",
-            "test_acc_max",
-            "n",
-        ]
+        fieldnames = _summary_fieldnames()
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         for index, row in enumerate(summary_rows, start=1):
-            writer.writerow(
-                {
-                    "rank": index,
-                    "candidate_id": row["candidate_id"],
-                    "x_steps": row["x_steps"],
-                    "learning_rate": row["learning_rate"],
-                    "weight_decay": row["weight_decay"],
-                    "dropout": row["dropout"],
-                    "tao2": row["tao2"],
-                    "val_acc_mean": canonical_float_text(row["val_acc_mean"]),
-                    "val_acc_std": canonical_float_text(row["val_acc_std"]),
-                    "val_acc_min": canonical_float_text(row["val_acc_min"]),
-                    "val_acc_max": canonical_float_text(row["val_acc_max"]),
-                    "test_acc_mean": canonical_float_text(row["test_acc_mean"]),
-                    "test_acc_std": canonical_float_text(row["test_acc_std"]),
-                    "test_acc_min": canonical_float_text(row["test_acc_min"]),
-                    "test_acc_max": canonical_float_text(row["test_acc_max"]),
-                    "n": row["n"],
-                }
-            )
+            payload = {
+                "rank": index,
+                "candidate_id": row["candidate_id"],
+                "x_steps": row["x_steps"],
+                "learning_rate": row["learning_rate"],
+                "weight_decay": row["weight_decay"],
+                "dropout": row["dropout"],
+                "tao2": row["tao2"],
+                "val_acc_mean": canonical_float_text(row["val_acc_mean"]),
+                "val_acc_std": canonical_float_text(row["val_acc_std"]),
+                "val_acc_min": canonical_float_text(row["val_acc_min"]),
+                "val_acc_max": canonical_float_text(row["val_acc_max"]),
+                "test_acc_mean": canonical_float_text(row["test_acc_mean"]),
+                "test_acc_std": canonical_float_text(row["test_acc_std"]),
+                "test_acc_min": canonical_float_text(row["test_acc_min"]),
+                "test_acc_max": canonical_float_text(row["test_acc_max"]),
+                "n": row["n"],
+                "sanity_e_pg_mean": "",
+                "sanity_e_pg_std": "",
+                "sanity_e_pg_min": "",
+                "sanity_e_pg_max": "",
+                "sanity_e_pg_n": "",
+            }
+            if row.get("sanity_e_pg_mean") is not None:
+                payload.update(
+                    {
+                        "sanity_e_pg_mean": canonical_float_text(row["sanity_e_pg_mean"]),
+                        "sanity_e_pg_std": canonical_float_text(row["sanity_e_pg_std"]),
+                        "sanity_e_pg_min": canonical_float_text(row["sanity_e_pg_min"]),
+                        "sanity_e_pg_max": canonical_float_text(row["sanity_e_pg_max"]),
+                        "sanity_e_pg_n": row["sanity_e_pg_n"],
+                    }
+                )
+            writer.writerow(payload)
 
 
 def load_best_config(job_dir: Path) -> dict[str, Any]:

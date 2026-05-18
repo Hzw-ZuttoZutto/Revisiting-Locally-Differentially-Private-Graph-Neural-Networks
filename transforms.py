@@ -615,6 +615,7 @@ class FeaturePerturbation:
 
     def __call__(self, data):
         data.feature_mechanism = self.mechanism
+        data.feature_mechanism_resolved_m = None
         if self.feature != 'raw':
             if not hasattr(data, 'output_range'):
                 data.output_range = None
@@ -641,6 +642,7 @@ class FeaturePerturbation:
             # 为data 在这里添加一个属性 data.output_range = mechanism.output_range,mechanism当中我期望计算output_range 的方法由集成的类重写
             data.x = mechanism(data.x)
             data.output_range = mechanism.output_range
+            data.feature_mechanism_resolved_m = getattr(mechanism, 'last_m', None)
 
         return data
 

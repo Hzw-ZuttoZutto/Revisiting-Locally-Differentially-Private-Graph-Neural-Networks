@@ -39,6 +39,7 @@ MANIFEST_COLUMNS = [
     "best_verify_val_acc_std",
     "best_verify_test_acc_mean",
     "best_verify_test_acc_std",
+    "best_verify_sanity_e_pg_mean",
     "best_config_path",
     "recommended_command_path",
     "error_message",
@@ -224,6 +225,9 @@ def _load_best_outputs_into_row(row: dict[str, str], job_dir: Path) -> None:
     row["best_verify_val_acc_std"] = mechanism_stage_utils.canonical_search_value(val_metrics.get("std"))
     row["best_verify_test_acc_mean"] = mechanism_stage_utils.canonical_search_value(test_metrics.get("mean"))
     row["best_verify_test_acc_std"] = mechanism_stage_utils.canonical_search_value(test_metrics.get("std"))
+    sanity_metrics = verify_metrics.get("sanity_e_pg")
+    if isinstance(sanity_metrics, dict):
+        row["best_verify_sanity_e_pg_mean"] = mechanism_stage_utils.canonical_search_value(sanity_metrics.get("mean"))
     row["best_config_path"] = str(mechanism_stage_utils.best_config_path(job_dir))
     row["recommended_command_path"] = str(mechanism_stage_utils.recommended_command_path(job_dir))
 
@@ -632,4 +636,3 @@ def run_batch_search(
     print(f"Batch finished: completed={completed_jobs} skipped={skipped_jobs} failed={failed_jobs}")
     print(f"Manifest: {manifest_path}")
     return completed_jobs, skipped_jobs, failed_jobs, manifest_path
-

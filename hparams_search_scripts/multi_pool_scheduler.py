@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import os
 import subprocess
 import time
 from collections import deque
@@ -253,7 +254,19 @@ class MultiPoolScheduler:
         log_path = self._attempt_log_path(task, attempt)
         log_path.parent.mkdir(parents=True, exist_ok=True)
 
-        env = dict(task.env)
+        env = dict(os.environ)
+        env.update(task.env)
+
+        temp_root = env.get("TMPDIR") or env.get("TMP") or env.get("TEMP")
+        if temp_root is None or str(temp_root).strip() == "":
+            temp_root = str(Path.home() / ".cache" / "tmp")
+        temp_root_path = Path(temp_root).expanduser()
+        temp_root_path.mkdir(parents=True, exist_ok=True)
+        temp_root = str(temp_root_path)
+        env["TMPDIR"] = temp_root
+        env.setdefault("TMP", temp_root)
+        env.setdefault("TEMP", temp_root)
+
         if self._device == "gpu":
             env["CUDA_VISIBLE_DEVICES"] = str(worker_id)
         else:

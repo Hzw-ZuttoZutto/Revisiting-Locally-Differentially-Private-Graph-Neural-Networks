@@ -49,6 +49,7 @@ SEARCH_SPACE_KEYS = {
     "model",
     "trainer",
     "nfr",
+    "diagnostics",
 }
 SEARCH_DATASET_KEYS = {"datasets"}
 SEARCH_FEATURE_KEYS = {
@@ -75,6 +76,7 @@ SEARCH_CALIBRATOR_REQUIRED_KEYS = {"x_steps"}
 SEARCH_MODEL_KEYS = {"backbones", "dropout"}
 SEARCH_TRAINER_KEYS = {"learning_rate", "weight_decay"}
 SEARCH_NFR_KEYS = {"use_nfr", "tao2"}
+SEARCH_DIAGNOSTICS_KEYS = {"sanity_check", "node_ratio"}
 
 SUPPORTED_FEATURES = tuple(FeatureTransform.supported_features)
 SUPPORTED_REWRITE_FEATURES = tuple(FeatureTransform.rewrite_supported_features)
@@ -97,6 +99,10 @@ DEFAULT_REWRITE_CALIBRATOR = {
     "norm_scale": [],
 }
 DEFAULT_ZERO_STEP_SMOOTHER = ["kprop"]
+DEFAULT_DIAGNOSTICS = {
+    "sanity_check": [False],
+    "node_ratio": [1.0],
+}
 
 
 class SearchError(RuntimeError):
@@ -202,6 +208,13 @@ def _parse_nonnegative_float(raw: Any, path: str) -> float:
 
 def _parse_probability(raw: Any, path: str) -> float:
     value = _parse_nonnegative_float(raw, path)
+    if value > 1:
+        raise SearchError(f"{path} must be between 0 and 1")
+    return value
+
+
+def _parse_positive_probability(raw: Any, path: str) -> float:
+    value = _parse_positive_float(raw, path)
     if value > 1:
         raise SearchError(f"{path} must be between 0 and 1")
     return value
@@ -431,7 +444,9 @@ def _validate_defaults_section(raw: Any) -> dict[str, Any]:
 
 def _validate_search_space_section(raw: Any) -> dict[str, Any]:
     supported_datasets = set(_supported_dataset_names())
-    mapping = _expect_mapping(raw, "search_space")
+    mapping = dict(_expect_mapping(raw, "search_space"))
+    if "diagnostics" not in mapping:
+        mapping["diagnostics"] = dict(DEFAULT_DIAGNOSTICS)
     _expect_exact_keys(mapping, SEARCH_SPACE_KEYS, "search_space")
 
     dataset = _expect_mapping(mapping["dataset"], "search_space.dataset")
@@ -461,6 +476,14 @@ def _validate_search_space_section(raw: Any) -> dict[str, Any]:
 
     nfr = _expect_mapping(mapping["nfr"], "search_space.nfr")
     _expect_exact_keys(nfr, SEARCH_NFR_KEYS, "search_space.nfr")
+
+    diagnostics = _expect_mapping(mapping["diagnostics"], "search_space.diagnostics")
+    _expect_allowed_keys(
+        diagnostics,
+        allowed=SEARCH_DIAGNOSTICS_KEYS,
+        required=set(),
+        path="search_space.diagnostics",
+    )
 
     normalized_feature = {
         "dataset": {
@@ -729,6 +752,22 @@ def _validate_search_space_section(raw: Any) -> dict[str, Any]:
                 allow_empty=True,
             ),
         },
+        "diagnostics": {
+            "sanity_check": _parse_list(
+                diagnostics.get("sanity_check", list(DEFAULT_DIAGNOSTICS["sanity_check"])),
+                "search_space.diagnostics.sanity_check",
+                item_parser=_parse_bool,
+                allow_empty=False,
+            ),
+            "node_ratio": _parse_list(
+                diagnostics.get("node_ratio", list(DEFAULT_DIAGNOSTICS["node_ratio"])),
+                "search_space.diagnostics.node_ratio",
+                item_parser=lambda value, path: mechanism_stage_utils.canonical_float_text(
+                    _parse_positive_probability(value, path)
+                ),
+                allow_empty=False,
+            ),
+        },
     }
     _validate_cross_constraints(normalized)
     return normalized
@@ -749,11 +788,13 @@ def _validate_cross_constraints(search_space: dict[str, Any]) -> None:
     perturb_cfg = search_space["feature_perturbation"]
     calibrator_cfg = search_space["calibrator"]
     nfr_cfg = search_space["nfr"]
+    diagnostics_cfg = search_space["diagnostics"]
     features = set(feature_cfg["features"])
     scale_values = feature_cfg["scale"]
     feature_preprojection_values = set(feature_cfg["feature_preprojection"])
     norm_values = set(calibrator_cfg["norm"])
     use_nfr_values = set(nfr_cfg["use_nfr"])
+    sanity_check_values = set(diagnostics_cfg["sanity_check"])
     rewrite_only = len(features) > 0 and features <= SUPPORTED_REWRITE_FEATURE_SET
     sim_only = features == {"sim"}
     rewrite_features = features & SUPPORTED_REWRITE_FEATURE_SET
@@ -937,6 +978,35 @@ def _validate_cross_constraints(search_space: dict[str, Any]) -> None:
             nfr_cfg["tao2"],
             "search_space.nfr.tao2",
         )
+
+    if True in sanity_check_values:
+        allowed_sanity_features = {"raw", "random_normal"}
+        invalid_features = sorted(features - allowed_sanity_features)
+        if invalid_features:
+            raise SearchError(
+                "sanity_check=true only supports features "
+                f"{sorted(allowed_sanity_features)}, got {invalid_features}"
+            )
+        if True in norm_values:
+            raise SearchError("sanity_check=true cannot be combined with norm=true")
+        if True in use_nfr_values:
+            raise SearchError("sanity_check=true cannot be combined with use_nfr=true")
+        if "raw" in features:
+            mechanisms = set(perturb_cfg["mechanisms"])
+            if mechanisms != {"mbm"}:
+                raise SearchError("sanity_check=true with feature=raw requires mechanisms=['mbm']")
+            m_values = set(perturb_cfg["m"])
+            if m_values != {"best"}:
+                raise SearchError("sanity_check=true with feature=raw requires m=['best']")
+            if "inf" in set(perturb_cfg["x_eps"]):
+                raise SearchError("sanity_check=true with feature=raw requires finite x_eps values")
+        if "random_normal" in features:
+            mean_values = {float(value) for value in feature_cfg["random_normal_mean"]}
+            std_values = {float(value) for value in feature_cfg["random_normal_std"]}
+            if mean_values != {0.0}:
+                raise SearchError("sanity_check=true with feature=random_normal requires random_normal_mean=[0]")
+            if std_values != {1.0}:
+                raise SearchError("sanity_check=true with feature=random_normal requires random_normal_std=[1]")
 
 
 def load_search_config(config_path: Path) -> dict[str, Any]:
@@ -1227,6 +1297,29 @@ def _feature_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]
     return variants
 
 
+def _diagnostic_outer_variants(search_space: dict[str, Any]) -> list[dict[str, Any]]:
+    diagnostics_cfg = search_space["diagnostics"]
+    variants: list[dict[str, Any]] = []
+    for sanity_check in diagnostics_cfg["sanity_check"]:
+        if sanity_check:
+            for node_ratio in diagnostics_cfg["node_ratio"]:
+                variants.append(
+                    {
+                        "sanity_check": True,
+                        "node_ratio": node_ratio,
+                    }
+                )
+            continue
+
+        variants.append(
+            {
+                "sanity_check": False,
+                "node_ratio": None,
+            }
+        )
+    return variants
+
+
 def _active_path_parts(fixed_params: dict[str, Any]) -> list[str]:
     parts: list[str] = []
     for axis_name, value in mechanism_stage_utils.normalized_outer_fixed_params(fixed_params).items():
@@ -1250,78 +1343,81 @@ def build_batch_spec(
     jobs: list[core.BatchJob] = []
 
     feature_variants = _feature_outer_variants(search_space)
+    diagnostics_variants = _diagnostic_outer_variants(search_space)
     for dataset_name in search_space["dataset"]["datasets"]:
         for feature_variant in feature_variants:
-            for mechanism in search_space["feature_perturbation"]["mechanisms"]:
-                for x_eps in search_space["feature_perturbation"]["x_eps"]:
-                    for m_value in search_space["feature_perturbation"]["m"]:
-                        for norm_enabled in search_space["calibrator"]["norm"]:
-                            norm_scale_values = (
-                                search_space["calibrator"]["norm_scale"] if norm_enabled else ["none"]
-                            )
-                            for norm_scale in norm_scale_values:
-                                smoother_values = (
-                                    [None]
-                                    if feature_variant["feature"] == "operator"
-                                    else list(search_space["calibrator"]["smoother"])
+            for diagnostics_variant in diagnostics_variants:
+                for mechanism in search_space["feature_perturbation"]["mechanisms"]:
+                    for x_eps in search_space["feature_perturbation"]["x_eps"]:
+                        for m_value in search_space["feature_perturbation"]["m"]:
+                            for norm_enabled in search_space["calibrator"]["norm"]:
+                                norm_scale_values = (
+                                    search_space["calibrator"]["norm_scale"] if norm_enabled else ["none"]
                                 )
-                                for smoother in smoother_values:
-                                    for backbone in search_space["model"]["backbones"]:
-                                        for use_nfr in search_space["nfr"]["use_nfr"]:
-                                            fixed_params = {
-                                                "dataset": dataset_name,
-                                                **feature_variant,
-                                                "mechanism": mechanism,
-                                                "x_eps": x_eps,
-                                                "m": m_value,
-                                                "norm": bool(norm_enabled),
-                                                "norm_scale": norm_scale,
-                                                "smoother": smoother,
-                                                "backbone": backbone,
-                                                "use_nfr": bool(use_nfr),
-                                            }
-                                            tao2_values = (
-                                                search_space["nfr"]["tao2"] if use_nfr else ["none"]
-                                            )
-                                            candidates = mechanism_stage_utils.build_candidate_specs(
-                                                x_steps_values=search_space["calibrator"]["x_steps"],
-                                                learning_rate_values=search_space["trainer"]["learning_rate"],
-                                                weight_decay_values=search_space["trainer"]["weight_decay"],
-                                                dropout_values=search_space["model"]["dropout"],
-                                                tao2_values=tao2_values,
-                                            )
-                                            candidate_space = {
-                                                "x_steps": list(search_space["calibrator"]["x_steps"]),
-                                                "learning_rate": list(search_space["trainer"]["learning_rate"]),
-                                                "weight_decay": list(search_space["trainer"]["weight_decay"]),
-                                                "dropout": list(search_space["model"]["dropout"]),
-                                                "tao2": list(tao2_values),
-                                            }
-                                            job_id = mechanism_stage_utils.stable_job_id(fixed_params)
-                                            path_parts = _active_path_parts(fixed_params)
-                                            display_name = ", ".join(path_parts)
-                                            job_spec = {
-                                                "schema_version": mechanism_stage_utils.SCHEMA_VERSION,
-                                                "job_id": job_id,
-                                                "display_name": display_name,
-                                                "python_bin": sys.executable,
-                                                "training_device": training_device,
-                                                "base_seed": meta["base_seed"],
-                                                "rank_metric": meta["rank_metric"],
-                                                "verify_topk": meta["verify_topk"],
-                                                "defaults": defaults,
-                                                "fixed_params": fixed_params,
-                                                "candidate_space": candidate_space,
-                                                "candidates": [candidate.to_dict() for candidate in candidates],
-                                            }
-                                            jobs.append(
-                                                core.BatchJob(
-                                                    job_id=job_id,
-                                                    job_dir=output_root.joinpath(*path_parts),
-                                                    display_name=display_name,
-                                                    job_spec=job_spec,
+                                for norm_scale in norm_scale_values:
+                                    smoother_values = (
+                                        [None]
+                                        if feature_variant["feature"] == "operator"
+                                        else list(search_space["calibrator"]["smoother"])
+                                    )
+                                    for smoother in smoother_values:
+                                        for backbone in search_space["model"]["backbones"]:
+                                            for use_nfr in search_space["nfr"]["use_nfr"]:
+                                                fixed_params = {
+                                                    "dataset": dataset_name,
+                                                    **feature_variant,
+                                                    **diagnostics_variant,
+                                                    "mechanism": mechanism,
+                                                    "x_eps": x_eps,
+                                                    "m": m_value,
+                                                    "norm": bool(norm_enabled),
+                                                    "norm_scale": norm_scale,
+                                                    "smoother": smoother,
+                                                    "backbone": backbone,
+                                                    "use_nfr": bool(use_nfr),
+                                                }
+                                                tao2_values = (
+                                                    search_space["nfr"]["tao2"] if use_nfr else ["none"]
                                                 )
-                                            )
+                                                candidates = mechanism_stage_utils.build_candidate_specs(
+                                                    x_steps_values=search_space["calibrator"]["x_steps"],
+                                                    learning_rate_values=search_space["trainer"]["learning_rate"],
+                                                    weight_decay_values=search_space["trainer"]["weight_decay"],
+                                                    dropout_values=search_space["model"]["dropout"],
+                                                    tao2_values=tao2_values,
+                                                )
+                                                candidate_space = {
+                                                    "x_steps": list(search_space["calibrator"]["x_steps"]),
+                                                    "learning_rate": list(search_space["trainer"]["learning_rate"]),
+                                                    "weight_decay": list(search_space["trainer"]["weight_decay"]),
+                                                    "dropout": list(search_space["model"]["dropout"]),
+                                                    "tao2": list(tao2_values),
+                                                }
+                                                job_id = mechanism_stage_utils.stable_job_id(fixed_params)
+                                                path_parts = _active_path_parts(fixed_params)
+                                                display_name = ", ".join(path_parts)
+                                                job_spec = {
+                                                    "schema_version": mechanism_stage_utils.SCHEMA_VERSION,
+                                                    "job_id": job_id,
+                                                    "display_name": display_name,
+                                                    "python_bin": sys.executable,
+                                                    "training_device": training_device,
+                                                    "base_seed": meta["base_seed"],
+                                                    "rank_metric": meta["rank_metric"],
+                                                    "verify_topk": meta["verify_topk"],
+                                                    "defaults": defaults,
+                                                    "fixed_params": fixed_params,
+                                                    "candidate_space": candidate_space,
+                                                    "candidates": [candidate.to_dict() for candidate in candidates],
+                                                }
+                                                jobs.append(
+                                                    core.BatchJob(
+                                                        job_id=job_id,
+                                                        job_dir=output_root.joinpath(*path_parts),
+                                                        display_name=display_name,
+                                                        job_spec=job_spec,
+                                                    )
+                                                )
 
     return core.BatchSpec(
         output_root=output_root,
