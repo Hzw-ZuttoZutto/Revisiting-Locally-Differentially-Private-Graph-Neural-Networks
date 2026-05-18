@@ -232,6 +232,24 @@ def _load_best_outputs_into_row(row: dict[str, str], job_dir: Path) -> None:
     row["recommended_command_path"] = str(mechanism_stage_utils.recommended_command_path(job_dir))
 
 
+def _normalized_job_spec_for_comparison(job_spec: dict[str, object]) -> dict[str, object]:
+    normalized = dict(job_spec)
+    normalized.pop("job_id", None)
+
+    fixed_params = normalized.get("fixed_params")
+    if isinstance(fixed_params, dict):
+        fixed_params_normalized = dict(fixed_params)
+        for axis_name in mechanism_stage_utils.OUTER_AXIS_NAMES:
+            if axis_name not in fixed_params_normalized:
+                if axis_name == "sanity_check":
+                    fixed_params_normalized[axis_name] = False
+                else:
+                    fixed_params_normalized[axis_name] = None
+        normalized["fixed_params"] = fixed_params_normalized
+
+    return normalized
+
+
 def _ensure_job_spec(job: BatchJob) -> None:
     mechanism_stage_utils.ensure_job_directories(job.job_dir)
     path = mechanism_stage_utils.job_spec_path(job.job_dir)
@@ -240,10 +258,18 @@ def _ensure_job_spec(job: BatchJob) -> None:
         return
 
     existing = mechanism_stage_utils.load_job_spec(job.job_dir)
-    if mechanism_stage_utils.canonical_yaml_text(existing) != mechanism_stage_utils.canonical_yaml_text(job.job_spec):
-        raise SuiteError(
-            f"Existing job_spec.yaml does not match the current configuration: {path}"
-        )
+    if mechanism_stage_utils.canonical_yaml_text(existing) == mechanism_stage_utils.canonical_yaml_text(job.job_spec):
+        return
+
+    existing_normalized = _normalized_job_spec_for_comparison(existing)
+    expected_normalized = _normalized_job_spec_for_comparison(job.job_spec)
+    if mechanism_stage_utils.canonical_yaml_text(existing_normalized) == mechanism_stage_utils.canonical_yaml_text(expected_normalized):
+        mechanism_stage_utils.write_yaml_file(path, job.job_spec)
+        return
+
+    raise SuiteError(
+        f"Existing job_spec.yaml does not match the current configuration: {path}"
+    )
 
 
 def _count_existing_grid(job_spec: dict[str, object], job_dir: Path) -> tuple[list[mechanism_stage_utils.CandidateSpec], int]:
@@ -636,3 +662,4 @@ def run_batch_search(
     print(f"Batch finished: completed={completed_jobs} skipped={skipped_jobs} failed={failed_jobs}")
     print(f"Manifest: {manifest_path}")
     return completed_jobs, skipped_jobs, failed_jobs, manifest_path
+

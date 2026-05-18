@@ -1,15 +1,21 @@
 seed: 12345
-
 device:
   device: gpu
   cpu_worker_count: null
-  gpu_ids: [1,2,3,4,5]
+  gpu_ids:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
   max_parallel_per_gpu: 4
   gpu_launch_interval_sec: 0.1
-
 defaults:
   dataset:
-    data_range: [0.0, 1.0]
+    data_range:
+    - 0.0
+    - 1.0
     val_ratio: 0.25
     test_ratio: 0.25
   model:
@@ -29,27 +35,36 @@ defaults:
     verify:
       patience: 150
       repeats: 5
-
 search_space:
   dataset:
     datasets:
-      - cora
-      - lastfm
-      - citeseer
-      - Books-Children
-      - Books-History
-      - ogbn-arxiv
+    - cora
+    - lastfm
+    - citeseer
+    - Books-Children
+    - Books-History
+    - ogbn-arxiv
   feature_transformation:
     features:
-      - random_normal
+    - random_normal
     sim_reference_eps: []
-    feature_dim: 
-      - 1600
-    scale: [0.0625,0.25,1,4,16,64,256,1024,4096,16384]
-    random_normal_mean: 
-      - 0
-    random_normal_std: 
-      - 1.0
+    feature_dim:
+    - 1600
+    scale:
+    - 0.0625
+    - 0.25
+    - 1
+    - 4
+    - 16
+    - 64
+    - 256
+    - 1024
+    - 4096
+    - 16384
+    random_normal_mean:
+    - 0
+    random_normal_std:
+    - 1.0
     shared_value: []
     degree_bucket_num_buckets: []
     degree_bucket_range_max: []
@@ -61,36 +76,36 @@ search_space:
   feature_perturbation: []
   calibrator:
     norm:
-      - false
+    - false
     norm_scale: []
     x_steps:
-      - 0
-      - 2
-      - 4
-      - 8
-      - 16
-      - 32
-      - 64
+    - 0
+    - 2
+    - 4
+    - 8
+    - 16
+    - 32
+    - 64
     smoother:
-      - hoa
+    - hoa
   model:
     backbones:
-      - gcn
+    - gcn
     dropout:
-      - 0.25
-      - 0.5
-      - 0.75
+    - 0.25
+    - 0.5
+    - 0.75
   trainer:
     learning_rate:
-      - 0.01
-      - 0.001
-      - 0.0001
+    - 0.01
+    - 0.001
+    - 0.0001
     weight_decay:
-      - 0.0
-      - 0.0001
-      - 0.001
-      - 0.01
+    - 0.0
+    - 0.0001
+    - 0.001
+    - 0.01
   nfr:
     use_nfr:
-      - false
+    - false
     tao2: []

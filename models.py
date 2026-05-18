@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch.nn import Dropout, Linear, SELU
 from torch_geometric.nn import MessagePassing, SAGEConv, GCNConv, GATConv
-from torch_sparse import SparseTensor, matmul
+from torch_sparse import SparseTensor, matmul, set_diag
 
 try:
     from torch_geometric.utils import accuracy as accuracy_1d
@@ -366,34 +366,66 @@ class NodeClassifier(torch.nn.Module):
         x = self.feature_preprojection_dropout(x)
         return x
 
-    def _forward_sparse_operator_sage_direct(self, data, *, gnn_adj_t):
-        if not isinstance(self.gnn, GraphSAGE):
-            raise ValueError(
-                'lazy sparse operator direct mode currently supports model="sage". '
-                'Use --feature-preprojection for other backbones.'
-            )
-        if not isinstance(gnn_adj_t, SparseTensor):
-            raise TypeError('lazy sparse operator direct mode requires SparseTensor adjacency')
-
-        operator_adj_t = self._operator_adj_t(
-            data,
-            device=self.gnn.conv1.lin_l.weight.device,
-        )
+    def _project_lazy_operator_features(self, weight_t, data, *, exact_backward):
+        device = weight_t.device
         x_steps = self._operator_steps(data)
+        if exact_backward:
+            operator_adj_t, operator_adj_t_transpose = self._operator_adj_t_transpose(data, device=device)
+            projected = self._apply_operator_to_matrix_exact_backward(
+                operator_adj_t,
+                weight_t,
+                x_steps=x_steps,
+                operator_adj_t_transpose=operator_adj_t_transpose,
+            )
+        else:
+            operator_adj_t = self._operator_adj_t(data, device=device)
+            projected = self._apply_operator_to_matrix(operator_adj_t, weight_t, x_steps=x_steps)
+        return self._apply_scale(projected)
 
+    def _forward_hidden_through_output_layer(self, hidden, *, gnn_adj_t):
+        hidden = self.gnn.activation(hidden)
+        hidden = self.gnn.dropout(hidden)
+        return self.gnn.conv2(hidden, gnn_adj_t)
+
+    @staticmethod
+    def _normalize_gcn_direct_adj_t(conv, adj_t, *, num_nodes, dtype):
+        if not conv.normalize:
+            return adj_t
+        if conv._cached_adj_t is not None:
+            return conv._cached_adj_t
+        normalized_adj_t = gcn_norm(
+            adj_t,
+            None,
+            num_nodes,
+            conv.improved,
+            conv.add_self_loops,
+            conv.flow,
+            dtype,
+        )
+        if conv.cached:
+            conv._cached_adj_t = normalized_adj_t
+        return normalized_adj_t
+
+    @staticmethod
+    def _gat_direct_edge_index(conv, adj_t):
+        if conv.edge_dim is not None or conv.lin_edge is not None or conv.att_edge is not None:
+            raise ValueError('lazy sparse operator direct mode for model="gat" does not support edge features.')
+        if conv.add_self_loops:
+            return set_diag(adj_t)
+        return adj_t
+
+    def _forward_sparse_operator_sage_direct(self, data, *, gnn_adj_t):
         conv1 = self.gnn.conv1
-        neighbor_features = self._apply_operator_to_matrix(
-            operator_adj_t,
+        neighbor_features = self._project_lazy_operator_features(
             conv1.lin_l.weight.t(),
-            x_steps=x_steps,
+            data,
+            exact_backward=False,
         )
-        root_features = self._apply_operator_to_matrix(
-            operator_adj_t,
+        root_features = self._project_lazy_operator_features(
             conv1.lin_r.weight.t(),
-            x_steps=x_steps,
+            data,
+            exact_backward=False,
         )
-        neighbor_features = self._apply_scale(neighbor_features)
-        root_features = self._apply_scale(root_features)
 
         hidden = self._graphsage_mean_aggregate(gnn_adj_t, neighbor_features)
         if conv1.lin_l.bias is not None:
@@ -401,10 +433,72 @@ class NodeClassifier(torch.nn.Module):
         hidden = hidden + root_features
         if conv1.normalize:
             hidden = F.normalize(hidden, p=2.0, dim=-1)
+        return self._forward_hidden_through_output_layer(hidden, gnn_adj_t=gnn_adj_t)
 
-        hidden = self.gnn.activation(hidden)
-        hidden = self.gnn.dropout(hidden)
-        return self.gnn.conv2(hidden, gnn_adj_t)
+    def _forward_sparse_operator_gcn_direct(self, data, *, gnn_adj_t):
+        conv1 = self.gnn.conv1
+        hidden = self._project_lazy_operator_features(
+            conv1.lin.weight.t(),
+            data,
+            exact_backward=True,
+        )
+        normalized_adj_t = self._normalize_gcn_direct_adj_t(
+            conv1,
+            gnn_adj_t,
+            num_nodes=hidden.size(conv1.node_dim),
+            dtype=hidden.dtype,
+        )
+        hidden = conv1.propagate(normalized_adj_t, x=hidden, edge_weight=None)
+        if conv1.bias is not None:
+            hidden = hidden + conv1.bias
+        return self._forward_hidden_through_output_layer(hidden, gnn_adj_t=gnn_adj_t)
+
+    def _forward_sparse_operator_gat_direct(self, data, *, gnn_adj_t):
+        conv1 = self.gnn.conv1
+        if conv1.lin is None:
+            raise ValueError(
+                'lazy sparse operator direct mode for model="gat" requires a shared linear projection.'
+            )
+        if conv1.res is not None:
+            raise ValueError(
+                'lazy sparse operator direct mode for model="gat" does not support residual projections.'
+            )
+
+        transformed = self._project_lazy_operator_features(
+            conv1.lin.weight.t(),
+            data,
+            exact_backward=True,
+        )
+        transformed = transformed.view(-1, conv1.heads, conv1.out_channels)
+        x = (transformed, transformed)
+
+        alpha_src = (transformed * conv1.att_src).sum(dim=-1)
+        alpha_dst = (transformed * conv1.att_dst).sum(dim=-1)
+        edge_index = self._gat_direct_edge_index(conv1, gnn_adj_t)
+        alpha = conv1.edge_updater(edge_index, alpha=(alpha_src, alpha_dst), edge_attr=None, size=None)
+        hidden = conv1.propagate(edge_index, x=x, alpha=alpha, size=None)
+
+        if conv1.concat:
+            hidden = hidden.view(-1, conv1.heads * conv1.out_channels)
+        else:
+            hidden = hidden.mean(dim=1)
+        if conv1.bias is not None:
+            hidden = hidden + conv1.bias
+        return self._forward_hidden_through_output_layer(hidden, gnn_adj_t=gnn_adj_t)
+
+    def _forward_sparse_operator_direct(self, data, *, gnn_adj_t):
+        if not isinstance(gnn_adj_t, SparseTensor):
+            raise TypeError('lazy sparse operator direct mode requires SparseTensor adjacency')
+        if isinstance(self.gnn, GraphSAGE):
+            return self._forward_sparse_operator_sage_direct(data, gnn_adj_t=gnn_adj_t)
+        if isinstance(self.gnn, GCN):
+            return self._forward_sparse_operator_gcn_direct(data, gnn_adj_t=gnn_adj_t)
+        if isinstance(self.gnn, GAT):
+            return self._forward_sparse_operator_gat_direct(data, gnn_adj_t=gnn_adj_t)
+        raise ValueError(
+            f'lazy sparse operator direct mode does not support backbone {type(self.gnn).__name__}. '
+            'Use --feature-preprojection instead.'
+        )
 
     def _refresh_smoother_cache(self, smoother_adj_t):
         if self.feature == 'operator':
@@ -449,7 +543,7 @@ class NodeClassifier(torch.nn.Module):
         gnn_adj_t = data.adj_t if gnn_adj_t is None else gnn_adj_t
 
         if self.feature == 'operator' and self._has_lazy_operator_input(data) and not self.feature_preprojection:
-            return self._forward_sparse_operator_sage_direct(data, gnn_adj_t=gnn_adj_t)
+            return self._forward_sparse_operator_direct(data, gnn_adj_t=gnn_adj_t)
 
         self._refresh_smoother_cache(smoother_adj_t)
 

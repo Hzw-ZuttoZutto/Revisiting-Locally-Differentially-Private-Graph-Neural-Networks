@@ -9,7 +9,7 @@ device:
   - 3
   - 4
   - 5
-  max_parallel_per_gpu: 4
+  max_parallel_per_gpu: 10
   gpu_launch_interval_sec: 0.1
 defaults:
   dataset:
@@ -38,18 +38,12 @@ defaults:
 search_space:
   dataset:
     datasets:
-    - cora
-    - lastfm
     - citeseer
-    - Books-Children
-    - Books-History
-    - ogbn-arxiv
   feature_transformation:
     features:
-    - random_normal
+    - operator
     sim_reference_eps: []
-    feature_dim:
-    - 1600
+    feature_dim: []
     scale:
     - 0.0625
     - 0.25
@@ -61,10 +55,8 @@ search_space:
     - 1024
     - 4096
     - 16384
-    random_normal_mean:
-    - 0
-    random_normal_std:
-    - 1.0
+    random_normal_mean: []
+    random_normal_std: []
     shared_value: []
     degree_bucket_num_buckets: []
     degree_bucket_range_max: []

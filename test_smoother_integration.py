@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 import torch
+import torch.nn.functional as F
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch_sparse import SparseTensor
 
@@ -33,7 +34,7 @@ def build_dense_operator_matrix(adj_t, *, x_steps):
 class SmootherCliTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.repo_root = Path(__file__).resolve().parents[1]
+        cls.repo_root = Path(__file__).resolve().parent
 
     def _run_main(self, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
@@ -145,7 +146,8 @@ class SmootherRoutingTests(unittest.TestCase):
         self.assertEqual(model.feature_preprojection_layer.in_features, 3)
         self.assertEqual(model.feature_preprojection_layer.out_features, 2)
 
-    def test_lazy_sparse_operator_direct_matches_dense_operator_for_sage(self):
+    @staticmethod
+    def _operator_test_adj_t():
         dense_adj = torch.tensor(
             [
                 [0.0, 1.0, 1.0, 0.0],
@@ -155,165 +157,179 @@ class SmootherRoutingTests(unittest.TestCase):
             ],
             dtype=torch.float32,
         )
-        adj_t = SparseTensor.from_dense(dense_adj)
-        x_steps = 3
+        return SparseTensor.from_dense(dense_adj)
+
+    @classmethod
+    def _build_operator_dense_and_lazy_data(cls, *, x_steps, labels=None):
+        adj_t = cls._operator_test_adj_t()
         operator_dense = build_dense_operator_matrix(adj_t, x_steps=x_steps)
         operator_sparse = gcn_norm(adj_t, add_self_loops=False)
-        model = NodeClassifier(
-            input_dim=operator_dense.size(1),
-            num_classes=3,
-            feature="operator",
-            model="sage",
-            hidden_dim=5,
-            dropout=0.0,
-            x_steps=x_steps,
-        )
-        model.eval()
 
-        dense_data = type("Data", (), {"x": operator_dense, "adj_t": adj_t})()
-        lazy_data = type(
-            "Data",
-            (),
-            {
-                "x": torch.zeros((operator_dense.size(0), 1), dtype=torch.float32),
-                "adj_t": adj_t,
-                "operator_feature_mode": "lazy_sparse",
-                "operator_x_steps": x_steps,
-                "operator_num_features": operator_dense.size(1),
-                "operator_normalized_adj_t": operator_sparse,
-            },
-        )()
+        dense_payload = {"x": operator_dense, "adj_t": adj_t}
+        lazy_payload = {
+            "x": torch.zeros((operator_dense.size(0), 1), dtype=torch.float32),
+            "adj_t": adj_t,
+            "operator_feature_mode": "lazy_sparse",
+            "operator_x_steps": x_steps,
+            "operator_num_features": operator_dense.size(1),
+            "operator_normalized_adj_t": operator_sparse,
+        }
+        if labels is not None:
+            labels = labels.clone()
+            train_mask = torch.ones(labels.size(0), dtype=torch.bool)
+            dense_payload["y"] = labels
+            dense_payload["train_mask"] = train_mask
+            lazy_payload["y"] = labels.clone()
+            lazy_payload["train_mask"] = train_mask.clone()
 
-        observed_dense = model._forward_logits(dense_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
-        observed_lazy = model._forward_logits(lazy_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
-        self.assertTrue(torch.allclose(observed_lazy, observed_dense, atol=1e-5, rtol=1e-5))
+        dense_data = type("Data", (), dense_payload)()
+        lazy_data = type("Data", (), lazy_payload)()
+        return adj_t, operator_dense, dense_data, lazy_data
+
+    def _assert_named_parameter_grads_close(self, left_model, right_model):
+        left_params = dict(left_model.named_parameters())
+        right_params = dict(right_model.named_parameters())
+        self.assertEqual(set(left_params), set(right_params))
+        for name in sorted(left_params):
+            left_grad = left_params[name].grad
+            right_grad = right_params[name].grad
+            with self.subTest(parameter=name):
+                if left_grad is None or right_grad is None:
+                    self.assertIs(left_grad, right_grad)
+                else:
+                    self.assertTrue(torch.allclose(left_grad, right_grad, atol=1e-5, rtol=1e-5))
+
+    def test_lazy_sparse_operator_direct_matches_dense_operator(self):
+        for backbone in ("sage", "gcn", "gat"):
+            with self.subTest(backbone=backbone):
+                x_steps = 3
+                adj_t, operator_dense, dense_data, lazy_data = self._build_operator_dense_and_lazy_data(x_steps=x_steps)
+                model = NodeClassifier(
+                    input_dim=operator_dense.size(1),
+                    num_classes=3,
+                    feature="operator",
+                    model=backbone,
+                    hidden_dim=5,
+                    dropout=0.0,
+                    x_steps=x_steps,
+                )
+                model.eval()
+
+                observed_dense = model._forward_logits(dense_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
+                observed_lazy = model._forward_logits(lazy_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
+                self.assertTrue(torch.allclose(observed_lazy, observed_dense, atol=1e-5, rtol=1e-5))
+
+    def test_lazy_sparse_operator_direct_matches_dense_operator_gradients(self):
+        labels = torch.tensor([0, 1, 2, 1], dtype=torch.long)
+        for backbone in ("sage", "gcn", "gat"):
+            with self.subTest(backbone=backbone):
+                x_steps = 3
+                adj_t, operator_dense, dense_data, lazy_data = self._build_operator_dense_and_lazy_data(
+                    x_steps=x_steps,
+                    labels=labels,
+                )
+                dense_model = NodeClassifier(
+                    input_dim=operator_dense.size(1),
+                    num_classes=3,
+                    feature="operator",
+                    model=backbone,
+                    hidden_dim=5,
+                    dropout=0.0,
+                    x_steps=x_steps,
+                )
+                lazy_model = NodeClassifier(
+                    input_dim=operator_dense.size(1),
+                    num_classes=3,
+                    feature="operator",
+                    model=backbone,
+                    hidden_dim=5,
+                    dropout=0.0,
+                    x_steps=x_steps,
+                )
+                lazy_model.load_state_dict(dense_model.state_dict())
+                dense_model.train()
+                lazy_model.train()
+                dense_model.zero_grad(set_to_none=True)
+                lazy_model.zero_grad(set_to_none=True)
+
+                dense_logits = dense_model._forward_logits(dense_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
+                lazy_logits = lazy_model._forward_logits(lazy_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
+                self.assertTrue(torch.allclose(lazy_logits, dense_logits, atol=1e-5, rtol=1e-5))
+
+                dense_loss = F.cross_entropy(dense_logits[dense_data.train_mask], dense_data.y[dense_data.train_mask])
+                lazy_loss = F.cross_entropy(lazy_logits[lazy_data.train_mask], lazy_data.y[lazy_data.train_mask])
+                dense_loss.backward()
+                lazy_loss.backward()
+                self._assert_named_parameter_grads_close(dense_model, lazy_model)
 
     def test_lazy_sparse_operator_preprojection_matches_dense_operator(self):
-        dense_adj = torch.tensor(
-            [
-                [0.0, 1.0, 1.0, 0.0],
-                [1.0, 0.0, 1.0, 0.0],
-                [1.0, 1.0, 0.0, 1.0],
-                [0.0, 0.0, 1.0, 0.0],
-            ],
-            dtype=torch.float32,
-        )
-        adj_t = SparseTensor.from_dense(dense_adj)
-        x_steps = 2
-        operator_dense = build_dense_operator_matrix(adj_t, x_steps=x_steps)
-        operator_sparse = gcn_norm(adj_t, add_self_loops=False)
-        model = NodeClassifier(
-            input_dim=operator_dense.size(1),
-            num_classes=2,
-            feature="operator",
-            model="sage",
-            hidden_dim=4,
-            feature_preprojection=True,
-            preprojection_output_dim=3,
-            dropout=0.0,
-            x_steps=x_steps,
-        )
-        model.eval()
+        for backbone in ("sage", "gcn", "gat"):
+            with self.subTest(backbone=backbone):
+                x_steps = 2
+                adj_t, operator_dense, dense_data, lazy_data = self._build_operator_dense_and_lazy_data(x_steps=x_steps)
+                model = NodeClassifier(
+                    input_dim=operator_dense.size(1),
+                    num_classes=2,
+                    feature="operator",
+                    model=backbone,
+                    hidden_dim=4,
+                    feature_preprojection=True,
+                    preprojection_output_dim=3,
+                    dropout=0.0,
+                    x_steps=x_steps,
+                )
+                model.eval()
 
-        dense_data = type("Data", (), {"x": operator_dense, "adj_t": adj_t})()
-        lazy_data = type(
-            "Data",
-            (),
-            {
-                "x": torch.zeros((operator_dense.size(0), 1), dtype=torch.float32),
-                "adj_t": adj_t,
-                "operator_feature_mode": "lazy_sparse",
-                "operator_x_steps": x_steps,
-                "operator_num_features": operator_dense.size(1),
-                "operator_normalized_adj_t": operator_sparse,
-            },
-        )()
-
-        observed_dense = model._forward_logits(dense_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
-        observed_lazy = model._forward_logits(lazy_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
-        self.assertTrue(torch.allclose(observed_lazy, observed_dense, atol=1e-5, rtol=1e-5))
+                observed_dense = model._forward_logits(dense_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
+                observed_lazy = model._forward_logits(lazy_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
+                self.assertTrue(torch.allclose(observed_lazy, observed_dense, atol=1e-5, rtol=1e-5))
 
     def test_lazy_sparse_operator_preprojection_matches_dense_operator_gradients(self):
-        dense_adj = torch.tensor(
-            [
-                [0.0, 1.0, 1.0, 0.0],
-                [1.0, 0.0, 1.0, 0.0],
-                [1.0, 1.0, 0.0, 1.0],
-                [0.0, 0.0, 1.0, 0.0],
-            ],
-            dtype=torch.float32,
-        )
-        adj_t = SparseTensor.from_dense(dense_adj)
-        x_steps = 3
-        operator_dense = build_dense_operator_matrix(adj_t, x_steps=x_steps)
-        operator_sparse = gcn_norm(adj_t, add_self_loops=False)
+        labels = torch.tensor([0, 1, 0, 1], dtype=torch.long)
+        for backbone in ("sage", "gcn", "gat"):
+            with self.subTest(backbone=backbone):
+                x_steps = 3
+                adj_t, operator_dense, dense_data, lazy_data = self._build_operator_dense_and_lazy_data(
+                    x_steps=x_steps,
+                    labels=labels,
+                )
+                dense_model = NodeClassifier(
+                    input_dim=operator_dense.size(1),
+                    num_classes=2,
+                    feature="operator",
+                    model=backbone,
+                    hidden_dim=4,
+                    feature_preprojection=True,
+                    preprojection_output_dim=3,
+                    dropout=0.0,
+                    x_steps=x_steps,
+                )
+                lazy_model = NodeClassifier(
+                    input_dim=operator_dense.size(1),
+                    num_classes=2,
+                    feature="operator",
+                    model=backbone,
+                    hidden_dim=4,
+                    feature_preprojection=True,
+                    preprojection_output_dim=3,
+                    dropout=0.0,
+                    x_steps=x_steps,
+                )
+                lazy_model.load_state_dict(dense_model.state_dict())
+                dense_model.train()
+                lazy_model.train()
+                dense_model.zero_grad(set_to_none=True)
+                lazy_model.zero_grad(set_to_none=True)
 
-        dense_model = NodeClassifier(
-            input_dim=operator_dense.size(1),
-            num_classes=2,
-            feature="operator",
-            model="sage",
-            hidden_dim=4,
-            feature_preprojection=True,
-            preprojection_output_dim=3,
-            dropout=0.0,
-            x_steps=x_steps,
-        )
-        lazy_model = NodeClassifier(
-            input_dim=operator_dense.size(1),
-            num_classes=2,
-            feature="operator",
-            model="sage",
-            hidden_dim=4,
-            feature_preprojection=True,
-            preprojection_output_dim=3,
-            dropout=0.0,
-            x_steps=x_steps,
-        )
-        lazy_model.load_state_dict(dense_model.state_dict())
+                dense_logits = dense_model._forward_logits(dense_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
+                lazy_logits = lazy_model._forward_logits(lazy_data, gnn_adj_t=adj_t, smoother_adj_t=adj_t)
+                self.assertTrue(torch.allclose(lazy_logits, dense_logits, atol=1e-5, rtol=1e-5))
 
-        dense_data = type("Data", (), {"x": operator_dense, "adj_t": adj_t})()
-        lazy_data = type(
-            "Data",
-            (),
-            {
-                "x": torch.zeros((operator_dense.size(0), 1), dtype=torch.float32),
-                "adj_t": adj_t,
-                "operator_feature_mode": "lazy_sparse",
-                "operator_x_steps": x_steps,
-                "operator_num_features": operator_dense.size(1),
-                "operator_normalized_adj_t": operator_sparse,
-            },
-        )()
-
-        dense_model.zero_grad(set_to_none=True)
-        lazy_model.zero_grad(set_to_none=True)
-
-        dense_features = dense_model._build_feature_representation(dense_data, adj_t)
-        lazy_features = lazy_model._build_feature_representation(lazy_data, adj_t)
-        self.assertTrue(torch.allclose(lazy_features, dense_features, atol=1e-5, rtol=1e-5))
-
-        dense_loss = dense_features.pow(2).sum()
-        lazy_loss = lazy_features.pow(2).sum()
-        dense_loss.backward()
-        lazy_loss.backward()
-
-        self.assertTrue(
-            torch.allclose(
-                lazy_model.feature_preprojection_layer.weight.grad,
-                dense_model.feature_preprojection_layer.weight.grad,
-                atol=1e-5,
-                rtol=1e-5,
-            )
-        )
-        self.assertTrue(
-            torch.allclose(
-                lazy_model.feature_preprojection_layer.bias.grad,
-                dense_model.feature_preprojection_layer.bias.grad,
-                atol=1e-5,
-                rtol=1e-5,
-            )
-        )
+                dense_loss = F.cross_entropy(dense_logits[dense_data.train_mask], dense_data.y[dense_data.train_mask])
+                lazy_loss = F.cross_entropy(lazy_logits[lazy_data.train_mask], lazy_data.y[lazy_data.train_mask])
+                dense_loss.backward()
+                lazy_loss.backward()
+                self._assert_named_parameter_grads_close(dense_model, lazy_model)
 
 
 class HoaMathTests(unittest.TestCase):
