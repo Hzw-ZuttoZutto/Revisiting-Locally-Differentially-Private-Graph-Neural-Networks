@@ -1,6 +1,3 @@
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure8/sage/direct.yaml --output_root_dir paper_experiments/figure8/sage/direct.yaml
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure8/sage/learned_projected.yaml --output_root_dir paper_experiments/figure8/sage/learned_projected.yaml
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure8/sage/random_projected.yaml --output_root_dir paper_experiments/figure8/sage/random_projected.yaml
 python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure8_split/gat/direct/cora.yaml --output_root_dir paper_experiments/figure8/gat/direct/cora
 python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure8_split/gat/direct/lastfm.yaml --output_root_dir paper_experiments/figure8/gat/direct/lastfm
 python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure8_split/gat/direct/citeseer.yaml --output_root_dir paper_experiments/figure8/gat/direct/citeseer
