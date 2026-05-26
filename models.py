@@ -173,6 +173,7 @@ class NodeClassifier(torch.nn.Module):
                  scale=1.0,
                  feature_preprojection=False,
                  preprojection_output_dim=None,
+                 input_already_smoothed=False,
                  x_steps:               dict(help='feature smoother step parameter', option='-kx') = 0,
                  smoother:              dict(help='feature smoother before GNN', choices=['kprop', 'hoa']) = 'kprop',
                  ):
@@ -182,6 +183,7 @@ class NodeClassifier(torch.nn.Module):
         self.scale = self._resolve_feature_scale(scale)
         self.feature_preprojection = bool(feature_preprojection)
         self.preprojection_output_dim = preprojection_output_dim
+        self.input_already_smoothed = bool(input_already_smoothed)
         self.operator_x_steps = int(x_steps)
 
         if self.feature_preprojection and self.feature != 'operator':
@@ -501,7 +503,7 @@ class NodeClassifier(torch.nn.Module):
         )
 
     def _refresh_smoother_cache(self, smoother_adj_t):
-        if self.feature == 'operator':
+        if self.feature == 'operator' or self.input_already_smoothed:
             return
         smoother_adj_id = id(smoother_adj_t)
         if self._cached_smoother_adj_id is None:
@@ -513,7 +515,7 @@ class NodeClassifier(torch.nn.Module):
 
     @torch.no_grad()
     def refresh_smoother_cache(self, data, smoother_adj_t=None):
-        if self.feature == 'operator':
+        if self.feature == 'operator' or self.input_already_smoothed:
             return self._build_feature_representation(data, smoother_adj_t)
         smoother_adj_t = data.adj_t if smoother_adj_t is None else smoother_adj_t
         smoother_adj_id = id(smoother_adj_t)
@@ -534,6 +536,9 @@ class NodeClassifier(torch.nn.Module):
             else:
                 x = self._apply_operator_projection(data.x)
             return self._apply_scale(x)
+
+        if self.input_already_smoothed:
+            return self._apply_scale(data.x)
 
         x = self.smoother(data.x, smoother_adj_t)
         return self._apply_scale(x)

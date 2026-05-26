@@ -320,9 +320,69 @@ def _count_existing_verify(
     return missing, done
 
 
+def _uses_grouped_state_runner(spec: BatchSpec) -> bool:
+    if len(spec.jobs) == 0:
+        return False
+    config_path = spec.config_copy_source.resolve()
+    if config_path.parent.name not in {'gcn', 'gat'}:
+        return False
+    if config_path.parent.parent.name != 'figure3':
+        return False
+    fixed_params = spec.jobs[0].job_spec.get('fixed_params')
+    if not isinstance(fixed_params, dict):
+        return False
+    if str(fixed_params.get('feature', '')).strip().lower() != 'raw':
+        return False
+    if str(fixed_params.get('smoother', '')).strip().lower() not in {'hoa', 'kprop'}:
+        return False
+    if str(fixed_params.get('backbone', '')).strip().lower() not in {'gcn', 'gat'}:
+        return False
+    return True
+
+
+def _group_grid_candidates(
+    candidates: list[mechanism_stage_utils.CandidateSpec],
+) -> list[list[mechanism_stage_utils.CandidateSpec]]:
+    grouped: dict[tuple[int, str], list[mechanism_stage_utils.CandidateSpec]] = {}
+    for candidate in sorted(
+        candidates,
+        key=lambda item: (
+            int(item.x_steps),
+            mechanism_stage_utils.canonical_optional_float_text(item.tao2),
+            int(item.candidate_id),
+        ),
+    ):
+        key = (int(candidate.x_steps), mechanism_stage_utils.canonical_optional_float_text(candidate.tao2))
+        grouped.setdefault(key, []).append(candidate)
+    return list(grouped.values())
+
+
+def _group_verify_work(
+    items: list[tuple[mechanism_stage_utils.RankedCandidate, int]],
+) -> list[list[tuple[mechanism_stage_utils.RankedCandidate, int]]]:
+    grouped: dict[tuple[int, int, str], list[tuple[mechanism_stage_utils.RankedCandidate, int]]] = {}
+    for ranked, repeat_id in sorted(
+        items,
+        key=lambda item: (
+            int(item[1]),
+            int(item[0].candidate.x_steps),
+            mechanism_stage_utils.canonical_optional_float_text(item[0].candidate.tao2),
+            int(item[0].candidate_id),
+        ),
+    ):
+        key = (
+            int(repeat_id),
+            int(ranked.candidate.x_steps),
+            mechanism_stage_utils.canonical_optional_float_text(ranked.candidate.tao2),
+        )
+        grouped.setdefault(key, []).append((ranked, repeat_id))
+    return list(grouped.values())
+
+
 def _stage_scripts(repo_root: Path) -> dict[str, Path]:
     scripts = {
         "grid_task": repo_root / "hparams_search_scripts" / "run_mechanism_grid_task.py",
+        "group_task": repo_root / "hparams_search_scripts" / "run_mechanism_group_task.py",
         "grid_rank": repo_root / "hparams_search_scripts" / "run_mechanism_grid_rank.py",
         "verify_task": repo_root / "hparams_search_scripts" / "run_mechanism_verify_task.py",
         "verify_finalize": repo_root / "hparams_search_scripts" / "run_mechanism_verify_finalize.py",
@@ -342,6 +402,7 @@ def run_batch_search(
         raise SuiteError(f"main.py not found under repo root: {repo_root}")
 
     stage_scripts = _stage_scripts(repo_root)
+    use_grouped_state_runner = _uses_grouped_state_runner(spec)
     spec.output_root.mkdir(parents=True, exist_ok=True)
     shutil.copy2(spec.config_copy_source, spec.output_root / mechanism_stage_utils.INPUT_CONFIG_COPY_FILENAME)
 
@@ -474,6 +535,37 @@ def run_batch_search(
             retry_count=DEFAULT_STAGE_RETRY_COUNT,
             label=task_id,
             log_index_path=state.log_index_path,
+            work_units=1,
+        )
+
+    def build_grid_group_task(
+        state: SearchState,
+        grouped_candidates: list[mechanism_stage_utils.CandidateSpec],
+    ) -> SchedulerTask:
+        first = grouped_candidates[0]
+        tao2_token = mechanism_stage_utils.path_token(first.tao2)
+        task_id = f"grid_group_xsteps={int(first.x_steps)}__tao2={tao2_token}"
+        command = [
+            stage_runner_python,
+            str(stage_scripts["group_task"]),
+            str(state.job.job_dir),
+            "--stage",
+            "grid",
+        ]
+        for candidate in grouped_candidates:
+            command.extend(["--candidate_id", str(candidate.candidate_id)])
+        return SchedulerTask(
+            task_id=task_id,
+            combo_key=state.job.job_id,
+            pool="grid",
+            command=command,
+            env={},
+            cwd=repo_root,
+            log_path=state.logs_dir / f"{task_id}.log",
+            retry_count=DEFAULT_STAGE_RETRY_COUNT,
+            label=task_id,
+            log_index_path=state.log_index_path,
+            work_units=len(grouped_candidates),
         )
 
     def build_rank_task(state: SearchState) -> SchedulerTask:
@@ -515,6 +607,41 @@ def run_batch_search(
             retry_count=DEFAULT_STAGE_RETRY_COUNT,
             label=task_id,
             log_index_path=state.log_index_path,
+            work_units=1,
+        )
+
+    def build_verify_group_task(
+        state: SearchState,
+        grouped_items: list[tuple[mechanism_stage_utils.RankedCandidate, int]],
+    ) -> SchedulerTask:
+        first_ranked, repeat_id = grouped_items[0]
+        tao2_token = mechanism_stage_utils.path_token(first_ranked.candidate.tao2)
+        task_id = (
+            f"verify_group_repeat={int(repeat_id):02d}__xsteps={int(first_ranked.candidate.x_steps)}__tao2={tao2_token}"
+        )
+        command = [
+            stage_runner_python,
+            str(stage_scripts["group_task"]),
+            str(state.job.job_dir),
+            "--stage",
+            "verify",
+            "--repeat_id",
+            str(repeat_id),
+        ]
+        for ranked, _ in grouped_items:
+            command.extend(["--candidate_id", str(ranked.candidate_id)])
+        return SchedulerTask(
+            task_id=task_id,
+            combo_key=state.job.job_id,
+            pool="verify",
+            command=command,
+            env={},
+            cwd=repo_root,
+            log_path=state.logs_dir / f"{task_id}.log",
+            retry_count=DEFAULT_STAGE_RETRY_COUNT,
+            label=task_id,
+            log_index_path=state.log_index_path,
+            work_units=len(grouped_items),
         )
 
     def build_finalize_task(state: SearchState) -> SchedulerTask:
@@ -539,9 +666,16 @@ def run_batch_search(
         initial_verify_work = [chunk for chunk in state.row.pop("_initial_verify_work").split(",") if chunk]
 
         if len(missing_grid_ids) > 0:
-            for candidate_id_text in missing_grid_ids:
-                candidate = mechanism_stage_utils.job_candidate_by_id(job_spec, int(candidate_id_text))
-                scheduler.enqueue(build_grid_task(state, candidate))
+            missing_candidates = [
+                mechanism_stage_utils.job_candidate_by_id(job_spec, int(candidate_id_text))
+                for candidate_id_text in missing_grid_ids
+            ]
+            if use_grouped_state_runner:
+                for grouped_candidates in _group_grid_candidates(missing_candidates):
+                    scheduler.enqueue(build_grid_group_task(state, grouped_candidates))
+            else:
+                for candidate in missing_candidates:
+                    scheduler.enqueue(build_grid_task(state, candidate))
             continue
 
         if initial_rank:
@@ -549,13 +683,20 @@ def run_batch_search(
             continue
 
         if len(initial_verify_work) > 0:
+            pending_verify_items: list[tuple[mechanism_stage_utils.RankedCandidate, int]] = []
             for item in initial_verify_work:
                 rank_text, repeat_text = item.split(":", 1)
                 ranked = mechanism_stage_utils.ranked_candidate_by_rank(
                     mechanism_stage_utils.verify_topk_path(state.job.job_dir),
                     int(rank_text),
                 )
-                scheduler.enqueue(build_verify_task(state, ranked, int(repeat_text)))
+                pending_verify_items.append((ranked, int(repeat_text)))
+            if use_grouped_state_runner:
+                for grouped_items in _group_verify_work(pending_verify_items):
+                    scheduler.enqueue(build_verify_group_task(state, grouped_items))
+            else:
+                for ranked, repeat_id in pending_verify_items:
+                    scheduler.enqueue(build_verify_task(state, ranked, int(repeat_id)))
             continue
 
         if initial_finalize:
@@ -592,11 +733,12 @@ def run_batch_search(
             mark_failed(state, result.error_message or f"{result.task.label} failed")
             return []
 
-        if result.task.task_id.startswith("grid_candidate_"):
-            progress.mark_completed(count=1)
-            state.training_accounted += 1
-            state.grid_completed_runtime += 1
-            current_grid_done = int(state.row["grid_done"]) + 1
+        if result.task.task_id.startswith("grid_candidate_") or result.task.task_id.startswith("grid_group_"):
+            completed_units = int(result.task.work_units)
+            progress.mark_completed(count=completed_units)
+            state.training_accounted += completed_units
+            state.grid_completed_runtime += completed_units
+            current_grid_done = int(state.row["grid_done"]) + completed_units
             state.row["grid_done"] = str(current_grid_done)
             if state.grid_completed_runtime == state.grid_pending_total:
                 return [build_rank_task(state)]
@@ -627,13 +769,16 @@ def run_batch_search(
             if len(missing_verify) == 0:
                 return [build_finalize_task(state)]
 
+            if use_grouped_state_runner:
+                return [build_verify_group_task(state, grouped_items) for grouped_items in _group_verify_work(missing_verify)]
             return [build_verify_task(state, ranked_candidate, repeat_id) for ranked_candidate, repeat_id in missing_verify]
 
-        if result.task.task_id.startswith("verify_rank"):
-            progress.mark_completed(count=1)
-            state.training_accounted += 1
-            state.verify_completed_runtime += 1
-            current_verify_done = int(state.row["verify_done"]) + 1
+        if result.task.task_id.startswith("verify_rank") or result.task.task_id.startswith("verify_group_"):
+            completed_units = int(result.task.work_units)
+            progress.mark_completed(count=completed_units)
+            state.training_accounted += completed_units
+            state.verify_completed_runtime += completed_units
+            current_verify_done = int(state.row["verify_done"]) + completed_units
             state.row["verify_done"] = str(current_verify_done)
             if state.verify_completed_runtime == state.verify_pending_total:
                 return [build_finalize_task(state)]

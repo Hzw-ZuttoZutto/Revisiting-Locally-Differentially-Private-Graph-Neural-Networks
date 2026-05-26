@@ -389,7 +389,7 @@ def run(args):
         df_results.to_csv(os.path.join(args.output_dir, f'{run_id}.csv'), index=False)
 
 
-def main():
+def build_parser():
     init_parser = ArgumentParser(add_help=False, conflict_handler='resolve')
 
     feature_transform_args = (
@@ -415,7 +415,6 @@ def main():
     calibrator_model_args = ('x_steps', 'smoother')
     model_args = ('model', 'hidden_dim', 'dropout')
 
-    # dataset args
     group_dataset = init_parser.add_argument_group('dataset arguments')
     add_parameters_as_argument(load_dataset, group_dataset)
     group_dataset.add_argument(
@@ -432,24 +431,19 @@ def main():
         ),
     )
 
-    # feature transformation args
     group_feature_transform = init_parser.add_argument_group('feature transformation arguments')
     add_parameters_as_argument(FeatureTransform, group_feature_transform, include=feature_transform_args)
 
-    # feature perturbation args
     group_feature_perturbation = init_parser.add_argument_group('feature perturbation arguments')
     add_parameters_as_argument(FeaturePerturbation, group_feature_perturbation, include=feature_perturbation_args)
 
-    # calibrator args
     group_calibrator = init_parser.add_argument_group('calibrator arguments')
     add_parameters_as_argument(FeaturePerturbation, group_calibrator, include=calibrator_perturbation_args)
     add_parameters_as_argument(NodeClassifier, group_calibrator, include=calibrator_model_args)
 
-    # model args
     group_model = init_parser.add_argument_group('model arguments')
     add_parameters_as_argument(NodeClassifier, group_model, include=model_args)
 
-    # NFR args
     group_nfr = init_parser.add_argument_group('nfr arguments')
     group_nfr.add_argument(
         '--use_nfr', '--use-nfr',
@@ -482,12 +476,10 @@ def main():
         help='fraction of nodes to sample for sanity_check, with 0 < node_ratio <= 1',
     )
 
-    # trainer arguments (depends on perturbation)
     group_trainer = init_parser.add_argument_group('trainer arguments')
     add_parameters_as_argument(Trainer, group_trainer)
     group_trainer.add_argument('--device', help='desired device for training', choices=['cpu', 'cuda'], default='cuda')
 
-    # experiment args
     group_expr = init_parser.add_argument_group('experiment arguments')
     group_expr.add_argument('-s', '--seed', type=int, default=None, help='initial random seed')
     group_expr.add_argument('-r', '--repeats', type=int, default=1, help='number of times the experiment is repeated')
@@ -504,9 +496,10 @@ def main():
         help='optional cache root for raw->perturbation->optional NFR tensors loaded before HOA/KProp',
     )
 
-    parser = ArgumentParser(parents=[init_parser], formatter_class=ArgumentDefaultsHelpFormatter)
-    args = parser.parse_args()
+    return ArgumentParser(parents=[init_parser], formatter_class=ArgumentDefaultsHelpFormatter)
 
+
+def finalize_parsed_args(parser, args):
     configure_determinism()
 
     validate_gradient_clip_args(parser, args)
@@ -520,6 +513,19 @@ def main():
 
     if args.device == 'cuda' and not torch.cuda.is_available():
         parser.error('CUDA is required but not available in the current environment')
+
+    return args
+
+
+def parse_cli_args(argv=None):
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    finalize_parsed_args(parser, args)
+    return parser, args
+
+
+def main():
+    parser, args = parse_cli_args()
 
     print_args(args)
     args.cmd = ' '.join(sys.argv)  # store calling command

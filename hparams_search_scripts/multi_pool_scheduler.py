@@ -23,6 +23,7 @@ class SchedulerTask:
     label: str
     log_index_path: Path | None = None
     concurrency_group: str | None = None
+    work_units: int = 1
 
 
 @dataclass(frozen=True)
