@@ -9,7 +9,7 @@ device:
     - 3
     - 4
     - 5
-  max_parallel_per_gpu: 5
+  max_parallel_per_gpu: 4
   gpu_launch_interval_sec: 1
 defaults:
   dataset:

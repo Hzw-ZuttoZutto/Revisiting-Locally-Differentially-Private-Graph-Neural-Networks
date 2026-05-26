@@ -8,10 +8,9 @@ import numpy as np
 import pandas as pd
 import torch
 from tqdm.auto import tqdm
-from torch_geometric.transforms import Compose
-
 from datasets import load_dataset
 from models import NodeClassifier
+from pre_smoothing_feature_cache import prepare_pre_smoothing_input
 from sanity_diagnostics import compute_sanity_e_pg
 from trainer import Trainer
 from transforms import FeatureTransform, FeaturePerturbation, NFR
@@ -218,9 +217,11 @@ def confidence_interval(data, func=np.mean, size=1000, ci=95, seed=12345):
 def preprocess_data(data, args, rewrite_seed=None):
     feature_transform = from_args(FeatureTransform, args).set_rewrite_seed(rewrite_seed)
     feature_perturbation = from_args(FeaturePerturbation, args)
+    from torch_geometric.transforms import Compose
+
     return Compose([
-        feature_transform,                      # feature重写
-        feature_perturbation,                   # feature扰动
+        feature_transform,
+        feature_perturbation,
     ])(data)
 
 
@@ -281,7 +282,7 @@ def run_single_repeat(args, repeat_id, run_id, logger=None):
     dataset = from_args(load_dataset, args)     # 加载数据
     data = dataset.clone().to(args.device)      # 将训练数据搬到gpu
     original_input_dim = int(data.num_features)
-    data = preprocess_data(data, args, rewrite_seed=current_seed)          # feature重写 + feature扰动 
+    data, _ = prepare_pre_smoothing_input(data, args, rewrite_seed=current_seed)
     sanity_e_pg = None
     if bool(getattr(args, 'sanity_check', False)):
         sanity_e_pg = compute_sanity_e_pg(
@@ -295,7 +296,6 @@ def run_single_repeat(args, repeat_id, run_id, logger=None):
             original_input_dim=original_input_dim,
             sampling_seed=current_seed,
         )
-    data = apply_nfr_if_enabled(data, args)
     input_dim = int(getattr(data, 'operator_num_features', data.num_features))
 
     model = from_args(
@@ -496,6 +496,13 @@ def main():
     group_expr.add_argument('--log-mode', type=LogMode, action=EnumAction, default=LogMode.INDIVIDUAL,
                             help='wandb logging mode')
     group_expr.add_argument('--project-name', type=str, default='LPGNN', help='wandb project name')
+    group_expr.add_argument(
+        '--pre_smoothing_feature_cache_root', '--pre-smoothing-feature-cache-root',
+        dest='pre_smoothing_feature_cache_root',
+        type=str,
+        default=None,
+        help='optional cache root for raw->perturbation->optional NFR tensors loaded before HOA/KProp',
+    )
 
     parser = ArgumentParser(parents=[init_parser], formatter_class=ArgumentDefaultsHelpFormatter)
     args = parser.parse_args()
@@ -505,6 +512,8 @@ def main():
     validate_gradient_clip_args(parser, args)
     validate_sim_args(parser, args)
     validate_feature_rewrite_args(parser, args)
+    if args.pre_smoothing_feature_cache_root is not None and str(args.pre_smoothing_feature_cache_root).strip() == '':
+        args.pre_smoothing_feature_cache_root = None
     if args.use_nfr and args.tao2 is None:
         parser.error('--tao2 must be provided when --use_nfr is enabled')
     validate_sanity_check_args(parser, args)

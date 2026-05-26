@@ -4,7 +4,7 @@ device:
   device: gpu
   cpu_worker_count: null
   gpu_ids: [0,1,2,3,4,5]
-  max_parallel_per_gpu: 6
+  max_parallel_per_gpu: 8
   gpu_launch_interval_sec: 0.1
 
 defaults:

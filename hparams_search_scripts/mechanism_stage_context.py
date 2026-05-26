@@ -21,6 +21,7 @@ class JobContext:
     training_device: str
     base_seed: int
     verify_topk: int
+    pre_smoothing_feature_cache_root: str | None
 
 
 def resolve_job_context(job_dir: str | Path) -> JobContext:
@@ -37,6 +38,9 @@ def resolve_job_context(job_dir: str | Path) -> JobContext:
 
     python_bin = str(job_spec.get("python_bin", "python")).strip() or "python"
     training_device = str(job_spec.get("training_device", "cpu")).strip().lower()
+    pre_smoothing_feature_cache_root = job_spec.get("pre_smoothing_feature_cache_root")
+    if pre_smoothing_feature_cache_root is not None:
+        pre_smoothing_feature_cache_root = str(pre_smoothing_feature_cache_root).strip() or None
     if training_device not in {"cpu", "cuda"}:
         raise stage_utils.StageError(
             f"Unsupported training_device={training_device!r} in job spec"
@@ -57,6 +61,7 @@ def resolve_job_context(job_dir: str | Path) -> JobContext:
         training_device=training_device,
         base_seed=base_seed,
         verify_topk=verify_topk,
+        pre_smoothing_feature_cache_root=pre_smoothing_feature_cache_root,
     )
 
 
@@ -195,6 +200,11 @@ def build_main_base_args(ctx: JobContext) -> list[str]:
 
     if bool(ctx.fixed_params["use_nfr"]):
         parts.append("--use_nfr")
+    _append_optional(
+        parts,
+        "pre_smoothing_feature_cache_root",
+        ctx.pre_smoothing_feature_cache_root,
+    )
 
     return parts
 

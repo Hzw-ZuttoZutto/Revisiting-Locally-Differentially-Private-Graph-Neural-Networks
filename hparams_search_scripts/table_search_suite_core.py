@@ -235,6 +235,7 @@ def _load_best_outputs_into_row(row: dict[str, str], job_dir: Path) -> None:
 def _normalized_job_spec_for_comparison(job_spec: dict[str, object]) -> dict[str, object]:
     normalized = dict(job_spec)
     normalized.pop("job_id", None)
+    normalized.pop("pre_smoothing_feature_cache_root", None)
 
     fixed_params = normalized.get("fixed_params")
     if isinstance(fixed_params, dict):

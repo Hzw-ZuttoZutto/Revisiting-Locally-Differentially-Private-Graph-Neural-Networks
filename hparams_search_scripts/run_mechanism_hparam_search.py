@@ -1334,6 +1334,7 @@ def build_batch_spec(
     search_config: dict[str, Any],
     output_root: Path,
     config_copy_source: Path,
+    pre_smoothing_feature_cache_root: str | None = None,
 ) -> core.BatchSpec:
     defaults = search_config["defaults"]
     search_space = search_config["search_space"]
@@ -1402,6 +1403,11 @@ def build_batch_spec(
                                                     "display_name": display_name,
                                                     "python_bin": sys.executable,
                                                     "training_device": training_device,
+                                                    "pre_smoothing_feature_cache_root": (
+                                                        None
+                                                        if pre_smoothing_feature_cache_root is None
+                                                        else str(pre_smoothing_feature_cache_root).strip() or None
+                                                    ),
                                                     "base_seed": meta["base_seed"],
                                                     "rank_metric": meta["rank_metric"],
                                                     "verify_topk": meta["verify_topk"],
@@ -1436,6 +1442,15 @@ def parse_args() -> argparse.Namespace:
         type=str,
         help="root directory for all batch outputs",
     )
+    parser.add_argument(
+        "--pre_smoothing_feature_cache_root",
+        "--pre-smoothing-feature-cache-root",
+        dest="pre_smoothing_feature_cache_root",
+        required=False,
+        type=str,
+        default=None,
+        help="optional cache root for raw->perturbation->optional NFR tensors loaded before HOA/KProp",
+    )
     return parser.parse_args()
 
 
@@ -1451,6 +1466,7 @@ def main() -> int:
         search_config=search_config,
         output_root=Path(args.output_root_dir).resolve(),
         config_copy_source=config_path,
+        pre_smoothing_feature_cache_root=args.pre_smoothing_feature_cache_root,
     )
     _, _, failed_count, _ = core.run_batch_search(batch_spec, repo_root=repo_root)
     return 1 if failed_count > 0 else 0
