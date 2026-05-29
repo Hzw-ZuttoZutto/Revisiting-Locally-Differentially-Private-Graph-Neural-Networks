@@ -33,12 +33,7 @@ defaults:
 search_space:
   dataset:
     datasets:
-      - cora
-      - lastfm
-      - citeseer
-      - ogbn-arxiv
-      - books-children
-      - books-history
+      - facebook
   feature_transformation:
     features:
       - raw
@@ -57,7 +52,7 @@ search_space:
     deepwalk_undirected: []
   feature_perturbation:
     mechanisms:
-      - pm
+      - mbm
     x_eps:
       - 0.001
       - 0.01
@@ -80,10 +75,10 @@ search_space:
       - 32
       - 64
     smoother:
-      - hoa
+      - kprop
   model:
     backbones:
-      - gat
+      - gcn
     dropout:
       - 0.25
       - 0.5
@@ -100,10 +95,5 @@ search_space:
       - 0.01
   nfr:
     use_nfr:
-      - true
-    tao2: 
-      - 0.1
-      - 0.3
-      - 0.5
-      - 0.7
-      - 0.9
+      - false
+    tao2: []

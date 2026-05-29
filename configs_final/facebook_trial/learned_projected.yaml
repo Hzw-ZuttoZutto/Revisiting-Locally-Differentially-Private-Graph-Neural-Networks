@@ -33,31 +33,18 @@ defaults:
 search_space:
   dataset:
     datasets:
-      - cora
+      - facebook
   feature_transformation:
     features:
-      - random_normal
+      - operator
+    feature_preprojection:
+      - True
+    preprojection_output_dim: [128]
     sim_reference_eps: []
-    feature_dim: 
-      - 4
-      - 8
-      - 16
-      - 32
-      - 64
-      - 128
-      - 256
-      - 512
-      - 1024
-      - 2048
-      - 4096
-      - 8192
-      - 16384
-      - 32768
-    scale: [0.0625,0.25,1,4,16,64,256,1024,4096,16384]
-    random_normal_mean: 
-      - 0
-    random_normal_std: 
-      - 1.0
+    feature_dim: []
+    scale: [1]
+    random_normal_mean: []
+    random_normal_std: []
     shared_value: []
     degree_bucket_num_buckets: []
     degree_bucket_range_max: []
@@ -72,7 +59,13 @@ search_space:
       - false
     norm_scale: []
     x_steps:
+      - 0
+      - 2
+      - 4
       - 8
+      - 16
+      - 32
+      - 64
     smoother:
       - hoa
   model:
@@ -96,6 +89,3 @@ search_space:
     use_nfr:
       - false
     tao2: []
-  diagnostics:
-    sanity_check: [true]
-    node_ratio: [1.0]

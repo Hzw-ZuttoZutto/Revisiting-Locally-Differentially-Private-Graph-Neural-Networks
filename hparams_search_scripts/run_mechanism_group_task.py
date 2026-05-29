@@ -22,6 +22,7 @@ try:
     from main import build_diagnostic_dir, build_parser, finalize_parsed_args, repeat_seed, seed_everything, to_scalar_metrics
     from models import HOA, KProp, NodeClassifier
     from pre_smoothing_feature_cache import _capture_rng_state, _restore_rng_state, prepare_pre_smoothing_input
+    from sanity_diagnostics import compute_sanity_e_pg
     from trainer import Trainer
     from utils import from_args
 except ModuleNotFoundError:
@@ -31,6 +32,7 @@ except ModuleNotFoundError:
     from main import build_diagnostic_dir, build_parser, finalize_parsed_args, repeat_seed, seed_everything, to_scalar_metrics  # type: ignore
     from models import HOA, KProp, NodeClassifier  # type: ignore
     from pre_smoothing_feature_cache import _capture_rng_state, _restore_rng_state, prepare_pre_smoothing_input  # type: ignore
+    from sanity_diagnostics import compute_sanity_e_pg  # type: ignore
     from trainer import Trainer  # type: ignore
     from utils import from_args  # type: ignore
 
@@ -128,6 +130,23 @@ def _compute_smoothed_x(prepared_data, *, smoother_name: str, x_steps: int):
     return smoother(prepared_data.x, normalized_adj_t)
 
 
+def _compute_sanity_metric_if_enabled(data, args, *, original_input_dim: int, current_seed: int | None) -> float | None:
+    if not bool(getattr(args, 'sanity_check', False)):
+        return None
+
+    return compute_sanity_e_pg(
+        data,
+        feature=args.feature,
+        smoother=args.smoother,
+        x_steps=args.x_steps,
+        node_ratio=args.node_ratio,
+        mechanism=args.mechanism,
+        x_eps=args.x_eps,
+        original_input_dim=int(original_input_dim),
+        sampling_seed=current_seed,
+    )
+
+
 def _run_single_candidate(args, data, *, run_id: str):
     input_dim = int(getattr(data, 'operator_num_features', data.num_features))
     model = from_args(
@@ -210,8 +229,6 @@ def main() -> None:
         patience=patience,
         repeats=repeats,
     )
-    if bool(getattr(reference_args, 'sanity_check', False)):
-        raise ValueError('grouped state runner does not support sanity_check configurations')
     if str(getattr(reference_args, 'feature', '')).strip().lower() == 'operator':
         raise ValueError('grouped state runner is only intended for non-operator figure3 feature paths')
 
@@ -221,7 +238,14 @@ def main() -> None:
 
     dataset = from_args(load_dataset, reference_args)
     prepared_data = dataset.clone().to(reference_args.device)
+    original_input_dim = int(prepared_data.num_features)
     prepared_data, _ = prepare_pre_smoothing_input(prepared_data, reference_args, rewrite_seed=current_seed)
+    sanity_e_pg = _compute_sanity_metric_if_enabled(
+        prepared_data,
+        reference_args,
+        original_input_dim=original_input_dim,
+        current_seed=current_seed,
+    )
     post_prepare_rng_state = _capture_rng_state(getattr(prepared_data.x, 'device', None))
     smoothed_x = _compute_smoothed_x(prepared_data, smoother_name=str(reference_args.smoother), x_steps=int(x_steps))
 
@@ -248,6 +272,8 @@ def main() -> None:
         data = prepared_data.clone()
         data.x = smoothed_x
         metrics = _run_single_candidate(candidate_args, data, run_id=run_id)
+        if sanity_e_pg is not None:
+            metrics['sanity_e_pg'] = float(sanity_e_pg)
         _write_single_result_csv(candidate_args, metrics, run_id=run_id)
 
         if not mechanism_stage_utils.candidate_result_exists(output_dir, candidate, expected_seed=seed):

@@ -38,7 +38,7 @@ search_space:
     features:
       - random_normal
     sim_reference_eps: []
-    feature_dim: 
+    feature_dim:
       - 4
       - 8
       - 16
@@ -54,9 +54,9 @@ search_space:
       - 16384
       - 32768
     scale: [0.0625,0.25,1,4,16,64,256,1024,4096,16384]
-    random_normal_mean: 
+    random_normal_mean:
       - 0
-    random_normal_std: 
+    random_normal_std:
       - 1.0
     shared_value: []
     degree_bucket_num_buckets: []
@@ -72,7 +72,7 @@ search_space:
       - false
     norm_scale: []
     x_steps:
-      - 8
+      - 0
     smoother:
       - hoa
   model:

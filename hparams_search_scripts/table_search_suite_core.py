@@ -320,24 +320,78 @@ def _count_existing_verify(
     return missing, done
 
 
-def _uses_grouped_state_runner(spec: BatchSpec) -> bool:
-    if len(spec.jobs) == 0:
+def _bool_fixed_param(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _uses_figure3_grouped_state_runner(config_path: Path, fixed_params: dict[str, Any]) -> bool:
+    if config_path.parent.name == 'figure30':
+        figure_name = 'figure30'
+        config_group = str(fixed_params.get('backbone', '')).strip().lower()
+    else:
+        figure_name = config_path.parent.parent.name
+        config_group = config_path.parent.name
+    if figure_name == 'figure3':
+        allowed_groups = {'gcn', 'gat'}
+        allowed_backbones = {'gcn', 'gat'}
+    elif figure_name == 'figure32':
+        allowed_groups = {'gcn', 'gat', 'sage'}
+        allowed_backbones = {'gcn', 'gat', 'sage'}
+    elif figure_name == 'figure30':
+        allowed_groups = {'gat'}
+        allowed_backbones = {'gat'}
+    else:
         return False
-    config_path = spec.config_copy_source.resolve()
-    if config_path.parent.name not in {'gcn', 'gat'}:
-        return False
-    if config_path.parent.parent.name != 'figure3':
-        return False
-    fixed_params = spec.jobs[0].job_spec.get('fixed_params')
-    if not isinstance(fixed_params, dict):
+    if config_group not in allowed_groups:
         return False
     if str(fixed_params.get('feature', '')).strip().lower() != 'raw':
         return False
     if str(fixed_params.get('smoother', '')).strip().lower() not in {'hoa', 'kprop'}:
         return False
-    if str(fixed_params.get('backbone', '')).strip().lower() not in {'gcn', 'gat'}:
+    if str(fixed_params.get('backbone', '')).strip().lower() not in allowed_backbones:
         return False
     return True
+
+
+def _uses_figure10_grouped_state_runner(config_path: Path, fixed_params: dict[str, Any]) -> bool:
+    if config_path.parent.name != 'figure10':
+        return False
+    if not config_path.name.startswith('x_steps='):
+        return False
+    if str(fixed_params.get('feature', '')).strip().lower() != 'random_normal':
+        return False
+    if str(fixed_params.get('smoother', '')).strip().lower() != 'hoa':
+        return False
+    if str(fixed_params.get('backbone', '')).strip().lower() != 'sage':
+        return False
+    if not _bool_fixed_param(fixed_params.get('sanity_check', False)):
+        return False
+    if _bool_fixed_param(fixed_params.get('use_nfr', False)):
+        return False
+    if str(fixed_params.get('mechanism', '')).strip().lower() != 'mbm':
+        return False
+    if str(fixed_params.get('m', '')).strip().lower() != 'best':
+        return False
+    if str(fixed_params.get('norm_scale', '')).strip().lower() != 'none':
+        return False
+    if _bool_fixed_param(fixed_params.get('norm', False)):
+        return False
+    return True
+
+
+def _uses_grouped_state_runner(spec: BatchSpec) -> bool:
+    if len(spec.jobs) == 0:
+        return False
+    config_path = spec.config_copy_source.resolve()
+    fixed_params = spec.jobs[0].job_spec.get('fixed_params')
+    if not isinstance(fixed_params, dict):
+        return False
+    return (
+        _uses_figure3_grouped_state_runner(config_path, fixed_params)
+        or _uses_figure10_grouped_state_runner(config_path, fixed_params)
+    )
 
 
 def _group_grid_candidates(
@@ -808,4 +862,3 @@ def run_batch_search(
     print(f"Batch finished: completed={completed_jobs} skipped={skipped_jobs} failed={failed_jobs}")
     print(f"Manifest: {manifest_path}")
     return completed_jobs, skipped_jobs, failed_jobs, manifest_path
-

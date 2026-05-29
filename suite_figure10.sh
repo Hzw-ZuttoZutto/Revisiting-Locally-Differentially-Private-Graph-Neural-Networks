@@ -1,6 +1,3 @@
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure10/x_steps=2.yaml --output_root_dir paper_experiments/figure10/x_steps=2.yaml
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure10/x_steps=4.yaml --output_root_dir paper_experiments/figure10/x_steps=4.yaml
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure10/x_steps=8.yaml --output_root_dir paper_experiments/figure10/x_steps=8.yaml
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure10/x_steps=16.yaml --output_root_dir paper_experiments/figure10/x_steps=16.yaml
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure10/x_steps=32.yaml --output_root_dir paper_experiments/figure10/x_steps=32.yaml
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure10/x_steps=64.yaml --output_root_dir paper_experiments/figure10/x_steps=64.yaml
+python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/facebook_trial/figure0_clean.yaml --output_root_dir paper_experiments/facebook_test/clean
+python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/facebook_trial/random_projected.yaml --output_root_dir paper_experiments/facebook_test/random
+python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/facebook_trial/learned_projected.yaml --output_root_dir paper_experiments/facebook_test/adapt
