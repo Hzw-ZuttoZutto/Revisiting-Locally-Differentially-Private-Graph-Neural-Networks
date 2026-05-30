@@ -411,7 +411,6 @@ def generate_random_normal_features(
         device=torch.device("cpu"),
         dtype=dtype,
     )
-    features.div_(math.sqrt(float(feature_dim)))
     return features.to(device=device)
 
 

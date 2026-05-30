@@ -183,7 +183,6 @@ def generate_random_chunk(
         device=torch.device("cpu"),
         dtype=torch.float32,
     )
-    chunk.div_(math.sqrt(feature_dim))
     if device.type != "cpu":
         chunk = chunk.to(device)
     return chunk

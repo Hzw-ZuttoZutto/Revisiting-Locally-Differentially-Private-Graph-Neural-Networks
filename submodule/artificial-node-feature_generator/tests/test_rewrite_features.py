@@ -197,7 +197,7 @@ def test_random_normal_uses_seed_and_feature_dim():
     assert not torch.allclose(first.x, third.x)
 
 
-def test_random_normal_applies_feature_dim_normalization():
+def test_random_normal_matches_seeded_normal_sample_without_feature_dim_scaling():
     data = make_data()
     dim = 5
     rewritten = rewrite_features(data, "random_normal", params={"feature_dim": dim}, seed=7)
@@ -209,7 +209,7 @@ def test_random_normal_applies_feature_dim_normalization():
         size=(data.num_nodes, dim),
         generator=generator,
         device=torch.device("cpu"),
-    ).to(dtype=rewritten.x.dtype) / (dim ** 0.5)
+    ).to(dtype=rewritten.x.dtype)
     assert torch.allclose(rewritten.x.cpu(), expected)
 
 

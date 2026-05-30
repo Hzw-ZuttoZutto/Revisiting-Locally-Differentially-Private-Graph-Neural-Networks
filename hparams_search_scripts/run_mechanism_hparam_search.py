@@ -384,8 +384,6 @@ def _validate_defaults_section(raw: Any) -> dict[str, Any]:
     verify_repeats = _parse_positive_int(verify["repeats"], "defaults.stage.verify.repeats")
     if grid_repeats != 1:
         raise SearchError("defaults.stage.grid.repeats must be exactly 1")
-    if verify_repeats != 5:
-        raise SearchError("defaults.stage.verify.repeats must be exactly 5")
 
     return {
         "dataset": {
@@ -765,7 +763,7 @@ def _validate_search_space_section(raw: Any) -> dict[str, Any]:
                 item_parser=lambda value, path: mechanism_stage_utils.canonical_float_text(
                     _parse_positive_probability(value, path)
                 ),
-                allow_empty=False,
+                allow_empty=True,
             ),
         },
     }
@@ -980,6 +978,10 @@ def _validate_cross_constraints(search_space: dict[str, Any]) -> None:
         )
 
     if True in sanity_check_values:
+        _require_non_empty(
+            diagnostics_cfg["node_ratio"],
+            "search_space.diagnostics.node_ratio",
+        )
         allowed_sanity_features = {"raw", "random_normal"}
         invalid_features = sorted(features - allowed_sanity_features)
         if invalid_features:

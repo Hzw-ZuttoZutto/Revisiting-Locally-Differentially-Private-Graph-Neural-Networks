@@ -218,15 +218,33 @@ def resolve_cache_root(raw_root: str | os.PathLike[str] | None) -> Path | None:
     return Path(text).expanduser().resolve()
 
 
+def _canonical_x_eps_text(value: Any) -> str:
+    parsed = float(value)
+    if math.isfinite(parsed):
+        return _canonical_float_text(parsed)
+    if math.isinf(parsed) and parsed > 0:
+        return "inf"
+    raise ValueError(f"Expected a positive finite value or inf for x_eps, got {value!r}")
+
+
 def is_cache_eligible(args) -> bool:
-    if str(getattr(args, "feature", "")).strip().lower() != "raw":
+    feature = str(getattr(args, "feature", "")).strip().lower()
+    if feature not in {"raw", "sim"}:
         return False
     mechanism = str(getattr(args, "mechanism", "")).strip().lower()
     if mechanism not in CACHEABLE_MECHANISMS:
         return False
-    x_eps = float(getattr(args, "x_eps"))
-    if not math.isfinite(x_eps):
-        return False
+    if feature == "raw":
+        x_eps = float(getattr(args, "x_eps"))
+        if not math.isfinite(x_eps):
+            return False
+    else:
+        sim_reference_eps = getattr(args, "sim_reference_eps", None)
+        if sim_reference_eps is None:
+            return False
+        sim_reference_eps = float(sim_reference_eps)
+        if not math.isfinite(sim_reference_eps) or sim_reference_eps <= 0:
+            return False
     return resolve_cache_root(getattr(args, "pre_smoothing_feature_cache_root", None)) is not None
 
 
@@ -241,16 +259,23 @@ def build_cache_key_payload(data, args, rewrite_seed: int | None) -> dict[str, A
     if data_range is None or len(data_range) != 2:
         raise ValueError("args.data_range must contain exactly two values.")
 
+    feature = str(getattr(args, "feature")).strip().lower()
+    if feature not in {"raw", "sim"}:
+        raise ValueError(f"pre-smoothing feature cache only supports raw/sim features, got {feature!r}")
+
     payload = {
         "version": CACHE_SCHEMA_VERSION,
         "dataset": str(getattr(args, "dataset")),
-        "feature": "raw",
+        "feature": feature,
         "graph": graph_fingerprint(data),
         "raw_feature_fingerprint": raw_feature_fingerprint(data),
         "raw_feature_shape": raw_shape,
         "raw_feature_dtype": raw_dtype,
         "mechanism": str(getattr(args, "mechanism")).strip().lower(),
-        "x_eps": _canonical_float_text(getattr(args, "x_eps")),
+        "x_eps": _canonical_x_eps_text(getattr(args, "x_eps")),
+        "sim_reference_eps": None
+        if getattr(args, "sim_reference_eps", None) is None
+        else _canonical_float_text(getattr(args, "sim_reference_eps")),
         "m": str(getattr(args, "m")),
         "norm": bool(getattr(args, "norm")),
         "norm_scale": str(getattr(args, "norm_scale")),

@@ -339,6 +339,9 @@ def _uses_figure3_grouped_state_runner(config_path: Path, fixed_params: dict[str
     elif figure_name == 'figure32':
         allowed_groups = {'gcn', 'gat', 'sage'}
         allowed_backbones = {'gcn', 'gat', 'sage'}
+    elif figure_name == 'main_add':
+        allowed_groups = {'gcn', 'gat', 'sage'}
+        allowed_backbones = {'gcn', 'gat', 'sage'}
     elif figure_name == 'figure30':
         allowed_groups = {'gat'}
         allowed_backbones = {'gat'}
@@ -381,17 +384,76 @@ def _uses_figure10_grouped_state_runner(config_path: Path, fixed_params: dict[st
     return True
 
 
-def _uses_grouped_state_runner(spec: BatchSpec) -> bool:
-    if len(spec.jobs) == 0:
+def _uses_semantic_raw_grouped_state_runner(fixed_params: dict[str, Any]) -> bool:
+    if str(fixed_params.get('feature', '')).strip().lower() != 'raw':
         return False
+    if _bool_fixed_param(fixed_params.get('use_nfr', False)):
+        return False
+    if str(fixed_params.get('backbone', '')).strip().lower() not in {'sage', 'gcn', 'gat'}:
+        return False
+    if str(fixed_params.get('smoother', '')).strip().lower() not in {'hoa', 'kprop'}:
+        return False
+    return True
+
+
+def _uses_semantic_random_normal_grouped_state_runner(fixed_params: dict[str, Any]) -> bool:
+    if str(fixed_params.get('feature', '')).strip().lower() != 'random_normal':
+        return False
+    if _bool_fixed_param(fixed_params.get('use_nfr', False)):
+        return False
+    if str(fixed_params.get('backbone', '')).strip().lower() not in {'sage', 'gcn', 'gat'}:
+        return False
+    if str(fixed_params.get('smoother', '')).strip().lower() not in {'hoa', 'kprop'}:
+        return False
+    return True
+
+
+def _uses_semantic_operator_grouped_runner(fixed_params: dict[str, Any]) -> bool:
+    if str(fixed_params.get('feature', '')).strip().lower() != 'operator':
+        return False
+    if _bool_fixed_param(fixed_params.get('use_nfr', False)):
+        return False
+    if str(fixed_params.get('backbone', '')).strip().lower() not in {'sage', 'gcn', 'gat'}:
+        return False
+    return True
+
+
+def _uses_semantic_sim_grouped_state_runner(spec: BatchSpec, fixed_params: dict[str, Any]) -> bool:
+    if str(fixed_params.get('feature', '')).strip().lower() != 'sim':
+        return False
+    if _bool_fixed_param(fixed_params.get('use_nfr', False)):
+        return False
+    if str(fixed_params.get('backbone', '')).strip().lower() not in {'sage', 'gcn', 'gat'}:
+        return False
+    if str(fixed_params.get('smoother', '')).strip().lower() not in {'hoa', 'kprop'}:
+        return False
+    defaults = spec.jobs[0].job_spec.get('defaults')
+    if not isinstance(defaults, dict):
+        return False
+    trainer_defaults = defaults.get('trainer')
+    if not isinstance(trainer_defaults, dict):
+        return False
+    return not _bool_fixed_param(trainer_defaults.get('sim_epoch_refresh', False))
+
+
+def _grouped_runner_mode(spec: BatchSpec) -> str | None:
+    if len(spec.jobs) == 0:
+        return None
     config_path = spec.config_copy_source.resolve()
     fixed_params = spec.jobs[0].job_spec.get('fixed_params')
     if not isinstance(fixed_params, dict):
-        return False
-    return (
+        return None
+    if _uses_semantic_operator_grouped_runner(fixed_params):
+        return 'operator'
+    if (
         _uses_figure3_grouped_state_runner(config_path, fixed_params)
         or _uses_figure10_grouped_state_runner(config_path, fixed_params)
-    )
+        or _uses_semantic_raw_grouped_state_runner(fixed_params)
+        or _uses_semantic_random_normal_grouped_state_runner(fixed_params)
+        or _uses_semantic_sim_grouped_state_runner(spec, fixed_params)
+    ):
+        return 'materialized'
+    return None
 
 
 def _group_grid_candidates(
@@ -437,6 +499,7 @@ def _stage_scripts(repo_root: Path) -> dict[str, Path]:
     scripts = {
         "grid_task": repo_root / "hparams_search_scripts" / "run_mechanism_grid_task.py",
         "group_task": repo_root / "hparams_search_scripts" / "run_mechanism_group_task.py",
+        "operator_group_task": repo_root / "hparams_search_scripts" / "run_mechanism_operator_group_task.py",
         "grid_rank": repo_root / "hparams_search_scripts" / "run_mechanism_grid_rank.py",
         "verify_task": repo_root / "hparams_search_scripts" / "run_mechanism_verify_task.py",
         "verify_finalize": repo_root / "hparams_search_scripts" / "run_mechanism_verify_finalize.py",
@@ -456,7 +519,9 @@ def run_batch_search(
         raise SuiteError(f"main.py not found under repo root: {repo_root}")
 
     stage_scripts = _stage_scripts(repo_root)
-    use_grouped_state_runner = _uses_grouped_state_runner(spec)
+    grouped_runner_mode = _grouped_runner_mode(spec)
+    use_grouped_state_runner = grouped_runner_mode is not None
+    grouped_stage_script = stage_scripts["operator_group_task"] if grouped_runner_mode == "operator" else stage_scripts["group_task"]
     spec.output_root.mkdir(parents=True, exist_ok=True)
     shutil.copy2(spec.config_copy_source, spec.output_root / mechanism_stage_utils.INPUT_CONFIG_COPY_FILENAME)
 
@@ -601,7 +666,7 @@ def run_batch_search(
         task_id = f"grid_group_xsteps={int(first.x_steps)}__tao2={tao2_token}"
         command = [
             stage_runner_python,
-            str(stage_scripts["group_task"]),
+            str(grouped_stage_script),
             str(state.job.job_dir),
             "--stage",
             "grid",
@@ -675,7 +740,7 @@ def run_batch_search(
         )
         command = [
             stage_runner_python,
-            str(stage_scripts["group_task"]),
+            str(grouped_stage_script),
             str(state.job.job_dir),
             "--stage",
             "verify",

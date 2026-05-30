@@ -86,13 +86,10 @@ def compute_class_similarity_matrix(
     class_sum_sq_norm = torch.zeros(num_classes, dtype=torch.float64)
     class_row_sq_norm = torch.zeros(num_classes, dtype=torch.float64)
     count_column = class_counts_tensor.unsqueeze(1)
-    feature_scale = math.sqrt(feature_dim)
-
     for start in range(0, feature_dim, chunk_dim):
         width = min(chunk_dim, feature_dim - start)
         x = torch.empty((num_nodes, width), dtype=torch.float32)
         x.normal_(mean=0.0, std=1.0, generator=generator)
-        x.div_(feature_scale)
 
         if hops > 0:
             x_i = x

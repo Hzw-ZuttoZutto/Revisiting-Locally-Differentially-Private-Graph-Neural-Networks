@@ -52,16 +52,19 @@ except ModuleNotFoundError:
 
 
 DEFAULT_CACHE_ROOT = "/data/hzw/Rethinking_DP_GNN_runtime/cache/figure3_pre_smoothing_suite_figure8"
+DEFAULT_CONFIG_SUBSTRING = "configs_final/figure3/"
 
 
 @dataclass(frozen=True)
 class CacheTask:
+    feature: str
     dataset: str
     data_range: tuple[float, float]
     val_ratio: float
     test_ratio: float
     mechanism: str
     x_eps: str
+    sim_reference_eps: str
     m: str
     norm: bool
     norm_scale: str
@@ -72,12 +75,14 @@ class CacheTask:
 
     def cache_identity(self) -> dict[str, Any]:
         return {
+            "feature": self.feature,
             "dataset": self.dataset,
             "data_range": list(self.data_range),
             "val_ratio": self.val_ratio,
             "test_ratio": self.test_ratio,
             "mechanism": self.mechanism,
             "x_eps": self.x_eps,
+            "sim_reference_eps": self.sim_reference_eps,
             "m": self.m,
             "norm": self.norm,
             "norm_scale": self.norm_scale,
@@ -114,19 +119,25 @@ def _parse_int_csv_list(raw: str | None) -> list[int] | None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Precompute figure3 pre-smoothing feature caches for the current suite_figure8.sh subset."
+        description="Precompute pre-smoothing feature caches for suite-driven raw-feature search configs."
     )
     parser.add_argument(
         "--suite-script",
         type=str,
         default=str(REPO_ROOT / "suite_figure8.sh"),
-        help="suite script to inspect for figure3 config lines",
+        help="suite script to inspect for matching config lines",
     )
     parser.add_argument(
         "--cache-root",
         type=str,
         default=DEFAULT_CACHE_ROOT,
         help="target cache root for pre-smoothing feature tensors",
+    )
+    parser.add_argument(
+        "--config-substring",
+        type=str,
+        default=DEFAULT_CONFIG_SUBSTRING,
+        help="only keep suite lines whose --config path contains this substring",
     )
     parser.add_argument(
         "--manifest",
@@ -196,13 +207,13 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _read_suite_script_config_paths(path: Path) -> list[Path]:
+def _read_suite_script_config_paths(path: Path, config_substring: str) -> list[Path]:
     config_paths: list[Path] = []
     for line in path.read_text(encoding="utf-8").splitlines():
         stripped = line.strip()
         if stripped == "" or stripped.startswith("#"):
             continue
-        if "configs_final/figure3/" not in stripped:
+        if config_substring not in stripped:
             continue
         parts = shlex.split(stripped)
         for index, part in enumerate(parts):
@@ -238,13 +249,15 @@ def _collect_cache_tasks(config_paths: list[Path]) -> list[CacheTask]:
             defaults = job.job_spec["defaults"]
             if not isinstance(fixed_params, dict) or not isinstance(defaults, dict):
                 raise RuntimeError("job_spec fixed_params/defaults must be mappings")
-            if str(fixed_params.get("feature")) != "raw":
+            feature = str(fixed_params.get("feature"))
+            if feature not in {"raw", "sim"}:
                 continue
             mechanism = str(fixed_params.get("mechanism"))
             if mechanism not in {"mbm", "pm", "hds"}:
                 continue
             x_eps = str(fixed_params.get("x_eps"))
-            if x_eps == "inf":
+            sim_reference_eps = "none" if fixed_params.get("sim_reference_eps") is None else str(fixed_params.get("sim_reference_eps"))
+            if feature == "raw" and x_eps == "inf":
                 continue
 
             verify_repeats = int(defaults["stage"]["verify"]["repeats"])  # type: ignore[index]
@@ -257,6 +270,7 @@ def _collect_cache_tasks(config_paths: list[Path]) -> list[CacheTask]:
             for seed in seeds:
                 for tao2 in sorted(candidate_tao2_values):
                     task = CacheTask(
+                        feature=feature,
                         dataset=resolve_dataset_name(str(fixed_params["dataset"])),
                         data_range=(
                             float(defaults["dataset"]["data_range"][0]),  # type: ignore[index]
@@ -266,6 +280,7 @@ def _collect_cache_tasks(config_paths: list[Path]) -> list[CacheTask]:
                         test_ratio=float(defaults["dataset"]["test_ratio"]),  # type: ignore[index]
                         mechanism=mechanism,
                         x_eps=x_eps,
+                        sim_reference_eps=sim_reference_eps,
                         m=str(fixed_params["m"]),
                         norm=bool(fixed_params["norm"]),
                         norm_scale=str(fixed_params["norm_scale"]),
@@ -278,12 +293,14 @@ def _collect_cache_tasks(config_paths: list[Path]) -> list[CacheTask]:
                     if key in task_map:
                         merged_sources = tuple(sorted(set(task_map[key].source_configs) | {str(config_path)}))
                         task_map[key] = CacheTask(
+                            feature=task.feature,
                             dataset=task.dataset,
                             data_range=task.data_range,
                             val_ratio=task.val_ratio,
                             test_ratio=task.test_ratio,
                             mechanism=task.mechanism,
                             x_eps=task.x_eps,
+                            sim_reference_eps=task.sim_reference_eps,
                             m=task.m,
                             norm=task.norm,
                             norm_scale=task.norm_scale,
@@ -299,8 +316,10 @@ def _collect_cache_tasks(config_paths: list[Path]) -> list[CacheTask]:
     tasks.sort(
         key=lambda task: (
             task.dataset.casefold(),
+            task.feature,
             task.mechanism,
-            float(task.x_eps),
+            float(task.x_eps) if task.x_eps != "inf" else float("inf"),
+            float(task.sim_reference_eps) if task.sim_reference_eps != "none" else -1.0,
             task.use_nfr,
             task.tao2,
             task.seed,
@@ -388,8 +407,8 @@ def _task_args_namespace(task: CacheTask, cache_root: Path) -> SimpleNamespace:
     tao2_value = None if task.tao2 == "none" else float(task.tao2)
     return SimpleNamespace(
         dataset=task.dataset,
-        feature="raw",
-        sim_reference_eps=None,
+        feature=task.feature,
+        sim_reference_eps=None if task.sim_reference_eps == "none" else float(task.sim_reference_eps),
         feature_dim=None,
         scale=1.0,
         feature_preprojection=False,
@@ -405,7 +424,7 @@ def _task_args_namespace(task: CacheTask, cache_root: Path) -> SimpleNamespace:
         deepwalk_workers=None,
         deepwalk_undirected=None,
         mechanism=task.mechanism,
-        x_eps=float(task.x_eps),
+        x_eps=float("inf") if task.x_eps == "inf" else float(task.x_eps),
         m=task.m,
         norm=task.norm,
         norm_scale=task.norm_scale,
@@ -424,12 +443,16 @@ def _task_cache_path(task: CacheTask, cache_root: Path, base_data) -> Path:
 
 
 def _run_worker(gpu_id: int, tasks: list[CacheTask], cache_root: str, force: bool) -> list[TaskResult]:
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
     _configure_determinism()
     if not torch.cuda.is_available():
-        raise RuntimeError(f"GPU worker {gpu_id} cannot see CUDA after setting CUDA_VISIBLE_DEVICES")
-
-    device = torch.device("cuda")
+        raise RuntimeError(f"GPU worker {gpu_id} cannot see CUDA")
+    device_count = torch.cuda.device_count()
+    if gpu_id < 0 or gpu_id >= device_count:
+        raise RuntimeError(
+            f"GPU worker requested physical device {gpu_id}, but torch only sees {device_count} visible CUDA devices"
+        )
+    device = torch.device(f"cuda:{gpu_id}")
+    torch.cuda.set_device(device)
     cache_root_path = resolve_cache_root(cache_root)
     if cache_root_path is None:
         raise RuntimeError("cache root must be provided")
@@ -521,9 +544,11 @@ def _write_manifest(path: Path, results: list[TaskResult]) -> None:
         writer = csv.writer(handle)
         writer.writerow(
             [
+                "feature",
                 "dataset",
                 "mechanism",
                 "x_eps",
+                "sim_reference_eps",
                 "m",
                 "norm",
                 "norm_scale",
@@ -542,9 +567,11 @@ def _write_manifest(path: Path, results: list[TaskResult]) -> None:
         for result in results:
             writer.writerow(
                 [
+                    result.task.feature,
                     result.task.dataset,
                     result.task.mechanism,
                     result.task.x_eps,
+                    result.task.sim_reference_eps,
                     result.task.m,
                     "true" if result.task.norm else "false",
                     result.task.norm_scale,
@@ -573,14 +600,15 @@ def main() -> int:
         raise RuntimeError("--cache-root must not be empty")
     manifest_path = Path(args.manifest).resolve() if args.manifest else cache_root / "manifest.csv"
 
-    config_paths = _read_suite_script_config_paths(suite_script)
+    config_paths = _read_suite_script_config_paths(suite_script, str(args.config_substring))
     tasks = _collect_cache_tasks(config_paths)
     tasks = _filter_tasks(tasks, args)
 
     total_bytes, dataset_bytes = _estimate_storage(tasks)
     total_gib = total_bytes / (1024 ** 3)
     print(f"Suite script: {suite_script}")
-    print(f"Figure3 configs: {len(config_paths)}")
+    print(f"Config substring: {args.config_substring}")
+    print(f"Matching configs: {len(config_paths)}")
     for config_path in config_paths:
         print(f"  - {config_path}")
     print(f"Unique tasks: {len(tasks)}")
@@ -640,8 +668,10 @@ def main() -> int:
     results.sort(
         key=lambda result: (
             result.task.dataset.casefold(),
+            result.task.feature,
             result.task.mechanism,
-            float(result.task.x_eps),
+            float(result.task.x_eps) if result.task.x_eps != "inf" else float("inf"),
+            float(result.task.sim_reference_eps) if result.task.sim_reference_eps != "none" else -1.0,
             result.task.use_nfr,
             result.task.tao2,
             result.task.seed,
@@ -661,9 +691,11 @@ def main() -> int:
         for failed in failures[:20]:
             print(
                 "FAILED",
+                failed.task.feature,
                 failed.task.dataset,
                 failed.task.mechanism,
                 failed.task.x_eps,
+                failed.task.sim_reference_eps,
                 failed.task.tao2,
                 failed.task.seed,
                 failed.error_message,

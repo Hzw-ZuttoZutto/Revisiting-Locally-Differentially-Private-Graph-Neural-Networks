@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import math
-
 import torch
 
 from artificial_node_feature_generator.graph import get_feature_device, get_feature_dtype, get_num_nodes
@@ -47,7 +45,6 @@ class RandomNormalFeatureProvider(BaseFeatureProvider):
             generator=generator,
             device=torch.device("cpu"),
         ).to(dtype=get_feature_dtype(data), device=get_feature_device(data))
-        features = features / math.sqrt(dim)
         return ProviderOutput(features=features, source=self.source, cacheable=True)
 
 
