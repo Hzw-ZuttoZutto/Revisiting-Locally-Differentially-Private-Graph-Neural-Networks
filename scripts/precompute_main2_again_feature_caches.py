@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import os
 import runpy
 import sys
 from pathlib import Path
@@ -11,6 +12,10 @@ TARGET = REPO_ROOT / "hparams_search_scripts" / "precompute_feature_caches.py"
 
 
 def main() -> None:
+    os.environ.setdefault(
+        "ARTIFICIAL_NODE_FEATURE_CACHE_ROOT",
+        "/data/hzw/Rethinking_DP_GNN_runtime/cache/artificial-node-feature-generator-cache",
+    )
     sys.argv = [
         str(TARGET),
         "--suite-script", str(REPO_ROOT / "suite_main2_again.sh"),

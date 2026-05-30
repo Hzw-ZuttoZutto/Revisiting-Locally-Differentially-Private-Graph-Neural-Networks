@@ -3,7 +3,7 @@ seed: 12345
 device:
   device: gpu
   cpu_worker_count: null
-  gpu_ids: [1,2,3,4,5]
+  gpu_ids: [0,1,2,3,4,5]
   max_parallel_per_gpu: 10
   gpu_launch_interval_sec: 0.1
 
@@ -28,7 +28,7 @@ defaults:
       repeats: 1
     verify:
       patience: 150
-      repeats: 5
+      repeats: 10
 
 search_space:
   dataset:
@@ -36,9 +36,8 @@ search_space:
       - cora
       - lastfm
       - citeseer
-      - Books-Children
+      - facebook
       - Books-History
-      - ogbn-arxiv
   feature_transformation:
     features:
       - raw

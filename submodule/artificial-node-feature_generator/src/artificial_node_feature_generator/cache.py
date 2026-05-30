@@ -31,6 +31,9 @@ def repo_root() -> Path:
 
 
 def cache_root() -> Path:
+    override = os.environ.get("ARTIFICIAL_NODE_FEATURE_CACHE_ROOT")
+    if override:
+        return Path(override).expanduser().resolve()
     return repo_root() / ".cache"
 
 

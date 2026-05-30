@@ -1,2 +1,0 @@
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure32/gat/figure3_pipeline4.yaml --output_root_dir paper_experiments/figure32/gat/figure3_pipeline4.yaml
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure30/figure3_pipeline4.yaml --output_root_dir paper_experiments/figure30/gat/figure3_pipeline4.yaml
