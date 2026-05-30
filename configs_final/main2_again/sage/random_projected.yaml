@@ -81,6 +81,7 @@ search_space:
       - 64
     smoother:
       - hoa
+      - kprop
   model:
     backbones:
       - sage
