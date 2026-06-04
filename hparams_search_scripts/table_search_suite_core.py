@@ -436,6 +436,22 @@ def _uses_semantic_sim_grouped_state_runner(spec: BatchSpec, fixed_params: dict[
     return not _bool_fixed_param(trainer_defaults.get('sim_epoch_refresh', False))
 
 
+def _uses_figure6_grouped_state_runner(config_path: Path, fixed_params: dict[str, Any]) -> bool:
+    if config_path.parent.name not in {'figure6', 'figure6_add', 'figure6_add_again'}:
+        return False
+    if str(fixed_params.get('feature', '')).strip().lower() != 'raw':
+        return False
+    if str(fixed_params.get('mechanism', '')).strip().lower() not in {'mbm', 'pm', 'hds'}:
+        return False
+    if str(fixed_params.get('smoother', '')).strip().lower() not in {'hoa', 'kprop'}:
+        return False
+    if str(fixed_params.get('backbone', '')).strip().lower() not in {'sage', 'gcn', 'gat'}:
+        return False
+    if not _bool_fixed_param(fixed_params.get('use_nfr', False)):
+        return False
+    return True
+
+
 def _grouped_runner_mode(spec: BatchSpec) -> str | None:
     if len(spec.jobs) == 0:
         return None
@@ -448,6 +464,7 @@ def _grouped_runner_mode(spec: BatchSpec) -> str | None:
     if (
         _uses_figure3_grouped_state_runner(config_path, fixed_params)
         or _uses_figure10_grouped_state_runner(config_path, fixed_params)
+        or _uses_figure6_grouped_state_runner(config_path, fixed_params)
         or _uses_semantic_raw_grouped_state_runner(fixed_params)
         or _uses_semantic_random_normal_grouped_state_runner(fixed_params)
         or _uses_semantic_sim_grouped_state_runner(spec, fixed_params)

@@ -18,15 +18,29 @@ except ImportError:
 
 class _ExactOperatorPowerSeries(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, matrix, operator_adj_t, operator_adj_t_transpose, x_steps):
+    def _normalize_smoother(smoother):
+        smoother = 'hoa' if smoother is None else str(smoother).strip().lower()
+        if smoother not in {'hoa', 'kprop'}:
+            raise ValueError(f"Unsupported operator smoother {smoother!r}; expected 'hoa' or 'kprop'.")
+        return smoother
+
+    @staticmethod
+    def forward(ctx, matrix, operator_adj_t, operator_adj_t_transpose, x_steps, smoother):
         steps = int(x_steps)
+        smoother = _ExactOperatorPowerSeries._normalize_smoother(smoother)
         ctx.x_steps = steps
+        ctx.operator_smoother = smoother
         ctx.operator_adj_t_transpose = operator_adj_t_transpose
 
         if steps <= 0:
             return matrix
 
         current = matrix
+        if smoother == 'kprop':
+            for _ in range(steps):
+                current = matmul(operator_adj_t, current, reduce='add')
+            return current
+
         accumulated = None
         for _ in range(steps):
             current = matmul(operator_adj_t, current, reduce='add')
@@ -37,16 +51,21 @@ class _ExactOperatorPowerSeries(torch.autograd.Function):
     def backward(ctx, grad_output):
         steps = ctx.x_steps
         if steps <= 0:
-            return grad_output, None, None, None
+            return grad_output, None, None, None, None
 
         current = grad_output
+        if ctx.operator_smoother == 'kprop':
+            for _ in range(steps):
+                current = matmul(ctx.operator_adj_t_transpose, current, reduce='add')
+            return current, None, None, None, None
+
         accumulated = None
         for _ in range(steps):
             current = matmul(ctx.operator_adj_t_transpose, current, reduce='add')
             accumulated = current if accumulated is None else accumulated + current
 
         grad_matrix = accumulated / float(steps)
-        return grad_matrix, None, None, None
+        return grad_matrix, None, None, None, None
 
 
 class KProp(MessagePassing):
@@ -175,7 +194,7 @@ class NodeClassifier(torch.nn.Module):
                  preprojection_output_dim=None,
                  input_already_smoothed=False,
                  x_steps:               dict(help='feature smoother step parameter', option='-kx') = 0,
-                 smoother:              dict(help='feature smoother before GNN', choices=['kprop', 'hoa']) = 'kprop',
+                 smoother:              dict(help='feature smoother before GNN', choices=['kprop', 'hoa'], type=str) = None,
                  ):
         super().__init__()
         self.feature = str(feature).strip().lower()
@@ -185,6 +204,7 @@ class NodeClassifier(torch.nn.Module):
         self.preprojection_output_dim = preprojection_output_dim
         self.input_already_smoothed = bool(input_already_smoothed)
         self.operator_x_steps = int(x_steps)
+        self.smoother_name = self._resolve_smoother_name(smoother, feature=self.feature)
 
         if self.feature_preprojection and self.feature != 'operator':
             raise ValueError('feature_preprojection is only supported when feature="operator".')
@@ -207,11 +227,11 @@ class NodeClassifier(torch.nn.Module):
             'kprop': KProp,
             'hoa': HOA,
         }
-        if smoother not in smoother_to_cls:
+        if self.smoother_name not in smoother_to_cls:
             supported = sorted(smoother_to_cls)
-            raise ValueError(f"Unsupported smoother {smoother!r}; expected one of {supported}.")
+            raise ValueError(f"Unsupported smoother {self.smoother_name!r}; expected one of {supported}.")
 
-        self.smoother = smoother_to_cls[smoother](
+        self.smoother = smoother_to_cls[self.smoother_name](
             steps=x_steps,
             aggregator='add',
             add_self_loops=False, # LPGNN论文说去掉自环对于性能会更好
@@ -235,6 +255,15 @@ class NodeClassifier(torch.nn.Module):
         self._cached_smoother_adj_id = None
         self._cached_operator_adj_t_key = None
         self._cached_operator_adj_t_transpose = None
+
+    @staticmethod
+    def _resolve_smoother_name(smoother, *, feature):
+        if smoother is None:
+            return 'hoa' if feature == 'operator' else 'kprop'
+        smoother_name = str(smoother).strip().lower()
+        if smoother_name not in {'hoa', 'kprop'}:
+            raise ValueError(f"Unsupported smoother {smoother!r}; expected 'hoa' or 'kprop'.")
+        return smoother_name
 
     @staticmethod
     def _resolve_feature_scale(scale):
@@ -288,16 +317,23 @@ class NodeClassifier(torch.nn.Module):
         return matmul(adj_t, x, reduce='mean')
 
     @staticmethod
-    def _apply_operator_to_matrix(operator_adj_t, matrix, *, x_steps):
-        if x_steps <= 0:
+    def _apply_operator_to_matrix(operator_adj_t, matrix, *, x_steps, smoother='hoa'):
+        steps = int(x_steps)
+        smoother = _ExactOperatorPowerSeries._normalize_smoother(smoother)
+        if steps <= 0:
             return matrix
 
         current = matrix
+        if smoother == 'kprop':
+            for _ in range(steps):
+                current = matmul(operator_adj_t, current, reduce='add')
+            return current
+
         accumulated = None
-        for _ in range(int(x_steps)):
+        for _ in range(steps):
             current = matmul(operator_adj_t, current, reduce='add')
             accumulated = current if accumulated is None else accumulated + current
-        return accumulated / float(x_steps)
+        return accumulated / float(steps)
 
     @classmethod
     def _apply_operator_to_matrix_exact_backward(
@@ -306,10 +342,11 @@ class NodeClassifier(torch.nn.Module):
         matrix,
         *,
         x_steps,
+        smoother='hoa',
         operator_adj_t_transpose=None,
     ):
         if not torch.is_grad_enabled() or not matrix.requires_grad:
-            return cls._apply_operator_to_matrix(operator_adj_t, matrix, x_steps=x_steps)
+            return cls._apply_operator_to_matrix(operator_adj_t, matrix, x_steps=x_steps, smoother=smoother)
 
         if operator_adj_t_transpose is None:
             operator_adj_t_transpose = cls._transpose_sparse_tensor(operator_adj_t)
@@ -318,6 +355,7 @@ class NodeClassifier(torch.nn.Module):
             operator_adj_t,
             operator_adj_t_transpose,
             int(x_steps),
+            smoother,
         )
 
     def _has_lazy_operator_input(self, data):
@@ -356,6 +394,7 @@ class NodeClassifier(torch.nn.Module):
                 operator_adj_t,
                 self.feature_preprojection_layer.weight.t(),
                 x_steps=self._operator_steps(data),
+                smoother=self.smoother_name,
                 operator_adj_t_transpose=operator_adj_t_transpose,
             )
             if self.feature_preprojection_layer.bias is not None:
@@ -377,11 +416,17 @@ class NodeClassifier(torch.nn.Module):
                 operator_adj_t,
                 weight_t,
                 x_steps=x_steps,
+                smoother=self.smoother_name,
                 operator_adj_t_transpose=operator_adj_t_transpose,
             )
         else:
             operator_adj_t = self._operator_adj_t(data, device=device)
-            projected = self._apply_operator_to_matrix(operator_adj_t, weight_t, x_steps=x_steps)
+            projected = self._apply_operator_to_matrix(
+                operator_adj_t,
+                weight_t,
+                x_steps=x_steps,
+                smoother=self.smoother_name,
+            )
         return self._apply_scale(projected)
 
     def _forward_hidden_through_output_layer(self, hidden, *, gnn_adj_t):

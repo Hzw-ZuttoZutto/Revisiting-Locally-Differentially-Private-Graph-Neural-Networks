@@ -1358,10 +1358,13 @@ def build_batch_spec(
                                     search_space["calibrator"]["norm_scale"] if norm_enabled else ["none"]
                                 )
                                 for norm_scale in norm_scale_values:
+                                    configured_smoother_values = list(search_space["calibrator"]["smoother"])
+                                    # Legacy operator configs with both smoothers were historically collapsed
+                                    # into one HOA-style direct job. A single smoother is now explicit.
                                     smoother_values = (
                                         [None]
-                                        if feature_variant["feature"] == "operator"
-                                        else list(search_space["calibrator"]["smoother"])
+                                        if feature_variant["feature"] == "operator" and len(configured_smoother_values) != 1
+                                        else configured_smoother_values
                                     )
                                     for smoother in smoother_values:
                                         for backbone in search_space["model"]["backbones"]:

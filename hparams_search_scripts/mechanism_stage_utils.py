@@ -258,8 +258,6 @@ def normalized_outer_fixed_params(fixed_params: dict[str, Any]) -> dict[str, Any
             value = None
         if name == "preprojection_output_dim" and not bool(fixed_params.get("feature_preprojection")):
             value = None
-        if name == "smoother" and str(fixed_params.get("feature", "")).strip().lower() == "operator":
-            value = None
         if name == "sanity_check" and not bool(fixed_params.get("sanity_check")):
             value = None
         if name == "node_ratio" and not bool(fixed_params.get("sanity_check")):

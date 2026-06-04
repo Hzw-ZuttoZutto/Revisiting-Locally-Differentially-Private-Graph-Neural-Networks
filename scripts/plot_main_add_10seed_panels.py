@@ -644,8 +644,8 @@ def plot_panels(rows: list[dict[str, Any]], output_dir: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     pdf_path = output_dir / "main_add_10seed_panels.pdf"
     png_path = output_dir / "main_add_10seed_panels.png"
-    fig.savefig(pdf_path, dpi=300)
-    fig.savefig(png_path, dpi=300)
+    fig.savefig(pdf_path, dpi=300, bbox_inches="tight", pad_inches=0)
+    fig.savefig(png_path, dpi=300, bbox_inches="tight", pad_inches=0)
     plt.close(fig)
     print(f"Saved {pdf_path}")
     print(f"Saved {png_path}")
