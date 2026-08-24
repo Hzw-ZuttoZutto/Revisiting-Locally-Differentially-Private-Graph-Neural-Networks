@@ -50,6 +50,8 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+/datasets
+/rebuttal_experiments
 
 # Translations
 *.mo
@@ -144,6 +146,4 @@ test.ipynb
 *.job
 test.py
 output
-
-
 

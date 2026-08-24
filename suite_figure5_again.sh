@@ -1,1 +1,0 @@
-python -m hparams_search_scripts.run_mechanism_hparam_search --config configs_final/figure5_final_add_again/figure5.yaml --output_root_dir paper_experiments/figure5_final_add_again/figure5.yaml --pre_smoothing_feature_cache_root /data/hzw/Rethinking_DP_GNN_runtime/cache/figure5_again_pre_smoothing_suite_figure5_again

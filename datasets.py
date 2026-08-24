@@ -17,7 +17,15 @@ import numpy as np
 import pandas as pd
 import torch
 from torch_geometric.data import Data, InMemoryDataset, download_url
-from torch_geometric.datasets import Planetoid
+from torch_geometric.datasets import (
+    Actor,
+    AttributedGraphDataset,
+    Flickr,
+    HeterophilousGraphDataset,
+    Planetoid,
+    Reddit,
+    WikipediaNetwork,
+)
 from torch_geometric.transforms import ToSparseTensor
 from torch_geometric.utils import coalesce, to_undirected
 
@@ -42,6 +50,7 @@ DOWNLOAD_ATTEMPTS = 3
 
 LOADER_BUILTIN_PLANETOID = "builtin_planetoid"
 LOADER_BUILTIN_KARATECLUB = "builtin_karateclub"
+LOADER_BUILTIN_PYG = "builtin_pyg"
 LOADER_OGB_NODEPROP = "ogb_nodeprop"
 LOADER_HF_OGB_FEATURE_SWAP = "hf_ogb_feature_swap"
 LOADER_HF_CSV_NPY_GRAPH = "hf_csv_npy_graph"
@@ -169,6 +178,20 @@ DATASET_SPECS: dict[str, DatasetSpec] = {
     "cora": _builtin_benchmark_spec("cora", LOADER_BUILTIN_PLANETOID, "cora"),
     "citeseer": _builtin_benchmark_spec("citeseer", LOADER_BUILTIN_PLANETOID, "citeseer"),
     "pubmed": _builtin_benchmark_spec("pubmed", LOADER_BUILTIN_PLANETOID, "pubmed"),
+    "actor": _builtin_benchmark_spec("actor", LOADER_BUILTIN_PYG, "actor"),
+    "chameleon": _builtin_benchmark_spec("chameleon", LOADER_BUILTIN_PYG, "chameleon"),
+    "squirrel": _builtin_benchmark_spec("squirrel", LOADER_BUILTIN_PYG, "squirrel"),
+    "roman-empire": _builtin_benchmark_spec(
+        "roman-empire", LOADER_BUILTIN_PYG, "roman-empire"
+    ),
+    "amazon-ratings": _builtin_benchmark_spec(
+        "amazon-ratings", LOADER_BUILTIN_PYG, "amazon-ratings"
+    ),
+    "attributedgraph-flickr": _builtin_benchmark_spec(
+        "attributedgraph-flickr", LOADER_BUILTIN_PYG, "attributedgraph-flickr"
+    ),
+    "flickr": _builtin_benchmark_spec("flickr", LOADER_BUILTIN_PYG, "flickr"),
+    "reddit": _builtin_benchmark_spec("reddit", LOADER_BUILTIN_PYG, "reddit"),
     "facebook": _builtin_benchmark_spec("facebook", LOADER_BUILTIN_KARATECLUB, "facebook"),
     "lastfm": _builtin_benchmark_spec("lastfm", LOADER_BUILTIN_KARATECLUB, "lastfm"),
     "ogbn-arxiv": _builtin_benchmark_spec("ogbn-arxiv", LOADER_OGB_NODEPROP, "ogbn-arxiv"),
@@ -207,6 +230,14 @@ BUILTIN_DATASET_BUILDERS = {
     "cora": partial(Planetoid, name="cora"),
     "citeseer": partial(Planetoid, name="citeseer"),
     "pubmed": partial(Planetoid, name="pubmed"),
+    "actor": Actor,
+    "chameleon": partial(WikipediaNetwork, name="chameleon", geom_gcn_preprocess=True),
+    "squirrel": partial(WikipediaNetwork, name="squirrel", geom_gcn_preprocess=True),
+    "roman-empire": partial(HeterophilousGraphDataset, name="roman-empire"),
+    "amazon-ratings": partial(HeterophilousGraphDataset, name="amazon-ratings"),
+    "attributedgraph-flickr": partial(AttributedGraphDataset, name="Flickr"),
+    "flickr": Flickr,
+    "reddit": Reddit,
     "facebook": partial(KarateClub, name="facebook"),
     "lastfm": partial(KarateClub, name="lastfm", transform=FilterTopClass(10)),
 }
@@ -601,6 +632,7 @@ def _load_hf_ogb_feature_swap_dataset(spec: DatasetSpec, data_dir: str | Path) -
 _RAW_DATASET_LOADERS: dict[str, Callable[[DatasetSpec, str | Path], RawDatasetBundle]] = {
     LOADER_BUILTIN_PLANETOID: _load_builtin_raw_dataset,
     LOADER_BUILTIN_KARATECLUB: _load_builtin_raw_dataset,
+    LOADER_BUILTIN_PYG: _load_builtin_raw_dataset,
     LOADER_OGB_NODEPROP: _load_ogb_nodeprop_dataset,
     LOADER_HF_OGB_FEATURE_SWAP: _load_hf_ogb_feature_swap_dataset,
     LOADER_HF_CSV_NPY_GRAPH: _load_hf_csv_npy_graph_dataset,

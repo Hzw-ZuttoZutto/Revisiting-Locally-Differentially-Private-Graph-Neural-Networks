@@ -354,22 +354,71 @@ def _filter_tasks(tasks: list[CacheTask], args: argparse.Namespace) -> list[Cach
     return filtered
 
 
-def _estimate_storage(tasks: list[CacheTask]) -> tuple[int, dict[str, int]]:
+def _inspect_task_datasets(
+    tasks: list[CacheTask],
+) -> tuple[int, dict[str, int], dict[tuple[Any, ...], Any]]:
     dataset_bytes: dict[str, int] = {}
-    per_dataset_seen: set[str] = set()
+    base_datasets: dict[tuple[Any, ...], Any] = {}
     total_bytes = 0
     for task in tasks:
-        if task.dataset not in dataset_bytes:
+        dataset_key = (
+            task.dataset,
+            task.data_range,
+            task.val_ratio,
+            task.test_ratio,
+        )
+        if dataset_key not in base_datasets:
+            _seed_everything(task.seed)
             data = load_dataset(
                 task.dataset,
                 data_range=task.data_range,
                 val_ratio=task.val_ratio,
                 test_ratio=task.test_ratio,
             )
+            setattr(data, GRAPH_FINGERPRINT_ATTR, graph_fingerprint(data))
+            setattr(data, RAW_FINGERPRINT_ATTR, raw_feature_fingerprint(data))
+            base_datasets[dataset_key] = data
             dataset_bytes[task.dataset] = int(data.x.numel() * data.x.element_size())
         total_bytes += dataset_bytes[task.dataset]
-        per_dataset_seen.add(task.dataset)
-    return total_bytes, dataset_bytes
+    return total_bytes, dataset_bytes, base_datasets
+
+
+def _partition_cached_tasks(
+    tasks: list[CacheTask],
+    cache_root: Path,
+    base_datasets: dict[tuple[Any, ...], Any],
+    dataset_bytes: dict[str, int],
+    *,
+    force: bool,
+) -> tuple[list[CacheTask], list[TaskResult]]:
+    if force:
+        return list(tasks), []
+
+    missing: list[CacheTask] = []
+    hits: list[TaskResult] = []
+    for task in tasks:
+        dataset_key = (
+            task.dataset,
+            task.data_range,
+            task.val_ratio,
+            task.test_ratio,
+        )
+        cache_path = _task_cache_path(task, cache_root, base_datasets[dataset_key])
+        if not cache_path.is_file():
+            missing.append(task)
+            continue
+        hits.append(
+            TaskResult(
+                task=task,
+                status="hit",
+                cache_path=str(cache_path),
+                elapsed_sec=0.0,
+                bytes_written=dataset_bytes[task.dataset],
+                worker_gpu=None,
+                error_message=None,
+            )
+        )
+    return missing, hits
 
 
 def _configure_determinism() -> None:
@@ -604,7 +653,7 @@ def main() -> int:
     tasks = _collect_cache_tasks(config_paths)
     tasks = _filter_tasks(tasks, args)
 
-    total_bytes, dataset_bytes = _estimate_storage(tasks)
+    total_bytes, dataset_bytes, base_datasets = _inspect_task_datasets(tasks)
     total_gib = total_bytes / (1024 ** 3)
     print(f"Suite script: {suite_script}")
     print(f"Config substring: {args.config_substring}")
@@ -621,6 +670,15 @@ def main() -> int:
             f"tensor_bytes={dataset_bytes[dataset_name]}, total_GiB={dataset_total_gib:.6f}"
         )
 
+    pending_tasks, results = _partition_cached_tasks(
+        tasks,
+        cache_root,
+        base_datasets,
+        dataset_bytes,
+        force=bool(args.force),
+    )
+    print(f"Cache preflight: hits={len(results)}, missing={len(pending_tasks)}")
+
     if args.dry_run:
         return 0
 
@@ -632,20 +690,21 @@ def main() -> int:
 
     cache_root.mkdir(parents=True, exist_ok=True)
     worker_gpu_ids = _expand_worker_gpu_ids(gpu_ids, int(args.workers_per_gpu))
-    worker_chunks = _chunk_tasks(tasks, len(worker_gpu_ids))
+    worker_chunks = _chunk_tasks(pending_tasks, len(worker_gpu_ids))
+
     if len(worker_chunks) == 0:
-        _write_manifest(manifest_path, [])
-        return 0
-
-    print(
-        f"Precompute workers: {len(worker_chunks)} "
-        f"({int(args.workers_per_gpu)} per GPU across ids {gpu_ids})"
-    )
-
-    results: list[TaskResult] = []
-    if len(worker_chunks) == 1:
+        print("Precompute workers: 0 (all requested cache entries already exist)")
+    elif len(worker_chunks) == 1:
+        print(
+            f"Precompute workers: 1 "
+            f"({int(args.workers_per_gpu)} per GPU across ids {gpu_ids})"
+        )
         results.extend(_run_worker(worker_gpu_ids[0], worker_chunks[0], str(cache_root), bool(args.force)))
     else:
+        print(
+            f"Precompute workers: {len(worker_chunks)} "
+            f"({int(args.workers_per_gpu)} per GPU across ids {gpu_ids})"
+        )
         ctx = mp.get_context("spawn")
         with concurrent.futures.ProcessPoolExecutor(
             max_workers=len(worker_chunks),
