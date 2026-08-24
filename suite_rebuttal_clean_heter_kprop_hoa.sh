@@ -1,2 +1,0 @@
-python -m hparams_search_scripts.run_mechanism_hparam_search --config config_rebuttal/clean_heter/figure1_clean_kprop.yaml --output_root_dir rebuttal_experiments/clean_heter/figure1_clean_kprop.yaml --pre_smoothing_feature_cache_root /data/hzw/Rethinking_DP_GNN_runtime/cache/rebuttal_heter
-python -m hparams_search_scripts.run_mechanism_hparam_search --config config_rebuttal/clean_heter/figure1_clean_hoa.yaml --output_root_dir rebuttal_experiments/clean_heter/figure1_clean_hoa.yaml --pre_smoothing_feature_cache_root /data/hzw/Rethinking_DP_GNN_runtime/cache/rebuttal_heter

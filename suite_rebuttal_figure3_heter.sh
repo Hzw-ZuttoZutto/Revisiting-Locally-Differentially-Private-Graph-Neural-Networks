@@ -1,0 +1,2 @@
+python -m hparams_search_scripts.run_mechanism_hparam_search --config config_rebuttal/figure3_heter/figure3_ori.yaml --output_root_dir rebuttal_experiments/figure3_heter/figure3_ori.yaml --pre_smoothing_feature_cache_root /data/hzw/Rethinking_DP_GNN_runtime/cache/rebuttal_heter
+python -m hparams_search_scripts.run_mechanism_hparam_search --config config_rebuttal/figure3_heter/figure3_sim.yaml --output_root_dir rebuttal_experiments/figure3_heter/figure3_sim.yaml --pre_smoothing_feature_cache_root /data/hzw/Rethinking_DP_GNN_runtime/cache/rebuttal_heter
