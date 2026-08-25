@@ -26,11 +26,13 @@ if str(REPO_ROOT) not in sys.path:
 try:
     from datasets import load_dataset, resolve_dataset_name
     from hparams_search_scripts import run_mechanism_hparam_search as search_runner
+    from mechanisms import supported_feature_mechanisms
     from pre_smoothing_feature_cache import (
         GRAPH_FINGERPRINT_ATTR,
         RAW_FINGERPRINT_ATTR,
         build_cache_key_payload,
         cache_path_for_payload,
+        estimate_adaptive_tensor_storage_bytes,
         graph_fingerprint,
         prepare_pre_smoothing_input,
         raw_feature_fingerprint,
@@ -39,11 +41,13 @@ try:
 except ModuleNotFoundError:
     from datasets import load_dataset, resolve_dataset_name  # type: ignore
     from hparams_search_scripts import run_mechanism_hparam_search as search_runner  # type: ignore
+    from mechanisms import supported_feature_mechanisms  # type: ignore
     from pre_smoothing_feature_cache import (  # type: ignore
         GRAPH_FINGERPRINT_ATTR,
         RAW_FINGERPRINT_ATTR,
         build_cache_key_payload,
         cache_path_for_payload,
+        estimate_adaptive_tensor_storage_bytes,
         graph_fingerprint,
         prepare_pre_smoothing_input,
         raw_feature_fingerprint,
@@ -354,12 +358,35 @@ def _filter_tasks(tasks: list[CacheTask], args: argparse.Namespace) -> list[Cach
     return filtered
 
 
+def _estimate_task_tensor_storage_bytes(task: CacheTask, data) -> int:
+    reference_eps = task.x_eps if task.feature == "raw" else task.sim_reference_eps
+    if reference_eps in {"inf", "none"}:
+        return int(data.x.numel() * data.x.element_size())
+    mechanism_cls = supported_feature_mechanisms[task.mechanism]
+    mechanism = mechanism_cls(
+        eps=float(reference_eps),
+        input_range=task.data_range,
+        m=task.m,
+        norm=task.norm,
+        norm_scale=task.norm_scale,
+    )
+    resolved_m = int(mechanism._resolve_m(int(data.x.size(1))))
+    max_nonzero = int(data.x.size(0)) * resolved_m
+    return estimate_adaptive_tensor_storage_bytes(
+        list(data.x.shape),
+        element_size=data.x.element_size(),
+        max_nonzero=max_nonzero,
+    )
+
+
 def _inspect_task_datasets(
     tasks: list[CacheTask],
-) -> tuple[int, dict[str, int], dict[tuple[Any, ...], Any]]:
+) -> tuple[int, int, dict[str, int], dict[str, int], dict[tuple[Any, ...], Any]]:
     dataset_bytes: dict[str, int] = {}
+    dataset_storage_bytes: dict[str, int] = {}
     base_datasets: dict[tuple[Any, ...], Any] = {}
     total_bytes = 0
+    total_storage_bytes = 0
     for task in tasks:
         dataset_key = (
             task.dataset,
@@ -380,7 +407,10 @@ def _inspect_task_datasets(
             base_datasets[dataset_key] = data
             dataset_bytes[task.dataset] = int(data.x.numel() * data.x.element_size())
         total_bytes += dataset_bytes[task.dataset]
-    return total_bytes, dataset_bytes, base_datasets
+        task_storage_bytes = _estimate_task_tensor_storage_bytes(task, base_datasets[dataset_key])
+        total_storage_bytes += task_storage_bytes
+        dataset_storage_bytes[task.dataset] = dataset_storage_bytes.get(task.dataset, 0) + task_storage_bytes
+    return total_bytes, total_storage_bytes, dataset_bytes, dataset_storage_bytes, base_datasets
 
 
 def _partition_cached_tasks(
@@ -413,7 +443,7 @@ def _partition_cached_tasks(
                 status="hit",
                 cache_path=str(cache_path),
                 elapsed_sec=0.0,
-                bytes_written=dataset_bytes[task.dataset],
+                bytes_written=int(cache_path.stat().st_size),
                 worker_gpu=None,
                 error_message=None,
             )
@@ -653,21 +683,31 @@ def main() -> int:
     tasks = _collect_cache_tasks(config_paths)
     tasks = _filter_tasks(tasks, args)
 
-    total_bytes, dataset_bytes, base_datasets = _inspect_task_datasets(tasks)
+    (
+        total_bytes,
+        total_storage_bytes,
+        dataset_bytes,
+        dataset_storage_bytes,
+        base_datasets,
+    ) = _inspect_task_datasets(tasks)
     total_gib = total_bytes / (1024 ** 3)
+    total_storage_gib = total_storage_bytes / (1024 ** 3)
     print(f"Suite script: {suite_script}")
     print(f"Config substring: {args.config_substring}")
     print(f"Matching configs: {len(config_paths)}")
     for config_path in config_paths:
         print(f"  - {config_path}")
     print(f"Unique tasks: {len(tasks)}")
-    print(f"Estimated payload GiB: {total_gib:.6f}")
+    print(f"Logical dense tensor GiB: {total_gib:.6f}")
+    print(f"Estimated adaptive tensor storage GiB (upper bound): {total_storage_gib:.6f}")
     for dataset_name in sorted(dataset_bytes, key=str.casefold):
         dataset_count = sum(1 for task in tasks if task.dataset == dataset_name)
         dataset_total_gib = (dataset_bytes[dataset_name] * dataset_count) / (1024 ** 3)
+        dataset_storage_gib = dataset_storage_bytes[dataset_name] / (1024 ** 3)
         print(
             f"  - {dataset_name}: task_count={dataset_count}, "
-            f"tensor_bytes={dataset_bytes[dataset_name]}, total_GiB={dataset_total_gib:.6f}"
+            f"tensor_bytes={dataset_bytes[dataset_name]}, logical_GiB={dataset_total_gib:.6f}, "
+            f"adaptive_storage_GiB<={dataset_storage_gib:.6f}"
         )
 
     pending_tasks, results = _partition_cached_tasks(
@@ -678,6 +718,19 @@ def main() -> int:
         force=bool(args.force),
     )
     print(f"Cache preflight: hits={len(results)}, missing={len(pending_tasks)}")
+    pending_storage_bytes = 0
+    for task in pending_tasks:
+        dataset_key = (
+            task.dataset,
+            task.data_range,
+            task.val_ratio,
+            task.test_ratio,
+        )
+        pending_storage_bytes += _estimate_task_tensor_storage_bytes(task, base_datasets[dataset_key])
+    print(
+        "Estimated missing adaptive tensor storage GiB (upper bound): "
+        f"{pending_storage_bytes / (1024 ** 3):.6f}"
+    )
 
     if args.dry_run:
         return 0

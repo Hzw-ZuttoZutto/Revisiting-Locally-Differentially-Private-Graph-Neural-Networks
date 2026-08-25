@@ -5,7 +5,7 @@ device:
   cpu_worker_count: null
   gpu_ids: [0,1,2,3,4,5,6,7]
   max_parallel_per_gpu: 20
-  gpu_launch_interval_sec: 0.1
+  gpu_launch_interval_sec: 0.5
 
 defaults:
   dataset:
@@ -52,13 +52,18 @@ search_space:
     deepwalk_undirected: []
   feature_perturbation:
     mechanisms:
-      - mbm
+      - hds
     x_eps:
-      - 0.0001
       - 0.001
       - 0.01
       - 0.1
       - 1.0
+      - 2.0
+      - 3.0
+      - 4.0
+      - 6.0
+      - 8.0
+      - 10.0
     m:
       - best
   calibrator:
@@ -74,10 +79,10 @@ search_space:
       - 32
       - 64
     smoother:
-      - hoa
+      - kprop
   model:
     backbones:
-      - sage
+      - gat
     dropout:
       - 0.25
       - 0.5
@@ -94,6 +99,5 @@ search_space:
       - 0.01
   nfr:
     use_nfr:
-      - true
-    tao2: 
-      - 0.125
+      - false
+    tao2: []

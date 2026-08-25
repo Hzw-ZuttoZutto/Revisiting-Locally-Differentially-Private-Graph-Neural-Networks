@@ -5,10 +5,12 @@ import argparse
 import csv
 import hashlib
 import math
+import platform
 import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any
 
 import matplotlib
@@ -21,36 +23,44 @@ import pandas as pd
 import yaml
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
 PAPER_ROOT = Path("/data/hzw/Rethinking_DP_GNN_runtime/paper_experiments")
 DEFAULT_MAIN_LONG_CSV = PAPER_ROOT / "main_add_10seed_backfill" / "test_acc_long.csv"
-DEFAULT_MAIN2_ROOT = PAPER_ROOT / "main2_again"
+DEFAULT_FEATFREE_ROOT = Path(
+    "/data/hzw/Rethinking_DP_GNN_runtime/rebuttal_experiments/featfree_homo_rerun/HOA"
+)
 DEFAULT_CLEAN_REFERENCE_MANIFEST = PAPER_ROOT / "clean_reference" / "manifest.csv"
-DEFAULT_OUTPUT_DIR = PAPER_ROOT / "main_add_10seed_backfill" / "plots"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "rebuttal_figure"
+OUTPUT_STEM = "figure1"
+PLOT_DATA_FILENAME = f"{OUTPUT_STEM}_plot_data.csv"
+
+FROZEN_STYLE_VERSION = "paper_figure1_reference_v1"
+EXPECTED_PYTHON_VERSION = "3.10.20"
+EXPECTED_MATPLOTLIB_VERSION = "3.10.9"
+EXPECTED_ENV_PREFIX = Path("/home/hzw/miniconda3/envs/HZWDP")
 
 BACKBONES = ("gcn", "sage", "gat")
-BACKBONE_LABELS = {"gcn": "GCN", "sage": "GraphSAGE", "gat": "GAT"}
+BACKBONE_LABELS = MappingProxyType({"gcn": "GCN", "sage": "GraphSAGE", "gat": "GAT"})
 DATASETS = ("cora", "lastfm", "citeseer", "facebook")
-DATASET_LABELS = {
-    "cora": "Cora",
-    "lastfm": "Lastfm",
-    "citeseer": "Citeseer",
-    "facebook": "Facebook",
-    "Books-History": "Books-History",
-}
+DATASET_LABELS = MappingProxyType(
+    {
+        "cora": "Cora",
+        "lastfm": "Lastfm",
+        "citeseer": "Citeseer",
+        "facebook": "Facebook",
+    }
+)
 X_EPS_VALUES = ("0.001", "0.01", "0.1", "1.0", "2.0", "3.0", "4.0", "6.0", "8.0", "10.0")
-PIPELINE_LABELS = {
-    "figure3_pipeline1": "LPGNNv",
-    "figure3_pipeline2": "PrivGEv",
-    "figure3_pipeline3": "UPGNet-MBM",
-    "figure3_pipeline4": "UPGNet-PM",
-}
-REFERENCE_LABELS = {
-    "kprop": r"$F^2_{\mathrm{KProp}}$",
-    "hoa": r"$F^2_{\mathrm{HOA}}$",
-}
-PLOTTED_REFERENCE_SMOOTHERS = ("kprop", "hoa")
-NON_PRIVATE_LABEL = "Non private"
-REFERENCE_DIMS = (800, 1600, 3200)
+PIPELINE_LABELS = MappingProxyType(
+    {
+        "figure3_pipeline1": r"$\mathsf{LPGNN}$",
+        "figure3_pipeline2": r"$\mathsf{PrivGE}$",
+        "figure3_pipeline3": r"$\mathsf{UPGNet\text{-}MBM}$",
+        "figure3_pipeline4": r"$\mathsf{UPGNet\text{-}PM}$",
+    }
+)
+FEATFREE_LABEL = r"$\mathsf{FeatFree}$"
+NON_PRIVATE_LABEL = r"$\mathsf{Non\text{-}private}$"
 VERIFY_DIR_RE = re.compile(r"^rank=(\d+)__repeat=(\d+)__candidate=(\d+)__")
 
 BOOTSTRAP_SAMPLES = 1000
@@ -62,10 +72,10 @@ plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
 
 TITLE_FONTSIZE = 18
-FONTSIZE = 14
-X_LABEL_FONTSIZE = 14
-LEGEND_FONTSIZE = 16
-TICKLABEL_FONTSIZE = 10
+FONTSIZE = 18
+X_LABEL_FONTSIZE = 18
+LEGEND_FONTSIZE = 24
+TICKLABEL_FONTSIZE = 15
 LINEWIDTH = 2
 MARKERSIZE = 8
 FIGSIZE_X = 20
@@ -74,23 +84,50 @@ BOTTOM = 0.14
 TOP = 0.92
 LEFT = 0.065
 RIGHT = 0.99
+HSPACE = 0.34
+WSPACE = 0.16
+TITLE_PAD = 18
+Y_LABEL_PAD = 14
+MARKEREDGEWIDTH = 2
+GRID_COLOR = "white"
+GRID_LINESTYLE = "-"
+GRID_LINEWIDTH = 1
+GRID_ALPHA = 1.0
+LEGEND_BBOX = (0.5, 0.005)
+LEGEND_BORDERPAD = 0.2
+LEGEND_HANDLELENGTH = 1.3
+LEGEND_COLUMNSPACING = 0.75
+SAVE_DPI = 300
+SAVE_PAD_INCHES = 0.02
 
-STYLE_CONFIGS = {
-    "LPGNNv": {"color": "#5372ab", "marker": "s", "linestyle": "-"},
-    "PrivGEv": {"color": "#936bb9", "marker": "^", "linestyle": "-"},
-    "UPGNet-MBM": {"color": "#6aa56e", "marker": "o", "linestyle": "-"},
-    "UPGNet-PM": {"color": "#c9b97d", "marker": "x", "linestyle": "-"},
-    REFERENCE_LABELS["kprop"]: {"color": "#f2a65a", "marker": "v", "linestyle": "--"},
-    REFERENCE_LABELS["hoa"]: {"color": "#b75555", "marker": "D", "linestyle": "--"},
-    NON_PRIVATE_LABEL: {"color": "#2f7fb8", "marker": "P", "linestyle": "--"},
-}
+STYLE_CONFIGS = MappingProxyType(
+    {
+        PIPELINE_LABELS["figure3_pipeline1"]: MappingProxyType(
+            {"color": "#5372ab", "marker": "s", "linestyle": "-"}
+        ),
+        PIPELINE_LABELS["figure3_pipeline2"]: MappingProxyType(
+            {"color": "#936bb9", "marker": "^", "linestyle": "-"}
+        ),
+        PIPELINE_LABELS["figure3_pipeline3"]: MappingProxyType(
+            {"color": "#6aa56e", "marker": "o", "linestyle": "-"}
+        ),
+        PIPELINE_LABELS["figure3_pipeline4"]: MappingProxyType(
+            {"color": "#c9b97d", "marker": "x", "linestyle": "-"}
+        ),
+        FEATFREE_LABEL: MappingProxyType(
+            {"color": "#b75555", "marker": "D", "linestyle": "--"}
+        ),
+        NON_PRIVATE_LABEL: MappingProxyType(
+            {"color": "#2f7fb8", "marker": "P", "linestyle": "--"}
+        ),
+    }
+)
 LINE_ORDER = (
-    "LPGNNv",
-    "PrivGEv",
-    "UPGNet-MBM",
-    "UPGNet-PM",
-    REFERENCE_LABELS["kprop"],
-    REFERENCE_LABELS["hoa"],
+    PIPELINE_LABELS["figure3_pipeline1"],
+    PIPELINE_LABELS["figure3_pipeline2"],
+    PIPELINE_LABELS["figure3_pipeline3"],
+    PIPELINE_LABELS["figure3_pipeline4"],
+    FEATFREE_LABEL,
     NON_PRIVATE_LABEL,
 )
 
@@ -106,7 +143,7 @@ class Candidate:
 
 
 @dataclass
-class ReferenceChoice:
+class FeatFreeChoice:
     backbone: str
     dataset: str
     smoother: str
@@ -128,15 +165,36 @@ class ReferenceChoice:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Plot 3x5 main-add 10-seed curves with feature-free references."
+        description="Plot the frozen 3x4 main-add 10-seed panels with HOA FeatFree rerun data."
     )
     parser.add_argument("--main-long-csv", type=Path, default=DEFAULT_MAIN_LONG_CSV)
-    parser.add_argument("--main2-root", type=Path, default=DEFAULT_MAIN2_ROOT)
+    parser.add_argument("--featfree-root", type=Path, default=DEFAULT_FEATFREE_ROOT)
     parser.add_argument("--clean-reference-manifest", type=Path, default=DEFAULT_CLEAN_REFERENCE_MANIFEST)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--bootstrap-samples", type=int, default=BOOTSTRAP_SAMPLES)
     parser.add_argument("--bootstrap-seed", type=int, default=BOOTSTRAP_SEED)
     return parser.parse_args()
+
+
+def validate_render_environment() -> None:
+    problems: list[str] = []
+    actual_prefix = Path(sys.prefix).resolve()
+    if actual_prefix != EXPECTED_ENV_PREFIX.resolve():
+        problems.append(f"environment prefix is {actual_prefix}, expected {EXPECTED_ENV_PREFIX}")
+    if platform.python_version() != EXPECTED_PYTHON_VERSION:
+        problems.append(
+            f"Python is {platform.python_version()}, expected {EXPECTED_PYTHON_VERSION}"
+        )
+    if matplotlib.__version__ != EXPECTED_MATPLOTLIB_VERSION:
+        problems.append(
+            f"Matplotlib is {matplotlib.__version__}, expected {EXPECTED_MATPLOTLIB_VERSION}"
+        )
+    if problems:
+        detail = "; ".join(problems)
+        raise RuntimeError(
+            f"Frozen render environment mismatch ({FROZEN_STYLE_VERSION}): {detail}. "
+            f"Run with {EXPECTED_ENV_PREFIX / 'bin' / 'python'}."
+        )
 
 
 def canonical_x_eps(raw_value: Any) -> str:
@@ -341,93 +399,143 @@ def load_main_curves(
     return rows
 
 
-def load_reference_choices(main2_root: Path) -> dict[tuple[str, str, str], ReferenceChoice]:
-    choices: dict[tuple[str, str, str], list[ReferenceChoice]] = {}
+def assert_manifest_stat_matches(
+    row: dict[str, str],
+    field: str,
+    actual: float,
+    *,
+    manifest_path: Path,
+) -> None:
+    expected = row_float(row, field, csv_path=manifest_path)
+    if not math.isclose(expected, actual, rel_tol=0.0, abs_tol=1e-9):
+        raise RuntimeError(
+            f"Manifest/raw mismatch for {field!r} in {manifest_path}: "
+            f"manifest={expected} raw={actual}"
+        )
+
+
+def load_featfree_choices(featfree_root: Path) -> dict[tuple[str, str], FeatFreeChoice]:
+    choices: dict[tuple[str, str], FeatFreeChoice] = {}
+    complete_statuses = {"completed", "skipped_existing_result"}
 
     for backbone in BACKBONES:
-        manifest_path = main2_root / backbone / "random_projected.yaml" / "manifest.csv"
-        manifest_rows = read_csv_rows(manifest_path)
-        for row in manifest_rows:
-            dataset = row["dataset"]
-            if dataset not in DATASETS:
-                continue
-            smoother = row["smoother"].lower()
-            if smoother not in REFERENCE_LABELS:
-                continue
-            feature_dim = int(float(row["feature_dim"]))
-            if feature_dim not in REFERENCE_DIMS:
-                continue
-            if row["search_status"] not in {"completed", "skipped_existing_result"}:
-                raise RuntimeError(f"Incomplete reference job: {manifest_path} {dataset} {feature_dim} {smoother}")
+        for dataset in DATASETS:
+            manifest_path = (
+                featfree_root / dataset / backbone / "random_projected.yaml" / "manifest.csv"
+            )
+            manifest_rows = read_csv_rows(manifest_path)
+            if len(manifest_rows) != 1:
+                raise RuntimeError(
+                    f"Expected exactly one FeatFree row in {manifest_path}, found {len(manifest_rows)}"
+                )
+            row = manifest_rows[0]
+            expected_fields = {
+                "dataset": dataset,
+                "backbone": backbone,
+                "feature": "random_normal",
+                "smoother": "hoa",
+            }
+            for field, expected in expected_fields.items():
+                actual = row.get(field, "").lower()
+                if actual != expected:
+                    raise RuntimeError(
+                        f"Unexpected {field} in {manifest_path}: expected {expected!r}, got {actual!r}"
+                    )
+            if row.get("search_status", "") not in complete_statuses:
+                raise RuntimeError(
+                    f"Incomplete FeatFree job in {manifest_path}: {row.get('search_status', '')!r}"
+                )
+
+            feature_dim = int(row_float(row, "feature_dim", csv_path=manifest_path))
             job_dir = Path(row["job_dir"])
             best_config_path = Path(row["best_config_path"])
-            if not job_dir.is_dir() or not best_config_path.is_file():
-                raise RuntimeError(f"Missing reference artifacts for {backbone}/{dataset}/{feature_dim}/{smoother}")
-            candidate = candidate_from_best_config(best_config_path)
-            val_accs, test_accs, actual_rank = collect_reference_repeats(job_dir, candidate)
-            choices.setdefault((backbone, dataset, smoother), []).append(
-                ReferenceChoice(
-                    backbone=backbone,
-                    dataset=dataset,
-                    smoother=smoother,
-                    feature_dim=feature_dim,
-                    candidate=candidate,
-                    val_accs=val_accs,
-                    test_accs=test_accs,
-                    source_job_dir=job_dir,
-                    actual_verify_rank=actual_rank,
+            if not job_dir.is_dir():
+                raise RuntimeError(f"Missing FeatFree job directory: {job_dir}")
+            if not best_config_path.is_file():
+                raise RuntimeError(f"Missing FeatFree best_config.yaml: {best_config_path}")
+            if best_config_path.parent.resolve() != job_dir.resolve():
+                raise RuntimeError(
+                    f"FeatFree best_config_path is outside job_dir in {manifest_path}: "
+                    f"{best_config_path} vs {job_dir}"
                 )
+
+            candidate = candidate_from_best_config(best_config_path)
+            manifest_candidate_id = int(
+                row_float(row, "best_candidate_id", csv_path=manifest_path)
+            )
+            if candidate.candidate_id != manifest_candidate_id:
+                raise RuntimeError(
+                    f"FeatFree candidate mismatch in {manifest_path}: "
+                    f"manifest={manifest_candidate_id} best_config={candidate.candidate_id}"
+                )
+            val_accs, test_accs, actual_rank = collect_reference_repeats(job_dir, candidate)
+            assert_manifest_stat_matches(
+                row,
+                "best_verify_val_acc_mean",
+                float(np.mean(val_accs)),
+                manifest_path=manifest_path,
+            )
+            assert_manifest_stat_matches(
+                row,
+                "best_verify_test_acc_mean",
+                float(np.mean(test_accs)),
+                manifest_path=manifest_path,
+            )
+            assert_manifest_stat_matches(
+                row,
+                "best_verify_test_acc_std",
+                float(np.std(test_accs, ddof=1)),
+                manifest_path=manifest_path,
+            )
+            choices[(backbone, dataset)] = FeatFreeChoice(
+                backbone=backbone,
+                dataset=dataset,
+                smoother="hoa",
+                feature_dim=feature_dim,
+                candidate=candidate,
+                val_accs=val_accs,
+                test_accs=test_accs,
+                source_job_dir=job_dir,
+                actual_verify_rank=actual_rank,
             )
 
-    selected: dict[tuple[str, str, str], ReferenceChoice] = {}
-    expected_keys = {
-        (backbone, dataset, smoother)
-        for backbone in BACKBONES
-        for dataset in DATASETS
-        for smoother in PLOTTED_REFERENCE_SMOOTHERS
-    }
-    for key in expected_keys:
-        candidates = choices.get(key, [])
-        if len(candidates) != len(REFERENCE_DIMS):
-            raise RuntimeError(f"Expected 3 feature_dim candidates for {key}, found {len(candidates)}")
-        selected[key] = sorted(
-            candidates,
-            key=lambda item: (-item.val_mean, -item.test_mean, item.feature_dim),
-        )[0]
-    return selected
+    expected_count = len(BACKBONES) * len(DATASETS)
+    if len(choices) != expected_count:
+        raise RuntimeError(f"Expected {expected_count} FeatFree choices, found {len(choices)}")
+    return choices
 
 
-def reference_plot_rows(
-    choices: dict[tuple[str, str, str], ReferenceChoice],
+def featfree_plot_rows(
+    choices: dict[tuple[str, str], FeatFreeChoice],
     *,
     bootstrap_samples: int,
     bootstrap_seed: int,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    for (backbone, dataset, smoother), choice in sorted(choices.items()):
+    for (backbone, dataset), choice in sorted(choices.items()):
         test_stats = metric_stats(
             choice.test_accs,
             bootstrap_samples=bootstrap_samples,
             bootstrap_seed=bootstrap_seed,
-            key=("reference", backbone, dataset, smoother, choice.feature_dim),
+            key=("reference", backbone, dataset, choice.smoother, choice.feature_dim),
         )
         val_stats = metric_stats(
             choice.val_accs,
             bootstrap_samples=bootstrap_samples,
             bootstrap_seed=bootstrap_seed,
-            key=("reference-val", backbone, dataset, smoother, choice.feature_dim),
+            key=("reference-val", backbone, dataset, choice.smoother, choice.feature_dim),
         )
         for x_eps in X_EPS_VALUES:
             rows.append(
                 {
-                    "source": "main2_again_reference",
+                    "source": "featfree_homo_rerun_hoa",
                     "backbone": backbone,
                     "dataset": dataset,
                     "x_eps": x_eps,
                     "x_index": X_EPS_VALUES.index(x_eps),
-                    "line_label": REFERENCE_LABELS[smoother],
-                    "pipeline": "reference",
-                    "smoother": smoother,
+                    "line_label": FEATFREE_LABEL,
+                    "pipeline": "featfree",
+                    "smoother": choice.smoother,
                     "feature_dim": choice.feature_dim,
                     "candidate_id": choice.candidate.candidate_id,
                     "x_steps": choice.candidate.x_steps,
@@ -566,6 +674,18 @@ def validate_plot_rows(rows: list[dict[str, Any]]) -> None:
     seen = {(row["backbone"], row["dataset"], row["x_eps"], row["line_label"]) for row in rows}
     if len(seen) != expected:
         raise RuntimeError(f"Duplicate plot rows detected: unique={len(seen)} expected={expected}")
+    expected_per_line = len(BACKBONES) * len(DATASETS) * len(X_EPS_VALUES)
+    for label in LINE_ORDER:
+        count = sum(row["line_label"] == label for row in rows)
+        if count != expected_per_line:
+            raise RuntimeError(
+                f"Expected {expected_per_line} rows for {label}, found {count}"
+            )
+    featfree_sources = {
+        row["source"] for row in rows if row["line_label"] == FEATFREE_LABEL
+    }
+    if featfree_sources != {"featfree_homo_rerun_hoa"}:
+        raise RuntimeError(f"Unexpected FeatFree sources: {sorted(featfree_sources)}")
     for row in rows:
         mean = float(row["test_acc_mean"])
         low = float(row["test_acc_ci_low"])
@@ -576,17 +696,29 @@ def validate_plot_rows(rows: list[dict[str, Any]]) -> None:
             raise RuntimeError(f"CI does not contain mean for {row}")
 
 
-def plot_panels(rows: list[dict[str, Any]], output_dir: Path) -> None:
+def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
     df = pd.DataFrame(rows)
     fig, axes = plt.subplots(len(BACKBONES), len(DATASETS), figsize=(FIGSIZE_X, FIGSIZE_Y), sharex=False, sharey=False)
-    fig.subplots_adjust(bottom=BOTTOM, top=TOP, left=LEFT, right=RIGHT, hspace=0.34, wspace=0.16)
+    fig.subplots_adjust(
+        bottom=BOTTOM,
+        top=TOP,
+        left=LEFT,
+        right=RIGHT,
+        hspace=HSPACE,
+        wspace=WSPACE,
+    )
 
     for row_idx, backbone in enumerate(BACKBONES):
         for col_idx, dataset in enumerate(DATASETS):
             ax = axes[row_idx, col_idx]
             if row_idx == 0:
                 letter = chr(97 + col_idx)
-                ax.set_title(f"({letter}) {DATASET_LABELS[dataset]}", fontsize=TITLE_FONTSIZE, fontweight="medium")
+                ax.set_title(
+                    f"({letter}) {DATASET_LABELS[dataset]}",
+                    fontsize=TITLE_FONTSIZE,
+                    fontweight="medium",
+                    pad=TITLE_PAD,
+                )
 
             panel = df[(df["backbone"] == backbone) & (df["dataset"] == dataset)]
             for label in LINE_ORDER:
@@ -613,16 +745,27 @@ def plot_panels(rows: list[dict[str, Any]], output_dir: Path) -> None:
                     linewidth=LINEWIDTH,
                     capsize=0,
                     markerfacecolor="none",
-                    markeredgewidth=2,
+                    markeredgewidth=MARKEREDGEWIDTH,
                 )
 
             ax.set_xticks(range(len(X_EPS_VALUES)))
             ax.set_xticklabels(X_EPS_VALUES, rotation=30, ha="right")
             ax.set_xlabel(r"$\epsilon$", fontsize=X_LABEL_FONTSIZE, fontweight="medium")
-            ax.grid(True, color="white", linestyle="-", linewidth=1, alpha=1.0)
+            ax.grid(
+                True,
+                color=GRID_COLOR,
+                linestyle=GRID_LINESTYLE,
+                linewidth=GRID_LINEWIDTH,
+                alpha=GRID_ALPHA,
+            )
             ax.tick_params(axis="both", which="major", labelsize=TICKLABEL_FONTSIZE)
             if col_idx == 0:
-                ax.set_ylabel(f"{BACKBONE_LABELS[backbone]}\nAccuracy", fontsize=FONTSIZE, fontweight="medium")
+                ax.set_ylabel(
+                    f"{BACKBONE_LABELS[backbone]}\nAccuracy",
+                    fontsize=FONTSIZE,
+                    fontweight="medium",
+                    labelpad=Y_LABEL_PAD,
+                )
             else:
                 ax.set_ylabel("")
 
@@ -633,19 +776,36 @@ def plot_panels(rows: list[dict[str, Any]], output_dir: Path) -> None:
         handles,
         labels,
         loc="lower center",
-        bbox_to_anchor=(0.5, 0.035),
+        bbox_to_anchor=LEGEND_BBOX,
         ncol=len(LINE_ORDER),
         fontsize=LEGEND_FONTSIZE,
         frameon=False,
         shadow=False,
-        borderpad=1,
+        borderpad=LEGEND_BORDERPAD,
+        handlelength=LEGEND_HANDLELENGTH,
+        columnspacing=LEGEND_COLUMNSPACING,
     )
+    return fig, axes
+
+
+def plot_panels(rows: list[dict[str, Any]], output_dir: Path) -> None:
+    fig, _ = build_figure(rows)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    pdf_path = output_dir / "main_add_10seed_panels.pdf"
-    png_path = output_dir / "main_add_10seed_panels.png"
-    fig.savefig(pdf_path, dpi=300, bbox_inches="tight", pad_inches=0)
-    fig.savefig(png_path, dpi=300, bbox_inches="tight", pad_inches=0)
+    pdf_path = output_dir / f"{OUTPUT_STEM}.pdf"
+    png_path = output_dir / f"{OUTPUT_STEM}.png"
+    fig.savefig(
+        pdf_path,
+        dpi=SAVE_DPI,
+        bbox_inches="tight",
+        pad_inches=SAVE_PAD_INCHES,
+    )
+    fig.savefig(
+        png_path,
+        dpi=SAVE_DPI,
+        bbox_inches="tight",
+        pad_inches=SAVE_PAD_INCHES,
+    )
     plt.close(fig)
     print(f"Saved {pdf_path}")
     print(f"Saved {png_path}")
@@ -653,14 +813,15 @@ def plot_panels(rows: list[dict[str, Any]], output_dir: Path) -> None:
 
 def main() -> None:
     args = parse_args()
+    validate_render_environment()
     main_rows = load_main_curves(
         args.main_long_csv,
         bootstrap_samples=args.bootstrap_samples,
         bootstrap_seed=args.bootstrap_seed,
     )
-    reference_choices = load_reference_choices(args.main2_root)
-    reference_rows = reference_plot_rows(
-        reference_choices,
+    featfree_choices = load_featfree_choices(args.featfree_root)
+    featfree_rows = featfree_plot_rows(
+        featfree_choices,
         bootstrap_samples=args.bootstrap_samples,
         bootstrap_seed=args.bootstrap_seed,
     )
@@ -669,9 +830,9 @@ def main() -> None:
         bootstrap_samples=args.bootstrap_samples,
         bootstrap_seed=args.bootstrap_seed,
     )
-    plot_rows = main_rows + reference_rows + non_private_rows
+    plot_rows = main_rows + featfree_rows + non_private_rows
     validate_plot_rows(plot_rows)
-    plot_data_path = args.output_dir / "main_add_10seed_panel_plot_data.csv"
+    plot_data_path = args.output_dir / PLOT_DATA_FILENAME
     write_plot_data(plot_data_path, plot_rows)
     plot_panels(plot_rows, args.output_dir)
     print(f"Saved {plot_data_path}")

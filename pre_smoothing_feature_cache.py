@@ -24,10 +24,18 @@ except ImportError:  # pragma: no cover - non-POSIX fallback
     fcntl = None
 
 
-CACHE_SCHEMA_VERSION = 1
+CACHE_KEY_VERSION = 1
+CACHE_PAYLOAD_SCHEMA_VERSION = 2
+LEGACY_DENSE_PAYLOAD_SCHEMA_VERSION = 1
+CACHE_SCHEMA_VERSION = CACHE_KEY_VERSION
 CACHEABLE_MECHANISMS = {"mbm", "pm", "hds"}
 GRAPH_FINGERPRINT_ATTR = "_pre_smoothing_graph_fingerprint"
 RAW_FINGERPRINT_ATTR = "_pre_smoothing_raw_feature_fingerprint"
+SPARSE_FLAT_TENSOR_FORMAT = "sparse_flat_v1"
+DENSE_TENSOR_FORMAT = "dense_v1"
+# Compact storage must provide a clear win. Dense storage remains the fallback
+# for other datasets/mechanisms whose outputs are not sufficiently sparse.
+SPARSE_STORAGE_MAX_DENSE_FRACTION = 0.5
 
 
 @dataclass(frozen=True)
@@ -121,6 +129,155 @@ def _atomic_torch_save(path: str | Path, payload: Any) -> None:
             tmp_path.unlink()
         except FileNotFoundError:
             pass
+
+
+def _tensor_nbytes(tensor: torch.Tensor) -> int:
+    return int(tensor.numel() * tensor.element_size())
+
+
+def estimate_adaptive_tensor_storage_bytes(
+    shape: tuple[int, ...] | list[int],
+    *,
+    element_size: int,
+    max_nonzero: int,
+) -> int:
+    """Return a conservative tensor-payload estimate for the adaptive format."""
+    numel = math.prod(int(size) for size in shape)
+    dense_bytes = int(numel * int(element_size))
+    bounded_nonzero = max(0, min(int(max_nonzero), numel))
+    index_size = 4 if numel <= torch.iinfo(torch.int32).max else 8
+    sparse_bytes = bounded_nonzero * (index_size + int(element_size))
+    if dense_bytes == 0 or sparse_bytes >= dense_bytes * SPARSE_STORAGE_MAX_DENSE_FRACTION:
+        return dense_bytes
+    return sparse_bytes
+
+
+def _encode_tensor_for_cache(tensor: torch.Tensor) -> tuple[dict[str, Any], int]:
+    """Losslessly encode a tensor, using flat sparse storage only when beneficial."""
+    if not isinstance(tensor, torch.Tensor):
+        raise TypeError(f"cache tensor must be a torch.Tensor, got {type(tensor).__name__}")
+    if tensor.layout != torch.strided:
+        raise ValueError(f"cache tensor must be strided, got layout {tensor.layout}")
+
+    detached = tensor.detach()
+    dense_bytes = _tensor_nbytes(detached)
+    flat = detached.reshape(-1)
+    flat_indices = torch.nonzero(flat, as_tuple=False).flatten()
+    index_dtype = torch.int32 if flat.numel() <= torch.iinfo(torch.int32).max else torch.int64
+    sparse_bytes = estimate_adaptive_tensor_storage_bytes(
+        list(detached.shape),
+        element_size=detached.element_size(),
+        max_nonzero=int(flat_indices.numel()),
+    )
+
+    if sparse_bytes == dense_bytes:
+        dense_cpu = detached.to(device="cpu").contiguous()
+        return {
+            "x_format": DENSE_TENSOR_FORMAT,
+            "x": dense_cpu,
+        }, _tensor_nbytes(dense_cpu)
+
+    values = flat.index_select(0, flat_indices)
+    indices_cpu = flat_indices.to(device="cpu", dtype=index_dtype).contiguous()
+    values_cpu = values.to(device="cpu").contiguous()
+    return {
+        "x_format": SPARSE_FLAT_TENSOR_FORMAT,
+        "x_shape": [int(size) for size in detached.shape],
+        "x_flat_indices": indices_cpu,
+        "x_values": values_cpu,
+    }, _tensor_nbytes(indices_cpu) + _tensor_nbytes(values_cpu)
+
+
+def _validate_encoded_tensor(payload: dict[str, Any]) -> None:
+    schema_version = payload.get("schema_version")
+    if schema_version == LEGACY_DENSE_PAYLOAD_SCHEMA_VERSION:
+        if not isinstance(payload.get("x"), torch.Tensor):
+            raise ValueError("legacy cache payload is missing dense tensor x")
+        return
+
+    if schema_version != CACHE_PAYLOAD_SCHEMA_VERSION:
+        raise ValueError(f"unsupported cache payload schema version: {schema_version!r}")
+
+    tensor_format = payload.get("x_format")
+    if tensor_format == DENSE_TENSOR_FORMAT:
+        if not isinstance(payload.get("x"), torch.Tensor):
+            raise ValueError("dense cache payload is missing tensor x")
+        return
+    if tensor_format != SPARSE_FLAT_TENSOR_FORMAT:
+        raise ValueError(f"unsupported cached tensor format: {tensor_format!r}")
+
+    shape = payload.get("x_shape")
+    indices = payload.get("x_flat_indices")
+    values = payload.get("x_values")
+    if not isinstance(shape, (tuple, list)) or any(int(size) < 0 for size in shape):
+        raise ValueError("sparse cache payload has an invalid x_shape")
+    if not isinstance(indices, torch.Tensor) or indices.dim() != 1:
+        raise ValueError("sparse cache payload has invalid flat indices")
+    if indices.dtype not in {torch.int32, torch.int64}:
+        raise ValueError("sparse cache flat indices must use int32 or int64")
+    if not isinstance(values, torch.Tensor) or values.dim() != 1:
+        raise ValueError("sparse cache payload has invalid values")
+    if indices.numel() != values.numel():
+        raise ValueError("sparse cache indices and values have different lengths")
+
+    numel = math.prod(int(size) for size in shape)
+    if indices.numel() > 0:
+        minimum = int(indices.min().item())
+        maximum = int(indices.max().item())
+        if minimum < 0 or maximum >= numel:
+            raise ValueError("sparse cache flat index is outside x_shape")
+
+
+def _decode_tensor_from_cache(
+    payload: dict[str, Any],
+    *,
+    device: torch.device,
+    dtype: torch.dtype,
+) -> torch.Tensor:
+    _validate_encoded_tensor(payload)
+    schema_version = payload.get("schema_version")
+    tensor_format = payload.get("x_format")
+    if schema_version == LEGACY_DENSE_PAYLOAD_SCHEMA_VERSION or tensor_format == DENSE_TENSOR_FORMAT:
+        return payload["x"].to(device=device, dtype=dtype)
+
+    shape = tuple(int(size) for size in payload["x_shape"])
+    flat = torch.zeros(math.prod(shape), device=device, dtype=dtype)
+    indices = payload["x_flat_indices"].to(device=device, dtype=torch.long)
+    if indices.numel() > 0:
+        values = payload["x_values"].to(device=device, dtype=dtype)
+        flat.index_copy_(0, indices, values)
+    return flat.view(shape)
+
+
+def _payload_tensor_storage_bytes(payload: dict[str, Any]) -> int:
+    _validate_encoded_tensor(payload)
+    if payload.get("schema_version") == LEGACY_DENSE_PAYLOAD_SCHEMA_VERSION:
+        return _tensor_nbytes(payload["x"])
+    if payload.get("x_format") == DENSE_TENSOR_FORMAT:
+        return _tensor_nbytes(payload["x"])
+    return _tensor_nbytes(payload["x_flat_indices"]) + _tensor_nbytes(payload["x_values"])
+
+
+def compact_legacy_cache_file(path: str | Path) -> tuple[str, int, int]:
+    """Atomically compact one legacy dense cache file when sparse storage wins."""
+    cache_path = Path(path)
+    before_bytes = int(cache_path.stat().st_size)
+    with _cache_publication_lock(cache_path):
+        payload = _load_payload(cache_path)
+        if payload is None:
+            return "invalid", before_bytes, 0
+        if payload.get("schema_version") == CACHE_PAYLOAD_SCHEMA_VERSION:
+            return "already_compact", before_bytes, before_bytes
+
+        encoded_tensor, _ = _encode_tensor_for_cache(payload["x"])
+        if encoded_tensor.get("x_format") == DENSE_TENSOR_FORMAT:
+            return "dense_fallback", before_bytes, before_bytes
+
+        upgraded = {key: value for key, value in payload.items() if key != "x"}
+        upgraded["schema_version"] = CACHE_PAYLOAD_SCHEMA_VERSION
+        upgraded.update(encoded_tensor)
+        _atomic_torch_save(cache_path, upgraded)
+    return "compacted", before_bytes, int(cache_path.stat().st_size)
 
 
 def _get_edge_index(data) -> torch.Tensor:
@@ -264,7 +421,7 @@ def build_cache_key_payload(data, args, rewrite_seed: int | None) -> dict[str, A
         raise ValueError(f"pre-smoothing feature cache only supports raw/sim features, got {feature!r}")
 
     payload = {
-        "version": CACHE_SCHEMA_VERSION,
+        "version": CACHE_KEY_VERSION,
         "dataset": str(getattr(args, "dataset")),
         "feature": feature,
         "graph": graph_fingerprint(data),
@@ -337,10 +494,7 @@ def _load_payload(cache_path: Path) -> dict[str, Any] | None:
             payload = torch.load(cache_path, map_location="cpu")
         if not isinstance(payload, dict):
             raise ValueError("cache payload must be a mapping")
-        if payload.get("schema_version") != CACHE_SCHEMA_VERSION:
-            raise ValueError("unsupported cache schema version")
-        if "x" not in payload:
-            raise ValueError("cache payload is missing tensor x")
+        _validate_encoded_tensor(payload)
     except Exception:
         try:
             cache_path.unlink()
@@ -351,12 +505,15 @@ def _load_payload(cache_path: Path) -> dict[str, Any] | None:
 
 
 def _restore_from_payload(data, payload: dict[str, Any], cache_path: Path) -> CachePreparationResult:
-    tensor = payload["x"]
-    if not isinstance(tensor, torch.Tensor):
-        raise ValueError(f"Invalid cached tensor payload at {cache_path}")
     device = getattr(getattr(data, "x", None), "device", torch.device("cpu"))
-    dtype = getattr(getattr(data, "x", None), "dtype", tensor.dtype)
-    data.x = tensor.to(device=device, dtype=dtype)
+    current_x = getattr(data, "x", None)
+    if isinstance(current_x, torch.Tensor):
+        dtype = current_x.dtype
+    elif isinstance(payload.get("x"), torch.Tensor):
+        dtype = payload["x"].dtype
+    else:
+        dtype = payload["x_values"].dtype
+    data.x = _decode_tensor_from_cache(payload, device=device, dtype=dtype)
     data.output_range = payload.get("mechanism_output_range_before_nfr")
     data.feature_mechanism_resolved_m = payload.get("resolved_m")
     data.feature_mechanism = payload.get("mechanism")
@@ -368,7 +525,7 @@ def _restore_from_payload(data, payload: dict[str, Any], cache_path: Path) -> Ca
     return CachePreparationResult(
         status="hit",
         cache_path=str(cache_path),
-        bytes_written=int(data.x.numel() * data.x.element_size()),
+        bytes_written=_payload_tensor_storage_bytes(payload),
         mechanism_output_range_before_nfr=payload.get("mechanism_output_range_before_nfr"),
         resolved_m=payload.get("resolved_m"),
     )
@@ -405,16 +562,17 @@ def prepare_pre_smoothing_input(data, args, rewrite_seed: int | None = None, *, 
         args,
         rewrite_seed,
     )
+    encoded_tensor, encoded_tensor_bytes = _encode_tensor_for_cache(data.x)
     payload = {
-        "schema_version": CACHE_SCHEMA_VERSION,
+        "schema_version": CACHE_PAYLOAD_SCHEMA_VERSION,
         "key": _normalize_json_value(key_payload),
-        "x": data.x.detach().to(device="cpu"),
         "mechanism_output_range_before_nfr": mechanism_output_range_before_nfr,
         "resolved_m": resolved_m,
         "post_rng_state": post_rng_state,
         "use_nfr": bool(getattr(args, "use_nfr", False)),
         "tao2": getattr(args, "tao2", None),
         "mechanism": str(getattr(args, "mechanism")).strip().lower(),
+        **encoded_tensor,
     }
     with _cache_publication_lock(cache_path):
         if not force_rebuild:
@@ -428,7 +586,7 @@ def prepare_pre_smoothing_input(data, args, rewrite_seed: int | None = None, *, 
     return data, CachePreparationResult(
         status="built" if not force_rebuild else "rebuilt",
         cache_path=str(cache_path),
-        bytes_written=int(data.x.numel() * data.x.element_size()),
+        bytes_written=encoded_tensor_bytes,
         mechanism_output_range_before_nfr=mechanism_output_range_before_nfr,
         resolved_m=resolved_m,
     )
