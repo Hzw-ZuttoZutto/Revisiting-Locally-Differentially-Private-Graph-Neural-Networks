@@ -10,6 +10,23 @@ from pathlib import Path
 from typing import Callable, TextIO
 
 
+TEMP_GPU2_CAP15_ENV = "REBUTTAL_TEMP_GPU2_CAP15"
+TEMP_GPU2_WORKER_ID = 2
+TEMP_GPU2_PARALLEL_CAP = 15
+
+
+def _temporary_gpu2_cap15_enabled() -> bool:
+    raw = os.environ.get(TEMP_GPU2_CAP15_ENV, "0").strip().lower()
+    if raw in {"", "0", "false", "no", "off"}:
+        return False
+    if raw in {"1", "true", "yes", "on"}:
+        return True
+    raise ValueError(
+        f"{TEMP_GPU2_CAP15_ENV} must be a boolean flag "
+        f"(0/1, false/true, no/yes, off/on), got {raw!r}"
+    )
+
+
 @dataclass(frozen=True)
 class SchedulerTask:
     task_id: str
@@ -76,6 +93,22 @@ class MultiPoolScheduler:
         self._poll_interval_sec = float(poll_interval_sec)
         self._launch_interval_sec = float(launch_interval_sec)
         self._device = device
+        temporary_gpu2_cap15 = device == "gpu" and _temporary_gpu2_cap15_enabled()
+        self._parallel_limit_by_worker = {
+            worker_id: (
+                min(self._max_parallel_per_worker, TEMP_GPU2_PARALLEL_CAP)
+                if temporary_gpu2_cap15 and worker_id == TEMP_GPU2_WORKER_ID
+                else self._max_parallel_per_worker
+            )
+            for worker_id in self._worker_ids
+        }
+        if temporary_gpu2_cap15 and TEMP_GPU2_WORKER_ID in self._parallel_limit_by_worker:
+            print(
+                f"[Scheduler] {TEMP_GPU2_CAP15_ENV}=1: GPU {TEMP_GPU2_WORKER_ID} "
+                f"parallel cap={self._parallel_limit_by_worker[TEMP_GPU2_WORKER_ID]}; "
+                f"other GPUs cap={self._max_parallel_per_worker}",
+                flush=True,
+            )
 
         self._pool_queues: dict[str, deque[SchedulerTask]] = {}
         self._pool_order: list[str] = []
@@ -161,7 +194,7 @@ class MultiPoolScheduler:
         candidates = [
             worker_id
             for worker_id in self._worker_ids
-            if running_count_by_worker[worker_id] < self._max_parallel_per_worker
+            if running_count_by_worker[worker_id] < self._parallel_limit_by_worker[worker_id]
             and (
                 group_limit is None
                 or task.concurrency_group is None
@@ -382,4 +415,3 @@ class MultiPoolScheduler:
             spawned = on_result(result) or []
             for task in spawned:
                 self.enqueue(task)
-

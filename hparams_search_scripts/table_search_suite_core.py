@@ -7,6 +7,7 @@ import shutil
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 try:
     from hparams_search_scripts import mechanism_stage_utils
@@ -387,11 +388,14 @@ def _uses_figure10_grouped_state_runner(config_path: Path, fixed_params: dict[st
 def _uses_semantic_raw_grouped_state_runner(fixed_params: dict[str, Any]) -> bool:
     if str(fixed_params.get('feature', '')).strip().lower() != 'raw':
         return False
-    if _bool_fixed_param(fixed_params.get('use_nfr', False)):
-        return False
     if str(fixed_params.get('backbone', '')).strip().lower() not in {'sage', 'gcn', 'gat'}:
         return False
     if str(fixed_params.get('smoother', '')).strip().lower() not in {'hoa', 'kprop'}:
+        return False
+    if (
+        _bool_fixed_param(fixed_params.get('use_nfr', False))
+        and str(fixed_params.get('mechanism', '')).strip().lower() not in {'mbm', 'pm', 'hds'}
+    ):
         return False
     return True
 
@@ -418,7 +422,10 @@ def _uses_semantic_operator_grouped_runner(fixed_params: dict[str, Any]) -> bool
     return True
 
 
-def _uses_semantic_sim_grouped_state_runner(spec: BatchSpec, fixed_params: dict[str, Any]) -> bool:
+def _uses_semantic_sim_grouped_state_runner(
+    job_spec: dict[str, Any],
+    fixed_params: dict[str, Any],
+) -> bool:
     if str(fixed_params.get('feature', '')).strip().lower() != 'sim':
         return False
     if _bool_fixed_param(fixed_params.get('use_nfr', False)):
@@ -427,7 +434,7 @@ def _uses_semantic_sim_grouped_state_runner(spec: BatchSpec, fixed_params: dict[
         return False
     if str(fixed_params.get('smoother', '')).strip().lower() not in {'hoa', 'kprop'}:
         return False
-    defaults = spec.jobs[0].job_spec.get('defaults')
+    defaults = job_spec.get('defaults')
     if not isinstance(defaults, dict):
         return False
     trainer_defaults = defaults.get('trainer')
@@ -436,41 +443,48 @@ def _uses_semantic_sim_grouped_state_runner(spec: BatchSpec, fixed_params: dict[
     return not _bool_fixed_param(trainer_defaults.get('sim_epoch_refresh', False))
 
 
-def _uses_figure6_grouped_state_runner(config_path: Path, fixed_params: dict[str, Any]) -> bool:
-    if config_path.parent.name not in {'figure6', 'figure6_add', 'figure6_add_again'}:
-        return False
-    if str(fixed_params.get('feature', '')).strip().lower() != 'raw':
-        return False
-    if str(fixed_params.get('mechanism', '')).strip().lower() not in {'mbm', 'pm', 'hds'}:
-        return False
-    if str(fixed_params.get('smoother', '')).strip().lower() not in {'hoa', 'kprop'}:
-        return False
-    if str(fixed_params.get('backbone', '')).strip().lower() not in {'sage', 'gcn', 'gat'}:
-        return False
-    if not _bool_fixed_param(fixed_params.get('use_nfr', False)):
-        return False
-    return True
-
-
-def _grouped_runner_mode(spec: BatchSpec) -> str | None:
-    if len(spec.jobs) == 0:
-        return None
-    config_path = spec.config_copy_source.resolve()
-    fixed_params = spec.jobs[0].job_spec.get('fixed_params')
+def _job_grouped_runner_mode(
+    config_path: Path,
+    job_spec: dict[str, Any],
+) -> str | None:
+    fixed_params = job_spec.get('fixed_params')
     if not isinstance(fixed_params, dict):
         return None
     if _uses_semantic_operator_grouped_runner(fixed_params):
         return 'operator'
     if (
+        str(fixed_params.get('feature', '')).strip().lower() == 'raw'
+        and _bool_fixed_param(fixed_params.get('use_nfr', False))
+    ):
+        return (
+            'materialized'
+            if _uses_semantic_raw_grouped_state_runner(fixed_params)
+            else None
+        )
+    if (
         _uses_figure3_grouped_state_runner(config_path, fixed_params)
         or _uses_figure10_grouped_state_runner(config_path, fixed_params)
-        or _uses_figure6_grouped_state_runner(config_path, fixed_params)
         or _uses_semantic_raw_grouped_state_runner(fixed_params)
         or _uses_semantic_random_normal_grouped_state_runner(fixed_params)
-        or _uses_semantic_sim_grouped_state_runner(spec, fixed_params)
+        or _uses_semantic_sim_grouped_state_runner(job_spec, fixed_params)
     ):
         return 'materialized'
     return None
+
+
+def _grouped_runner_mode(spec: BatchSpec) -> str | None:
+    if len(spec.jobs) == 0:
+        return None
+
+    config_path = spec.config_copy_source.resolve()
+    modes = [
+        _job_grouped_runner_mode(config_path, job.job_spec)
+        for job in spec.jobs
+    ]
+    selected_mode = modes[0]
+    if selected_mode is None or any(mode != selected_mode for mode in modes[1:]):
+        return None
+    return selected_mode
 
 
 def _group_grid_candidates(
