@@ -34,12 +34,25 @@ DATASET_LABELS = {
     "actor": "Actor",
     "attributedgraph-flickr": "Flickr",
 }
+# Global label-prior baselines audited from the raw dataset labels.  Keep these
+# separate from the plotted experiment rows: they are dataset statistics, not
+# trained-method results.
+MAJORITY_BASELINE_PCT = {
+    "actor": 100.0 * 1965 / 7600,
+    "attributedgraph-flickr": 100.0 * 888 / 7575,
+}
 X_EPS_VALUES = reference.X_EPS_VALUES
 PIPELINE_LABELS = reference.PIPELINE_LABELS
 FEATFREE_LABEL = reference.FEATFREE_LABEL
 NON_PRIVATE_LABEL = reference.NON_PRIVATE_LABEL
 LINE_ORDER = reference.LINE_ORDER
 STYLE_CONFIGS = reference.STYLE_CONFIGS
+MAJORITY_LABEL = r"$\mathsf{Majority\text{-}Class}$"
+LEGEND_TOP_ROW = LINE_ORDER[:4]
+LEGEND_BOTTOM_ROW = (*LINE_ORDER[4:], MAJORITY_LABEL)
+LEGEND_DISPLAY_LABELS = {
+    reference.NON_PRIVATE_LABEL: r"$\mathsf{Non\text{-}Private}$",
+}
 
 COMPLETE_STATUSES = {"completed", "skipped_existing_result"}
 PIPELINE_CONTRACT = {
@@ -61,17 +74,23 @@ LEFT = 0.10
 RIGHT = reference.RIGHT
 HSPACE = 0.44
 WSPACE = reference.WSPACE
-LEGEND_BBOX = (0.5, 0.006)
-LEGEND_NCOL = 3
+LEGEND_TOP_BBOX = (0.5, 0.055)
+LEGEND_BOTTOM_BBOX = (0.5, 0.006)
+LEGEND_COLUMNSPACING = 0.45
+LEGEND_HANDLETEXTPAD = 0.5
 
 # Figure-specific typography.  The 3x2 layout is narrower than the reference
 # 3x4 figure, so keep these settings local instead of changing the shared style.
-AXIS_LABEL_FONTSIZE = 20
-X_LABEL_PAD = 1
-TICKLABEL_FONTSIZE = 18
-PANEL_HEADING_FONTSIZE = 22
+AXIS_LABEL_FONTSIZE = 22
+X_LABEL_PAD = -1
+TICKLABEL_FONTSIZE = 20
+PANEL_HEADING_FONTSIZE = 24
 BACKBONE_LABEL_PAD = 4
 BACKBONE_LABEL_X = -0.108
+MAJORITY_BASELINE_COLOR = "#000000"
+MAJORITY_BASELINE_LINESTYLE = "--"
+MAJORITY_BASELINE_LINEWIDTH = 2
+MAJORITY_BASELINE_ZORDER = 1.5
 
 
 @dataclass(frozen=True)
@@ -496,8 +515,10 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
         for column_index, dataset in enumerate(DATASETS):
             ax = axes[row_index, column_index]
             if row_index == 0:
+                majority_baseline = MAJORITY_BASELINE_PCT[dataset]
                 ax.set_title(
-                    f"({chr(97 + column_index)}) {DATASET_LABELS[dataset]}",
+                    f"({chr(97 + column_index)}) {DATASET_LABELS[dataset]}"
+                    f" (Majority Class: {majority_baseline:.2f}%)",
                     fontsize=PANEL_HEADING_FONTSIZE,
                     fontweight="medium",
                     pad=reference.TITLE_PAD,
@@ -528,6 +549,17 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
                     markerfacecolor="none",
                     markeredgewidth=reference.MARKEREDGEWIDTH,
                 )
+
+            majority_baseline = MAJORITY_BASELINE_PCT[dataset]
+            ax.axhline(
+                majority_baseline,
+                color=MAJORITY_BASELINE_COLOR,
+                linestyle=MAJORITY_BASELINE_LINESTYLE,
+                linewidth=MAJORITY_BASELINE_LINEWIDTH,
+                marker=None,
+                zorder=MAJORITY_BASELINE_ZORDER,
+                label=MAJORITY_LABEL,
+            )
 
             ax.set_xticks(range(len(X_EPS_VALUES)))
             ax.set_xticklabels(X_EPS_VALUES, rotation=30, ha="right")
@@ -561,21 +593,28 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
                 ax.yaxis.set_label_coords(BACKBONE_LABEL_X, 0.5)
 
     handles, labels = axes[0, 0].get_legend_handles_labels()
-    if labels != list(LINE_ORDER):
+    expected_labels = [*LINE_ORDER, MAJORITY_LABEL]
+    if len(labels) != len(expected_labels) or set(labels) != set(expected_labels):
         raise RuntimeError(f"Unexpected legend order: {labels}")
-    fig.legend(
-        handles,
-        labels,
-        loc="lower center",
-        bbox_to_anchor=LEGEND_BBOX,
-        ncol=LEGEND_NCOL,
-        fontsize=reference.LEGEND_FONTSIZE,
-        frameon=False,
-        shadow=False,
-        borderpad=reference.LEGEND_BORDERPAD,
-        handlelength=reference.LEGEND_HANDLELENGTH,
-        columnspacing=reference.LEGEND_COLUMNSPACING,
-    )
+    handles_by_label = dict(zip(labels, handles))
+    for legend_row, legend_bbox in (
+        (LEGEND_TOP_ROW, LEGEND_TOP_BBOX),
+        (LEGEND_BOTTOM_ROW, LEGEND_BOTTOM_BBOX),
+    ):
+        fig.legend(
+            [handles_by_label[label] for label in legend_row],
+            [LEGEND_DISPLAY_LABELS.get(label, label) for label in legend_row],
+            loc="lower center",
+            bbox_to_anchor=legend_bbox,
+            ncol=len(legend_row),
+            fontsize=reference.LEGEND_FONTSIZE,
+            frameon=False,
+            shadow=False,
+            borderpad=reference.LEGEND_BORDERPAD,
+            handlelength=reference.LEGEND_HANDLELENGTH,
+            columnspacing=LEGEND_COLUMNSPACING,
+            handletextpad=LEGEND_HANDLETEXTPAD,
+        )
     return fig, axes
 
 

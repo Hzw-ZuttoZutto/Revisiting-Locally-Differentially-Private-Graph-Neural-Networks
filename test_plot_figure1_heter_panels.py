@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from scripts import plot_figure1_heter_panels as plotter
 
@@ -42,8 +43,8 @@ def test_heter_figure_style_contract() -> None:
         assert math.isclose(fig.subplotpars.right, 0.99)
         assert math.isclose(fig.subplotpars.hspace, 0.44)
         assert math.isclose(fig.subplotpars.wspace, 0.16)
-        assert axes[0, 0].get_title() == "(a) Actor"
-        assert axes[0, 1].get_title() == "(b) Flickr"
+        assert axes[0, 0].get_title() == "(a) Actor (Majority Class: 25.86%)"
+        assert axes[0, 1].get_title() == "(b) Flickr (Majority Class: 11.72%)"
         assert {
             axes[0, column].title.get_fontsize() for column in range(2)
         } == {plotter.PANEL_HEADING_FONTSIZE}
@@ -65,14 +66,37 @@ def test_heter_figure_style_contract() -> None:
             assert axis.yaxis.label.get_fontsize() == plotter.PANEL_HEADING_FONTSIZE
             assert axis.yaxis.labelpad == plotter.BACKBONE_LABEL_PAD
             assert axis.yaxis.label.get_position() == (plotter.BACKBONE_LABEL_X, 0.5)
-        assert len(fig.legends) == 1
-        legend = fig.legends[0]
-        assert legend._ncols == 3
-        assert [text.get_text() for text in legend.get_texts()] == list(
-            plotter.LINE_ORDER
-        )
+        assert len(fig.legends) == 2
+        for legend, expected_row in zip(
+            fig.legends,
+            (plotter.LEGEND_TOP_ROW, plotter.LEGEND_BOTTOM_ROW),
+        ):
+            assert legend._ncols == len(expected_row)
+            assert [text.get_text() for text in legend.get_texts()] == [
+                plotter.LEGEND_DISPLAY_LABELS.get(label, label)
+                for label in expected_row
+            ]
+            assert legend.get_bbox_to_anchor()._bbox.x0 == 0.5
+        for column_index, dataset in enumerate(plotter.DATASETS):
+            expected_baseline = plotter.MAJORITY_BASELINE_PCT[dataset]
+            for axis in axes[:, column_index]:
+                assert len(axis.lines) == len(plotter.LINE_ORDER) + 1
+                baseline_line = axis.lines[-1]
+                assert np.allclose(
+                    np.asarray(baseline_line.get_ydata(), dtype=float),
+                    expected_baseline,
+                )
+                assert baseline_line.get_color() == plotter.MAJORITY_BASELINE_COLOR
+                assert (
+                    baseline_line.get_linestyle()
+                    == plotter.MAJORITY_BASELINE_LINESTYLE
+                )
+                assert baseline_line.get_linewidth() == plotter.MAJORITY_BASELINE_LINEWIDTH
+                assert baseline_line.get_marker() == "None"
+                assert baseline_line.get_label() == plotter.MAJORITY_LABEL
+                assert axis.get_ylim()[0] <= expected_baseline <= axis.get_ylim()[1]
+                assert list(axis.texts) == []
         for axis in axes.flat:
-            assert len(axis.lines) == len(plotter.LINE_ORDER)
             assert [container.get_label() for container in axis.containers] == list(
                 plotter.LINE_ORDER
             )
