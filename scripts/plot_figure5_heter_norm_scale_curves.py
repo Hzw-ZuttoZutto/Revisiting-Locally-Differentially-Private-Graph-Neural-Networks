@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import csv
+import math
+import re
 from decimal import Decimal
 from pathlib import Path
 
@@ -25,8 +27,20 @@ from plot_figure5_final_norm_scale_curves import (
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FIGURE5_ROOT = REPO_ROOT / "rebuttal_experiments" / "figure5_heter" / "figure5.yaml"
+DEFAULT_FEATFREE_MANIFEST = (
+    REPO_ROOT
+    / "rebuttal_experiments"
+    / "featfree_heter"
+    / "HOA"
+    / "attributedgraph-flickr"
+    / "sage"
+    / "random_projected.yaml"
+    / "manifest.csv"
+)
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "rebuttal_figure"
 EXPECTED_MANIFEST_ROWS = 168
+FEATFREE_LABEL = r"$\mathsf{FeatFree}$"
+VERIFY_DIR_RE = re.compile(r"^rank=(\d+)__repeat=(\d+)__candidate=(\d+)__")
 
 # These are the exact layout/style values embedded in the reference PDF.
 FIGSIZE_X = 13.2
@@ -56,6 +70,12 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_OUTPUT_DIR,
         help="Directory where figure5_heter.pdf and figure5_heter.png are written.",
+    )
+    parser.add_argument(
+        "--featfree-manifest",
+        type=Path,
+        default=DEFAULT_FEATFREE_MANIFEST,
+        help="Manifest for the Flickr GraphSAGE FeatFree reference.",
     )
     parser.add_argument(
         "--bootstrap-samples",
@@ -142,7 +162,124 @@ def load_records(figure5_root: Path) -> list[VerifyRecord]:
     return records
 
 
-def plot_curves(rows: list[dict[str, object]], output_dir: Path) -> None:
+def load_featfree_reference(manifest_path: Path) -> float:
+    if not manifest_path.is_file():
+        raise FileNotFoundError(f"FeatFree manifest not found: {manifest_path}")
+    with manifest_path.open("r", encoding="utf-8", newline="") as handle:
+        manifest_rows = list(csv.DictReader(handle))
+    if len(manifest_rows) != 1:
+        raise RuntimeError(
+            f"Expected one FeatFree row in {manifest_path}, found {len(manifest_rows)}"
+        )
+
+    manifest_row = manifest_rows[0]
+    expected_manifest = {
+        "dataset": "attributedgraph-flickr",
+        "feature": "random_normal",
+        "feature_dim": "12047",
+        "mechanism": "mbm",
+        "x_eps": "inf",
+        "m": "best",
+        "norm": "false",
+        "smoother": "hoa",
+        "backbone": "sage",
+        "use_nfr": "false",
+    }
+    for field, expected in expected_manifest.items():
+        actual = manifest_row.get(field, "").strip().lower()
+        if actual != expected:
+            raise RuntimeError(
+                f"Unexpected FeatFree {field} in {manifest_path}: "
+                f"expected {expected!r}, found {actual!r}"
+            )
+    if manifest_row.get("search_status", "") not in {"completed", "skipped_existing_result"}:
+        raise RuntimeError(
+            f"Incomplete FeatFree result in {manifest_path}: "
+            f"{manifest_row.get('search_status')!r}"
+        )
+
+    candidate_id = int(manifest_row["best_candidate_id"])
+    expected_hparams = {
+        "x_steps": float(manifest_row["best_x_steps"]),
+        "learning_rate": float(manifest_row["best_learning_rate"]),
+        "weight_decay": float(manifest_row["best_weight_decay"]),
+        "dropout": float(manifest_row["best_dropout"]),
+    }
+    job_dir = Path(manifest_row["job_dir"])
+    verify_dir = job_dir / "verify_top5"
+    if not verify_dir.is_dir():
+        raise RuntimeError(f"Missing FeatFree verify directory: {verify_dir}")
+
+    repeat_dirs: dict[int, Path] = {}
+    for child in sorted(verify_dir.iterdir()):
+        if not child.is_dir():
+            continue
+        match = VERIFY_DIR_RE.match(child.name)
+        if match is None or int(match.group(3)) != candidate_id:
+            continue
+        repeat_id = int(match.group(2))
+        if repeat_id in repeat_dirs:
+            raise RuntimeError(f"Duplicate FeatFree repeat {repeat_id} in {verify_dir}")
+        repeat_dirs[repeat_id] = child
+    if sorted(repeat_dirs) != list(range(1, EXPECTED_REPEATS + 1)):
+        raise RuntimeError(
+            f"Expected FeatFree repeats 1..{EXPECTED_REPEATS}, found {sorted(repeat_dirs)}"
+        )
+
+    test_accs: list[float] = []
+    seeds: list[int] = []
+    for repeat_id in range(1, EXPECTED_REPEATS + 1):
+        csv_files = sorted(repeat_dirs[repeat_id].glob("*.csv"))
+        if len(csv_files) != 1:
+            raise RuntimeError(
+                f"Expected one FeatFree CSV in {repeat_dirs[repeat_id]}, found {len(csv_files)}"
+            )
+        with csv_files[0].open("r", encoding="utf-8", newline="") as handle:
+            result_rows = list(csv.DictReader(handle))
+        if len(result_rows) != 1:
+            raise RuntimeError(f"Expected one row in {csv_files[0]}, found {len(result_rows)}")
+        result = result_rows[0]
+        expected_result = {
+            "dataset": "attributedgraph-flickr",
+            "feature": "random_normal",
+            "smoother": "hoa",
+            "model": "sage",
+        }
+        for field, expected in expected_result.items():
+            if result.get(field, "").strip().lower() != expected:
+                raise RuntimeError(f"Unexpected FeatFree {field} in {csv_files[0]}")
+        for field, expected in expected_hparams.items():
+            if not math.isclose(float(result[field]), expected, rel_tol=0.0, abs_tol=1e-12):
+                raise RuntimeError(f"FeatFree hyperparameter mismatch for {field} in {csv_files[0]}")
+        test_acc = float(result["test/acc"])
+        if not math.isfinite(test_acc):
+            raise RuntimeError(f"Non-finite FeatFree test accuracy in {csv_files[0]}")
+        test_accs.append(test_acc)
+        seeds.append(int(result["seed"]))
+
+    if len(set(seeds)) != EXPECTED_REPEATS:
+        raise RuntimeError(f"FeatFree verify seeds are not distinct: {seeds}")
+    featfree_mean = float(np.mean(test_accs))
+    featfree_std = float(np.std(test_accs, ddof=1))
+    for field, actual in (
+        ("best_verify_test_acc_mean", featfree_mean),
+        ("best_verify_test_acc_std", featfree_std),
+    ):
+        expected = float(manifest_row[field])
+        if not math.isclose(actual, expected, rel_tol=0.0, abs_tol=1e-9):
+            raise RuntimeError(
+                f"FeatFree manifest/raw mismatch for {field}: manifest={expected}, raw={actual}"
+            )
+    print(
+        f"FeatFree reference: {featfree_mean:.12f} "
+        f"(std={featfree_std:.12f}, n={len(test_accs)})"
+    )
+    return featfree_mean
+
+
+def plot_curves(
+    rows: list[dict[str, object]], featfree_acc: float, output_dir: Path
+) -> None:
     fig, ax = plt.subplots(figsize=(FIGSIZE_X, FIGSIZE_Y))
     fig.subplots_adjust(bottom=BOTTOM, top=TOP, left=LEFT, right=RIGHT)
 
@@ -176,6 +313,16 @@ def plot_curves(rows: list[dict[str, object]], output_dir: Path) -> None:
             markeredgewidth=2,
         )
 
+    ax.axhline(
+        featfree_acc,
+        color="black",
+        linestyle="--",
+        linewidth=2.4,
+        alpha=0.95,
+        zorder=1,
+        label=FEATFREE_LABEL,
+    )
+
     scale_values = [float(scale_value) for _, scale_value, _ in SCALE_SPECS]
     ax.set_xscale("log", base=2)
     ax.set_xticks(scale_values)
@@ -186,9 +333,13 @@ def plot_curves(rows: list[dict[str, object]], output_dir: Path) -> None:
     ax.grid(True, color="white", linestyle="-", linewidth=1, alpha=1.0)
     ax.tick_params(axis="both", which="major", labelsize=TICKLABEL_FONTSIZE)
     handles, labels = ax.get_legend_handles_labels()
+    handles_by_label = dict(zip(labels, handles))
+    epsilon_labels = [epsilon_label for _, epsilon_label in EPSILON_SPECS]
+    first_labels = epsilon_labels[:3]
+    second_labels = [*epsilon_labels[3:], FEATFREE_LABEL]
     first_legend = ax.legend(
-        handles[:3],
-        labels[:3],
+        [handles_by_label[label] for label in first_labels],
+        first_labels,
         loc="lower center",
         bbox_to_anchor=(0.5, -0.46),
         ncol=3,
@@ -201,11 +352,11 @@ def plot_curves(rows: list[dict[str, object]], output_dir: Path) -> None:
     )
     ax.add_artist(first_legend)
     ax.legend(
-        handles[3:],
-        labels[3:],
+        [handles_by_label[label] for label in second_labels],
+        second_labels,
         loc="lower center",
         bbox_to_anchor=(0.5, -0.64),
-        ncol=2,
+        ncol=3,
         fontsize=LEGEND_FONTSIZE,
         frameon=False,
         shadow=False,
@@ -233,7 +384,8 @@ def main() -> None:
         bootstrap_seed=args.bootstrap_seed,
     )
     validate_plot_rows(rows)
-    plot_curves(rows, args.output_dir)
+    featfree_acc = load_featfree_reference(args.featfree_manifest)
+    plot_curves(rows, featfree_acc, args.output_dir)
     print(f"Long rows: {len(records)}")
     print(f"Plot rows: {len(rows)}")
 

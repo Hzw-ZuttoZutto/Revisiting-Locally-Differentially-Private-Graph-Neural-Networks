@@ -18,13 +18,26 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+from matplotlib.ticker import MultipleLocator
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
 PAPER_ROOT = Path("/data/hzw/Rethinking_DP_GNN_runtime/paper_experiments")
 DEFAULT_FIGURE5_ROOT = PAPER_ROOT / "figure5_final"
 DEFAULT_FIGURE5_ADD_ROOT = PAPER_ROOT / "figure5_final_add"
 DEFAULT_FIGURE5_ADD_AGAIN_ROOT = PAPER_ROOT / "figure5_final_add_again"
 DEFAULT_OUTPUT_DIR = DEFAULT_FIGURE5_ROOT / "plots"
+DEFAULT_FEATFREE_MANIFEST = (
+    REPO_ROOT
+    / "rebuttal_experiments"
+    / "featfree_homo_rerun"
+    / "HOA"
+    / "cora"
+    / "sage"
+    / "random_projected.yaml"
+    / "manifest.csv"
+)
+FEATFREE_LABEL = r"$\mathsf{FeatFree}$"
 
 EPSILON_SPECS = (
     (Decimal("0.0001"), r"$\epsilon=10^{-4}$"),
@@ -55,18 +68,20 @@ plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
 
 TITLE_FONTSIZE = 18
-FONTSIZE = 15
-X_LABEL_FONTSIZE = 15
-LEGEND_FONTSIZE = 13
-TICKLABEL_FONTSIZE = 10
-LINEWIDTH = 2
-MARKERSIZE = 8
+FONTSIZE = 31
+X_LABEL_FONTSIZE = 0.60 * 30
+TICKLABEL_FONTSIZE = 22
+X_TICKLABEL_FONTSIZE = 0.75 * TICKLABEL_FONTSIZE
+LEGEND_FONTSIZE = TICKLABEL_FONTSIZE
+LINEWIDTH = 2.5
+MARKERSIZE = 11
 FIGSIZE_X = 13.2
-FIGSIZE_Y = 5.6
-BOTTOM = 0.26
-TOP = 0.92
+FIGSIZE_Y = 7.1
+BOTTOM = 0.36
+COORDINATE_AREA_HEIGHT_SCALE = 0.75
+TOP = BOTTOM + (0.99 - BOTTOM) * COORDINATE_AREA_HEIGHT_SCALE
 LEFT = 0.08
-RIGHT = 0.99
+RIGHT = 0.985
 
 STYLE_CONFIGS = {
     Decimal("0.0001"): {"color": "#5372ab", "marker": "s", "linestyle": "-"},
@@ -142,6 +157,12 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_OUTPUT_DIR,
         help="Directory where PDF/PNG/CSV outputs will be written.",
+    )
+    parser.add_argument(
+        "--featfree-manifest",
+        type=Path,
+        default=DEFAULT_FEATFREE_MANIFEST,
+        help="Manifest for the Cora GraphSAGE FeatFree reference.",
     )
     parser.add_argument(
         "--bootstrap-samples",
@@ -580,7 +601,121 @@ def validate_plot_rows(rows: list[dict[str, Any]]) -> None:
             raise RuntimeError(f"CI does not contain mean for {row}")
 
 
-def plot_curves(rows: list[dict[str, Any]], output_dir: Path) -> None:
+def load_featfree_reference(manifest_path: Path) -> float:
+    manifest_rows = load_manifest(manifest_path)
+    if len(manifest_rows) != 1:
+        raise RuntimeError(
+            f"Expected one FeatFree row in {manifest_path}, found {len(manifest_rows)}"
+        )
+    manifest_row = manifest_rows[0]
+    expected_manifest = {
+        "dataset": "cora",
+        "feature": "random_normal",
+        "feature_dim": "1433",
+        "mechanism": "mbm",
+        "x_eps": "inf",
+        "m": "best",
+        "norm": "false",
+        "smoother": "hoa",
+        "backbone": "sage",
+        "use_nfr": "false",
+    }
+    for field, expected in expected_manifest.items():
+        actual = manifest_row.get(field, "").strip().lower()
+        if actual != expected:
+            raise RuntimeError(
+                f"Unexpected FeatFree {field} in {manifest_path}: "
+                f"expected {expected!r}, found {actual!r}"
+            )
+    if manifest_row.get("search_status", "") not in {"completed", "skipped_existing_result"}:
+        raise RuntimeError(
+            f"Incomplete FeatFree result in {manifest_path}: "
+            f"{manifest_row.get('search_status')!r}"
+        )
+
+    job_dir = Path(manifest_row["job_dir"])
+    candidate = load_best_candidate(job_dir)
+    if candidate.candidate_id != int(manifest_row["best_candidate_id"]):
+        raise RuntimeError(
+            f"FeatFree candidate mismatch: best_config={candidate.candidate_id}, "
+            f"manifest={manifest_row['best_candidate_id']}"
+        )
+    expected_hparams = {
+        "x_steps": candidate.x_steps,
+        "learning_rate": candidate.learning_rate,
+        "weight_decay": candidate.weight_decay,
+        "dropout": candidate.dropout,
+        "tao2": candidate.tao2,
+    }
+    verify_root = job_dir / "verify_top5"
+    if not verify_root.is_dir():
+        raise FileNotFoundError(f"Missing FeatFree verify_top5 directory: {verify_root}")
+
+    repeat_dirs: dict[int, Path] = {}
+    for verify_dir in sorted(verify_root.glob("rank=*__repeat=*__candidate=*__*")):
+        if not verify_dir.is_dir():
+            continue
+        parsed = parse_verify_dir(verify_dir)
+        if parsed is None or not candidate_matches_dir(candidate, parsed):
+            continue
+        repeat = int(parsed["repeat"])
+        if repeat in repeat_dirs:
+            raise RuntimeError(f"Duplicate FeatFree repeat {repeat} in {verify_root}")
+        repeat_dirs[repeat] = verify_dir
+    if sorted(repeat_dirs) != list(range(1, EXPECTED_REPEATS + 1)):
+        raise RuntimeError(
+            f"Expected FeatFree repeats 1..{EXPECTED_REPEATS}, found {sorted(repeat_dirs)}"
+        )
+
+    test_accs: list[float] = []
+    seeds: list[str] = []
+    for repeat in range(1, EXPECTED_REPEATS + 1):
+        csv_paths = sorted(repeat_dirs[repeat].glob("*.csv"))
+        if len(csv_paths) != 1:
+            raise RuntimeError(
+                f"Expected one FeatFree CSV in {repeat_dirs[repeat]}, found {len(csv_paths)}"
+            )
+        csv_path = csv_paths[0]
+        result = read_single_result_csv(csv_path)
+        expected_result = {
+            "dataset": "cora",
+            "feature": "random_normal",
+            "feature_dim": "1433",
+            "smoother": "hoa",
+            "model": "sage",
+        }
+        for field, expected in expected_result.items():
+            if result.get(field, "").strip().lower() != expected:
+                raise RuntimeError(f"Unexpected FeatFree {field} in {csv_path}")
+        for field, expected in expected_hparams.items():
+            if normalize_scalar(result.get(field)) != expected:
+                raise RuntimeError(f"FeatFree hyperparameter mismatch for {field} in {csv_path}")
+        test_accs.append(require_float(result, "test/acc", csv_path))
+        seeds.append(result.get("seed", ""))
+
+    if len(set(seeds)) != EXPECTED_REPEATS:
+        raise RuntimeError(f"FeatFree verify seeds are not distinct: {seeds}")
+    featfree_mean = float(np.mean(test_accs))
+    featfree_std = float(np.std(test_accs, ddof=1))
+    for field, actual in (
+        ("best_verify_test_acc_mean", featfree_mean),
+        ("best_verify_test_acc_std", featfree_std),
+    ):
+        expected = float(manifest_row[field])
+        if not math.isclose(actual, expected, rel_tol=0.0, abs_tol=1e-9):
+            raise RuntimeError(
+                f"FeatFree manifest/raw mismatch for {field}: manifest={expected}, raw={actual}"
+            )
+    print(
+        f"FeatFree reference: {featfree_mean:.12f} "
+        f"(std={featfree_std:.12f}, n={len(test_accs)})"
+    )
+    return featfree_mean
+
+
+def plot_curves(
+    rows: list[dict[str, Any]], featfree_acc: float, output_dir: Path
+) -> None:
     fig, ax = plt.subplots(figsize=(FIGSIZE_X, FIGSIZE_Y))
     fig.subplots_adjust(bottom=BOTTOM, top=TOP, left=LEFT, right=RIGHT)
 
@@ -611,30 +746,80 @@ def plot_curves(rows: list[dict[str, Any]], output_dir: Path) -> None:
             markeredgewidth=2,
         )
 
+    ax.axhline(
+        featfree_acc,
+        color="black",
+        linestyle="--",
+        linewidth=2.4,
+        alpha=0.95,
+        zorder=1,
+        label=FEATFREE_LABEL,
+    )
+
+    data_y_bottom = min(
+        featfree_acc,
+        min(float(row["test_acc_ci_low"]) for row in rows),
+    )
+    data_y_top = max(
+        featfree_acc,
+        max(float(row["test_acc_ci_high"]) for row in rows),
+    )
+    ax.set_ylim(bottom=data_y_bottom, top=data_y_top)
+
     scale_values = [float(scale_value) for _, scale_value, _ in SCALE_SPECS]
     ax.set_xscale("log", base=2)
     ax.set_xticks(scale_values)
     ax.set_xticklabels(SCALE_LABELS, rotation=35, ha="right")
     ax.axvline(float(Decimal("1")), color="black", linestyle="--", linewidth=2.4, alpha=0.95, zorder=0)
-    ax.set_xlabel(r"$r$", fontsize=X_LABEL_FONTSIZE, fontweight="medium")
+    ax.set_xlabel(
+        r"$r$",
+        fontsize=X_LABEL_FONTSIZE,
+        fontweight="medium",
+        labelpad=0,
+    )
     ax.set_ylabel("Test Accuracy", fontsize=FONTSIZE, fontweight="medium")
+    ax.yaxis.set_major_locator(MultipleLocator(2.5))
     ax.grid(True, color="white", linestyle="-", linewidth=1, alpha=1.0)
-    ax.tick_params(axis="both", which="major", labelsize=TICKLABEL_FONTSIZE)
-    ax.legend(
+    ax.tick_params(axis="x", which="major", labelsize=X_TICKLABEL_FONTSIZE)
+    ax.tick_params(axis="y", which="major", labelsize=X_TICKLABEL_FONTSIZE)
+    handles, labels = ax.get_legend_handles_labels()
+    handles_by_label = dict(zip(labels, handles))
+    epsilon_labels = [epsilon_label for _, epsilon_label in EPSILON_SPECS]
+    first_labels = epsilon_labels[:3]
+    second_labels = [*epsilon_labels[3:], FEATFREE_LABEL]
+    first_legend = ax.legend(
+        [handles_by_label[label] for label in first_labels],
+        first_labels,
         loc="lower center",
-        bbox_to_anchor=(0.5, -0.33),
-        ncol=len(EPSILON_SPECS),
+        bbox_to_anchor=(0.5, -0.39),
+        ncol=3,
         fontsize=LEGEND_FONTSIZE,
         frameon=False,
         shadow=False,
-        borderpad=1,
+        borderpad=0.2,
+        handlelength=1.5,
+        columnspacing=0.85,
+    )
+    ax.add_artist(first_legend)
+    ax.legend(
+        [handles_by_label[label] for label in second_labels],
+        second_labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, -0.52),
+        ncol=3,
+        fontsize=LEGEND_FONTSIZE,
+        frameon=False,
+        shadow=False,
+        borderpad=0.2,
+        handlelength=1.5,
+        columnspacing=0.85,
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)
     pdf_path = output_dir / "figure5_final_norm_scale_curves.pdf"
     png_path = output_dir / "figure5_final_norm_scale_curves.png"
-    fig.savefig(pdf_path, dpi=300)
-    fig.savefig(png_path, dpi=300)
+    fig.savefig(pdf_path, dpi=300, bbox_inches="tight", pad_inches=0.01)
+    fig.savefig(png_path, dpi=300, bbox_inches="tight", pad_inches=0.01)
     plt.close(fig)
     print(f"Saved {pdf_path}")
     print(f"Saved {png_path}")
@@ -654,7 +839,8 @@ def main() -> None:
     plot_data_path = args.output_dir / "figure5_final_norm_scale_plot_data.csv"
     write_long_csv(long_csv_path, records)
     write_plot_data(plot_data_path, plot_rows)
-    plot_curves(plot_rows, args.output_dir)
+    featfree_acc = load_featfree_reference(args.featfree_manifest)
+    plot_curves(plot_rows, featfree_acc, args.output_dir)
     print(f"Saved {long_csv_path}")
     print(f"Saved {plot_data_path}")
     print(f"Long rows: {len(records)}")

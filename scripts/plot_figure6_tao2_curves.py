@@ -17,6 +17,13 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import MultipleLocator
+
+from plot_figure5_final_norm_scale_curves import (
+    DEFAULT_FEATFREE_MANIFEST,
+    FEATFREE_LABEL,
+    load_featfree_reference,
+)
 
 
 PAPER_ROOT = Path("/data/hzw/Rethinking_DP_GNN_runtime/paper_experiments")
@@ -69,18 +76,20 @@ plt.style.use("seaborn-v0_8-darkgrid")
 plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
 
-FONTSIZE = 15
-X_LABEL_FONTSIZE = 15
-LEGEND_FONTSIZE = 13
-TICKLABEL_FONTSIZE = 10
-LINEWIDTH = 2
-MARKERSIZE = 8
+FONTSIZE = 31
+LEGEND_FONTSIZE = 26
+X_LABEL_FONTSIZE = LEGEND_FONTSIZE
+TICKLABEL_FONTSIZE = 22
+X_TICKLABEL_FONTSIZE = 0.8 * TICKLABEL_FONTSIZE
+LINEWIDTH = 2.5
+MARKERSIZE = 11
 FIGSIZE_X = 13.2
-FIGSIZE_Y = 5.6
-BOTTOM = 0.30
-TOP = 0.96
+FIGSIZE_Y = 7.1
+BOTTOM = 0.36
+COORDINATE_AREA_HEIGHT_SCALE = 0.75
+TOP = BOTTOM + (0.99 - BOTTOM) * COORDINATE_AREA_HEIGHT_SCALE
 LEFT = 0.08
-RIGHT = 0.99
+RIGHT = 0.985
 
 STYLE_CONFIGS = {
     Decimal("0.0001"): {"color": "#5372ab", "marker": "s", "linestyle": "-"},
@@ -126,6 +135,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--figure6-add-root", type=Path, default=DEFAULT_FIGURE6_ADD_ROOT)
     parser.add_argument("--figure6-add-again-root", type=Path, default=DEFAULT_FIGURE6_ADD_AGAIN_ROOT)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument(
+        "--featfree-manifest",
+        type=Path,
+        default=DEFAULT_FEATFREE_MANIFEST,
+        help="Manifest for the matching Cora GraphSAGE FeatFree reference.",
+    )
     parser.add_argument("--bootstrap-samples", type=int, default=BOOTSTRAP_SAMPLES)
     parser.add_argument("--bootstrap-seed", type=int, default=BOOTSTRAP_SEED)
     return parser.parse_args()
@@ -498,7 +513,9 @@ def validate_plot_rows(rows: list[dict[str, Any]]) -> None:
             raise RuntimeError(f"CI does not contain mean for {row}")
 
 
-def plot_curves(rows: list[dict[str, Any]], output_dir: Path) -> None:
+def plot_curves(
+    rows: list[dict[str, Any]], featfree_acc: float, output_dir: Path
+) -> None:
     fig, ax = plt.subplots(figsize=(FIGSIZE_X, FIGSIZE_Y))
     fig.subplots_adjust(bottom=BOTTOM, top=TOP, left=LEFT, right=RIGHT)
 
@@ -529,31 +546,81 @@ def plot_curves(rows: list[dict[str, Any]], output_dir: Path) -> None:
             markeredgewidth=2,
         )
 
+    ax.axhline(
+        featfree_acc,
+        color="black",
+        linestyle="--",
+        linewidth=2.4,
+        alpha=0.95,
+        zorder=1,
+        label=FEATFREE_LABEL,
+    )
+
+    data_y_bottom = min(
+        featfree_acc,
+        min(float(row["test_acc_ci_low"]) for row in rows),
+    )
+    data_y_top = max(
+        featfree_acc,
+        max(float(row["test_acc_ci_high"]) for row in rows),
+    )
+    ax.set_ylim(bottom=data_y_bottom, top=data_y_top)
+
     tick_values = [float(delta) for _, delta, _ in TAO2_SPECS]
     tick_labels = [label for _, _, label in TAO2_SPECS]
     ax.set_xscale("log", base=2)
     ax.set_xticks(tick_values)
     ax.set_xticklabels(tick_labels, rotation=35, ha="right")
     ax.invert_xaxis()
-    ax.set_xlabel(r"$1-\tau_2$", fontsize=X_LABEL_FONTSIZE, fontweight="medium")
+    ax.set_xlabel(
+        r"$1-\tau$",
+        fontsize=X_LABEL_FONTSIZE,
+        fontweight="medium",
+        labelpad=0,
+    )
     ax.set_ylabel("Test Accuracy", fontsize=FONTSIZE, fontweight="medium")
+    ax.yaxis.set_major_locator(MultipleLocator(2))
     ax.grid(True, color="white", linestyle="-", linewidth=1, alpha=1.0)
-    ax.tick_params(axis="both", which="major", labelsize=TICKLABEL_FONTSIZE)
-    ax.legend(
+    ax.tick_params(axis="x", which="major", labelsize=X_TICKLABEL_FONTSIZE)
+    ax.tick_params(axis="y", which="major", labelsize=TICKLABEL_FONTSIZE)
+    handles, labels = ax.get_legend_handles_labels()
+    handles_by_label = dict(zip(labels, handles))
+    epsilon_labels = [epsilon_label for _, epsilon_label in EPSILON_SPECS]
+    first_labels = epsilon_labels[:3]
+    second_labels = [*epsilon_labels[3:], FEATFREE_LABEL]
+    first_legend = ax.legend(
+        [handles_by_label[label] for label in first_labels],
+        first_labels,
         loc="lower center",
-        bbox_to_anchor=(0.5, -0.38),
-        ncol=len(EPSILON_SPECS),
+        bbox_to_anchor=(0.5, -0.47),
+        ncol=3,
         fontsize=LEGEND_FONTSIZE,
         frameon=False,
         shadow=False,
-        borderpad=1,
+        borderpad=0.2,
+        handlelength=1.5,
+        columnspacing=0.85,
+    )
+    ax.add_artist(first_legend)
+    ax.legend(
+        [handles_by_label[label] for label in second_labels],
+        second_labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, -0.60),
+        ncol=3,
+        fontsize=LEGEND_FONTSIZE,
+        frameon=False,
+        shadow=False,
+        borderpad=0.2,
+        handlelength=1.5,
+        columnspacing=0.85,
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)
     pdf_path = output_dir / "figure6_tao2_curves.pdf"
     png_path = output_dir / "figure6_tao2_curves.png"
-    fig.savefig(pdf_path, dpi=300)
-    fig.savefig(png_path, dpi=300)
+    fig.savefig(pdf_path, dpi=300, bbox_inches="tight", pad_inches=0.01)
+    fig.savefig(png_path, dpi=300, bbox_inches="tight", pad_inches=0.01)
     plt.close(fig)
     print(f"Saved {pdf_path}")
     print(f"Saved {png_path}")
@@ -573,7 +640,8 @@ def main() -> None:
     plot_data_path = args.output_dir / "figure6_tao2_plot_data.csv"
     write_long_csv(long_csv_path, records)
     write_plot_data(plot_data_path, plot_rows)
-    plot_curves(plot_rows, args.output_dir)
+    featfree_acc = load_featfree_reference(args.featfree_manifest)
+    plot_curves(plot_rows, featfree_acc, args.output_dir)
     print(f"Saved {long_csv_path}")
     print(f"Saved {plot_data_path}")
     print(f"Long rows: {len(records)}")
