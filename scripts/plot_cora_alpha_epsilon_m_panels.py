@@ -198,7 +198,7 @@ def plot_panels(output_dir: Path, num_points: int) -> None:
             1.0: (-125, -28),
             10.0: (-42, 44),
         },
-        ylabel=r"$\beta_{\epsilon,d}$",
+        ylabel=r"$\beta(\varepsilon,d)$",
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)

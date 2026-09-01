@@ -44,6 +44,23 @@ EPSILON_SPECS = (
 )
 EPSILON_TO_INDEX = {epsilon: idx for idx, (epsilon, _) in enumerate(EPSILON_SPECS)}
 EPSILON_LABELS = [label for _, label in EPSILON_SPECS]
+EPSILON_TICK_LABELS = [
+    r"$10^{-5}$",
+    r"$10^{-4}$",
+    r"$10^{-3}$",
+    r"$10^{-2}$",
+    r"$10^{-1}$",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+]
 
 MECHANISMS = ("mbm", "pm", "hds")
 MECHANISM_LABELS = {"mbm": "MBM", "pm": "PM", "hds": "HDS"}
@@ -77,19 +94,25 @@ plt.style.use("seaborn-v0_8-darkgrid")
 plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
 
-TITLE_FONTSIZE = 18
-FONTSIZE = 14
-X_LABEL_FONTSIZE = 14
-LEGEND_FONTSIZE = 14
-TICKLABEL_FONTSIZE = 10
-LINEWIDTH = 2
-MARKERSIZE = 8
-FIGSIZE_X = 17.0
-FIGSIZE_Y = 4.8
-BOTTOM = 0.285
-TOP = 0.88
-LEFT = 0.06
-RIGHT = 0.995
+LEGEND_FONTSIZE = 28
+TITLE_FONTSIZE = LEGEND_FONTSIZE
+TITLE_PAD = 8
+FONTSIZE = 28
+X_LABEL_FONTSIZE = 28
+X_LABELPAD = -6
+TICKLABEL_FONTSIZE = 20
+LINEWIDTH = 2.4
+MARKERSIZE = 10
+FIGSIZE_X = 22.0
+FIGSIZE_Y = 6.4
+BOTTOM = 0.30
+BASE_TOP = 0.90
+COORDINATE_AREA_HEIGHT_SCALE = 0.75
+TOP = BOTTOM + (BASE_TOP - BOTTOM) * COORDINATE_AREA_HEIGHT_SCALE
+LEFT = 0.04
+RIGHT = 0.96
+LEGEND_ANCHOR = (0.465, 0.0525)
+EXPORT_PAD_INCHES = 0
 
 STYLE_CONFIGS = {
     "LDP-MBM": {"color": "#5372ab", "marker": "s", "linestyle": "-"},
@@ -100,6 +123,11 @@ STYLE_CONFIGS = {
     "SIM-HDS": {"color": "#d3a1c8", "marker": "P", "linestyle": "--"},
 }
 LINE_ORDER = ("LDP-MBM", "SIM-MBM", "LDP-PM", "SIM-PM", "LDP-HDS", "SIM-HDS")
+Y_TICKS = {
+    "mbm": (76, 78, 80, 82, 84),
+    "pm": (76, 78, 80, 82, 84, 86),
+    "hds": (76, 78, 80, 82, 84),
+}
 
 
 @dataclass(frozen=True)
@@ -539,11 +567,16 @@ def validate_plot_rows(rows: list[dict[str, Any]]) -> None:
 
 def plot_panels(rows: list[dict[str, Any]], output_dir: Path) -> None:
     fig, axes = plt.subplots(1, len(MECHANISMS), figsize=(FIGSIZE_X, FIGSIZE_Y), sharex=False, sharey=False)
-    fig.subplots_adjust(bottom=BOTTOM, top=TOP, left=LEFT, right=RIGHT, wspace=0.18)
+    fig.subplots_adjust(bottom=BOTTOM, top=TOP, left=LEFT, right=RIGHT, wspace=0.10)
 
     for col_idx, mechanism in enumerate(MECHANISMS):
         ax = axes[col_idx]
-        ax.set_title(f"({chr(97 + col_idx)}) {MECHANISM_LABELS[mechanism]}", fontsize=TITLE_FONTSIZE, fontweight="medium")
+        ax.set_title(
+            f"({chr(97 + col_idx)}) {MECHANISM_LABELS[mechanism]}",
+            fontsize=TITLE_FONTSIZE,
+            fontweight="medium",
+            pad=TITLE_PAD,
+        )
         panel = [row for row in rows if row["mechanism"] == mechanism]
         for source in ("ldp", "sim"):
             line_label = f"{SOURCES[source]['label_prefix']}-{MECHANISM_LABELS[mechanism]}"
@@ -571,8 +604,14 @@ def plot_panels(rows: list[dict[str, Any]], output_dir: Path) -> None:
             )
 
         ax.set_xticks(range(len(EPSILON_LABELS)))
-        ax.set_xticklabels(EPSILON_LABELS, rotation=35, ha="right")
-        ax.set_xlabel(r"$\epsilon$", fontsize=X_LABEL_FONTSIZE, fontweight="medium")
+        ax.set_xticklabels(EPSILON_TICK_LABELS, rotation=35, ha="right")
+        ax.set_yticks(Y_TICKS[mechanism])
+        ax.set_xlabel(
+            r"$\epsilon$",
+            fontsize=X_LABEL_FONTSIZE,
+            fontweight="medium",
+            labelpad=X_LABELPAD,
+        )
         ax.grid(True, color="white", linestyle="-", linewidth=1, alpha=1.0)
         ax.tick_params(axis="both", which="major", labelsize=TICKLABEL_FONTSIZE)
         if col_idx == 0:
@@ -596,19 +635,21 @@ def plot_panels(rows: list[dict[str, Any]], output_dir: Path) -> None:
     fig.legend(
         handles=legend_handles,
         loc="lower center",
-        bbox_to_anchor=(0.5, 0.025),
+        bbox_to_anchor=LEGEND_ANCHOR,
         ncol=len(LINE_ORDER),
         fontsize=LEGEND_FONTSIZE,
         frameon=False,
         shadow=False,
-        borderpad=1,
+        borderpad=0,
+        handlelength=1.5,
+        columnspacing=0.9,
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)
     pdf_path = output_dir / "figure4_final_ldp_sim_panels.pdf"
     png_path = output_dir / "figure4_final_ldp_sim_panels.png"
-    fig.savefig(pdf_path, dpi=300)
-    fig.savefig(png_path, dpi=300)
+    fig.savefig(pdf_path, dpi=300, bbox_inches="tight", pad_inches=EXPORT_PAD_INCHES)
+    fig.savefig(png_path, dpi=300, bbox_inches="tight", pad_inches=EXPORT_PAD_INCHES)
     plt.close(fig)
     print(f"Saved {pdf_path}")
     print(f"Saved {png_path}")

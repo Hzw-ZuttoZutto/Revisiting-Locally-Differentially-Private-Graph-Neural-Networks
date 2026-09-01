@@ -46,15 +46,21 @@ VERIFY_DIR_RE = re.compile(r"^rank=(\d+)__repeat=(\d+)__candidate=(\d+)__")
 FIGSIZE_X = 13.2
 FIGSIZE_Y = 7.1
 BOTTOM = 0.36
-TOP = 0.99
+BASE_TOP = 0.99
+COORDINATE_AREA_HEIGHT_SCALE = 0.75
+TOP = BOTTOM + (BASE_TOP - BOTTOM) * COORDINATE_AREA_HEIGHT_SCALE
 LEFT = 0.08
 RIGHT = 0.985
 FONTSIZE = 31
 X_LABEL_FONTSIZE = 30
-LEGEND_FONTSIZE = 30
+X_LABELPAD = -6
+LEGEND_FONTSIZE = 0.9 * 30
 TICKLABEL_FONTSIZE = 22
 LINEWIDTH = 2.5
 MARKERSIZE = 11
+Y_TICKS = (20, 30, 40, 50, 60)
+FIRST_LEGEND_ANCHOR = (0.5, -0.4975)
+SECOND_LEGEND_ANCHOR = (0.5, -0.6675)
 
 
 def parse_args() -> argparse.Namespace:
@@ -327,8 +333,14 @@ def plot_curves(
     ax.set_xscale("log", base=2)
     ax.set_xticks(scale_values)
     ax.set_xticklabels(SCALE_LABELS, rotation=35, ha="right")
+    ax.set_yticks(Y_TICKS)
     ax.axvline(1.0, color="black", linestyle="--", linewidth=2.4, alpha=0.95, zorder=0)
-    ax.set_xlabel(r"$r$", fontsize=X_LABEL_FONTSIZE, fontweight="medium")
+    ax.set_xlabel(
+        r"$r$",
+        fontsize=X_LABEL_FONTSIZE,
+        fontweight="medium",
+        labelpad=X_LABELPAD,
+    )
     ax.set_ylabel("Test Accuracy", fontsize=FONTSIZE, fontweight="medium")
     ax.grid(True, color="white", linestyle="-", linewidth=1, alpha=1.0)
     ax.tick_params(axis="both", which="major", labelsize=TICKLABEL_FONTSIZE)
@@ -341,7 +353,7 @@ def plot_curves(
         [handles_by_label[label] for label in first_labels],
         first_labels,
         loc="lower center",
-        bbox_to_anchor=(0.5, -0.46),
+        bbox_to_anchor=FIRST_LEGEND_ANCHOR,
         ncol=3,
         fontsize=LEGEND_FONTSIZE,
         frameon=False,
@@ -355,7 +367,7 @@ def plot_curves(
         [handles_by_label[label] for label in second_labels],
         second_labels,
         loc="lower center",
-        bbox_to_anchor=(0.5, -0.64),
+        bbox_to_anchor=SECOND_LEGEND_ANCHOR,
         ncol=3,
         fontsize=LEGEND_FONTSIZE,
         frameon=False,
