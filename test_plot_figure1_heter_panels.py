@@ -35,6 +35,11 @@ def synthetic_rows() -> list[dict[str, object]]:
 def test_heter_figure_style_contract() -> None:
     fig, axes = plotter.build_figure(synthetic_rows())
     try:
+        assert plotter.PANEL_Y_TICKS == {
+            ("gcn", "actor"): (25.0, 27.5, 30.0),
+            ("gcn", "attributedgraph-flickr"): (25.0, 37.5, 50.0, 62.5),
+            ("gat", "attributedgraph-flickr"): (20.0, 30.0, 40.0, 50.0),
+        }
         assert axes.shape == (3, 2)
         assert tuple(fig.get_size_inches()) == (12.0, 11.5)
         assert math.isclose(fig.subplotpars.bottom, 0.19)
@@ -66,6 +71,13 @@ def test_heter_figure_style_contract() -> None:
             assert axis.yaxis.label.get_fontsize() == plotter.PANEL_HEADING_FONTSIZE
             assert axis.yaxis.labelpad == plotter.BACKBONE_LABEL_PAD
             assert axis.yaxis.label.get_position() == (plotter.BACKBONE_LABEL_X, 0.5)
+        for (backbone, dataset), expected_ticks in plotter.PANEL_Y_TICKS.items():
+            row = plotter.BACKBONES.index(backbone)
+            column = plotter.DATASETS.index(dataset)
+            assert tuple(axes[row, column].get_yticks()) == expected_ticks
+        assert tuple(axes[1, 0].get_yticks()) == (20.0, 25.0, 30.0, 35.0, 40.0)
+        assert tuple(axes[1, 1].get_yticks()) == (10.0, 20.0, 30.0, 40.0)
+        assert tuple(axes[2, 0].get_yticks()) == (20.0, 25.0, 30.0, 35.0, 40.0)
         assert len(fig.legends) == 2
         for legend, expected_row in zip(
             fig.legends,

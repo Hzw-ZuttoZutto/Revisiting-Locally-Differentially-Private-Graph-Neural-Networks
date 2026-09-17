@@ -75,6 +75,25 @@ def test_frozen_style_contract() -> None:
         r"$\mathsf{FeatFree}$",
         r"$\mathsf{Non\text{-}private}$",
     )
+    assert plotter.MAJORITY_BASELINE_PCT == {
+        "cora": 100 * 818 / 2708,
+        "lastfm": 100 * 1572 / 7083,
+        "citeseer": 100 * 701 / 3327,
+        "facebook": 100 * 6880 / 22470,
+    }
+    assert plotter.MAJORITY_LABEL == r"$\mathsf{Majority\text{-}Class}$"
+    assert (
+        plotter.MAIN_AXIS_HEIGHT_FRACTION,
+        plotter.BASELINE_AXIS_HEIGHT_FRACTION,
+        plotter.AXIS_BREAK_GAP_FRACTION,
+    ) == (0.90, 0.075, 0.025)
+    assert (
+        plotter.BASELINE_AXIS_HALF_RANGE,
+        plotter.MAJORITY_BASELINE_COLOR,
+        plotter.MAJORITY_BASELINE_LINESTYLE,
+        plotter.MAJORITY_BASELINE_LINEWIDTH,
+        plotter.MAJORITY_BASELINE_ZORDER,
+    ) == (1.0, "#000000", "--", 2, 1.5)
     expected_styles = (
         ("#5372ab", "s", "-"),
         ("#936bb9", "^", "-"),
@@ -96,7 +115,9 @@ def test_frozen_style_contract() -> None:
 def test_frozen_figure_artists() -> None:
     fig, axes = plotter.build_figure(synthetic_plot_rows())
     try:
+        baseline_axes = fig._figure1_baseline_axes
         assert axes.shape == (3, 4)
+        assert baseline_axes.shape == (3, 4)
         np.testing.assert_allclose(fig.get_size_inches(), [20, 11.5])
         assert math.isclose(fig.subplotpars.bottom, 0.14)
         assert math.isclose(fig.subplotpars.top, 0.92)
@@ -108,6 +129,7 @@ def test_frozen_figure_artists() -> None:
         for column, dataset in enumerate(plotter.DATASETS):
             assert axes[0, column].get_title() == (
                 f"({chr(97 + column)}) {plotter.DATASET_LABELS[dataset]}"
+                f" (Majority-Class: {plotter.MAJORITY_BASELINE_PCT[dataset]:.2f}%)"
             )
             assert axes[0, column].title.get_fontsize() == 18
             assert axes[0, column].title.get_fontweight() == "medium"
@@ -122,14 +144,30 @@ def test_frozen_figure_artists() -> None:
                 assert axes[row, column].get_ylabel() == ""
 
         axis = axes[0, 0]
-        assert axis.get_xlabel() == r"$\epsilon$"
-        assert axis.xaxis.label.get_fontsize() == 18
-        assert [tick.get_text() for tick in axis.get_xticklabels()] == list(
+        baseline_axis = baseline_axes[0, 0]
+        assert axis.get_xlabel() == ""
+        assert list(axis.get_xticklabels()) == []
+        assert baseline_axis.get_xlabel() == r"$\epsilon$"
+        assert baseline_axis.xaxis.label.get_fontsize() == 18
+        assert [tick.get_text() for tick in baseline_axis.get_xticklabels()] == list(
             plotter.X_EPS_VALUES
         )
-        assert all(tick.get_rotation() == 30 for tick in axis.get_xticklabels())
-        assert all(tick.get_ha() == "right" for tick in axis.get_xticklabels())
-        assert all(tick.get_fontsize() == 15 for tick in axis.get_xticklabels())
+        assert all(
+            tick.get_rotation() == 30 for tick in baseline_axis.get_xticklabels()
+        )
+        assert all(tick.get_ha() == "right" for tick in baseline_axis.get_xticklabels())
+        assert all(
+            tick.get_fontsize() == 15 for tick in baseline_axis.get_xticklabels()
+        )
+        assert math.isclose(
+            axis.get_position().height / baseline_axis.get_position().height,
+            plotter.MAIN_AXIS_HEIGHT_FRACTION
+            / plotter.BASELINE_AXIS_HEIGHT_FRACTION,
+        )
+        assert axis.get_position().y0 > baseline_axis.get_position().y1
+        np.testing.assert_allclose(axis.get_facecolor(), baseline_axis.get_facecolor())
+        assert len(axis.patches) == 2
+        assert len(baseline_axis.patches) == 2
 
         assert len(axis.lines) == len(plotter.LINE_ORDER)
         assert [container.get_label() for container in axis.containers] == list(
@@ -145,14 +183,43 @@ def test_frozen_figure_artists() -> None:
             assert line.get_markerfacecolor() == "none"
             assert line.get_markeredgewidth() == 2
 
+        for column, dataset in enumerate(plotter.DATASETS):
+            expected_baseline = plotter.MAJORITY_BASELINE_PCT[dataset]
+            for row in range(len(plotter.BACKBONES)):
+                main_axis = axes[row, column]
+                panel_baseline_axis = baseline_axes[row, column]
+                assert main_axis.get_ylim()[0] > expected_baseline
+                assert len(panel_baseline_axis.lines) == 1
+                baseline_line = panel_baseline_axis.lines[0]
+                assert np.allclose(
+                    np.asarray(baseline_line.get_ydata(), dtype=float),
+                    expected_baseline,
+                )
+                assert baseline_line.get_color() == plotter.MAJORITY_BASELINE_COLOR
+                assert (
+                    baseline_line.get_linestyle()
+                    == plotter.MAJORITY_BASELINE_LINESTYLE
+                )
+                assert (
+                    baseline_line.get_linewidth()
+                    == plotter.MAJORITY_BASELINE_LINEWIDTH
+                )
+                assert baseline_line.get_marker() == "None"
+                assert baseline_line.get_label() == plotter.MAJORITY_LABEL
+                assert tuple(panel_baseline_axis.get_yticks()) == (expected_baseline,)
+                assert [
+                    tick.get_text() for tick in panel_baseline_axis.get_yticklabels()
+                ] == [f"{expected_baseline:.2f}"]
+
         assert len(fig.legends) == 1
         legend = fig.legends[0]
-        assert [text.get_text() for text in legend.get_texts()] == list(
-            plotter.LINE_ORDER
-        )
+        assert [text.get_text() for text in legend.get_texts()] == [
+            *plotter.LINE_ORDER,
+            plotter.MAJORITY_LABEL,
+        ]
         assert all(text.get_fontsize() == 24 for text in legend.get_texts())
         assert legend.get_frame_on() is False
-        assert legend._ncols == 6
+        assert legend._ncols == 7
         assert legend._loc == 8
         assert legend.get_bbox_to_anchor()._bbox.bounds == (0.5, 0.005, 0.0, 0.0)
         assert legend.borderpad == 0.2

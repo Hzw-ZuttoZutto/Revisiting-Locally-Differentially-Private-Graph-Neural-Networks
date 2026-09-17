@@ -66,6 +66,9 @@ VERIFY_DIR_RE = re.compile(
 plt.style.use("seaborn-v0_8-darkgrid")
 plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
+BACKGROUND_COLOR = "#f5f5f5"  # LaTeX xcolor: black!4
+plt.rcParams["figure.facecolor"] = BACKGROUND_COLOR
+plt.rcParams["savefig.facecolor"] = BACKGROUND_COLOR
 
 TITLE_FONTSIZE = 18
 FONTSIZE = 31

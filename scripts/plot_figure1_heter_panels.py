@@ -13,6 +13,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+BACKGROUND_COLOR = "#f5f5f5"  # LaTeX xcolor: black!4
+plt.rcParams["figure.facecolor"] = BACKGROUND_COLOR
+plt.rcParams["savefig.facecolor"] = BACKGROUND_COLOR
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -91,6 +95,11 @@ MAJORITY_BASELINE_COLOR = "#000000"
 MAJORITY_BASELINE_LINESTYLE = "--"
 MAJORITY_BASELINE_LINEWIDTH = 2
 MAJORITY_BASELINE_ZORDER = 1.5
+PANEL_Y_TICKS = {
+    ("gcn", "actor"): (25.0, 27.5, 30.0),
+    ("gcn", "attributedgraph-flickr"): (25.0, 37.5, 50.0, 62.5),
+    ("gat", "attributedgraph-flickr"): (20.0, 30.0, 40.0, 50.0),
+}
 
 
 @dataclass(frozen=True)
@@ -560,6 +569,12 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
                 zorder=MAJORITY_BASELINE_ZORDER,
                 label=MAJORITY_LABEL,
             )
+
+            panel_y_ticks = PANEL_Y_TICKS.get((backbone, dataset))
+            if panel_y_ticks is not None:
+                original_y_limits = ax.get_ylim()
+                ax.set_yticks(panel_y_ticks)
+                ax.set_ylim(original_y_limits)
 
             ax.set_xticks(range(len(X_EPS_VALUES)))
             ax.set_xticklabels(X_EPS_VALUES, rotation=30, ha="right")

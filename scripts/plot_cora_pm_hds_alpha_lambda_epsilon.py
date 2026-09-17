@@ -27,6 +27,9 @@ TEXT_COLOR = hds.TEXT_COLOR
 
 plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
+BACKGROUND_COLOR = "#f5f5f5"  # LaTeX xcolor: black!4
+plt.rcParams["figure.facecolor"] = BACKGROUND_COLOR
+plt.rcParams["savefig.facecolor"] = BACKGROUND_COLOR
 
 
 def parse_args() -> argparse.Namespace:

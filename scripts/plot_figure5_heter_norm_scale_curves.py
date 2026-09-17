@@ -24,6 +24,10 @@ from plot_figure5_final_norm_scale_curves import (
     validate_plot_rows,
 )
 
+BACKGROUND_COLOR = "#f5f5f5"  # LaTeX xcolor: black!4
+plt.rcParams["figure.facecolor"] = BACKGROUND_COLOR
+plt.rcParams["savefig.facecolor"] = BACKGROUND_COLOR
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FIGURE5_ROOT = REPO_ROOT / "rebuttal_experiments" / "figure5_heter" / "figure5.yaml"

@@ -20,6 +20,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.patches import PathPatch
+from matplotlib.path import Path as MplPath
 import yaml
 
 
@@ -61,6 +63,15 @@ PIPELINE_LABELS = MappingProxyType(
 )
 FEATFREE_LABEL = r"$\mathsf{FeatFree}$"
 NON_PRIVATE_LABEL = r"$\mathsf{Non\text{-}private}$"
+MAJORITY_LABEL = r"$\mathsf{Majority\text{-}Class}$"
+MAJORITY_BASELINE_PCT = MappingProxyType(
+    {
+        "cora": 100 * 818 / 2708,
+        "lastfm": 100 * 1572 / 7083,
+        "citeseer": 100 * 701 / 3327,
+        "facebook": 100 * 6880 / 22470,
+    }
+)
 VERIFY_DIR_RE = re.compile(r"^rank=(\d+)__repeat=(\d+)__candidate=(\d+)__")
 
 BOOTSTRAP_SAMPLES = 1000
@@ -70,6 +81,9 @@ BOOTSTRAP_SEED = 12345
 plt.style.use("seaborn-v0_8-darkgrid")
 plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
+BACKGROUND_COLOR = "#f5f5f5"  # LaTeX xcolor: black!4
+plt.rcParams["figure.facecolor"] = BACKGROUND_COLOR
+plt.rcParams["savefig.facecolor"] = BACKGROUND_COLOR
 
 TITLE_FONTSIZE = 18
 FONTSIZE = 18
@@ -99,6 +113,16 @@ LEGEND_HANDLELENGTH = 1.3
 LEGEND_COLUMNSPACING = 0.75
 SAVE_DPI = 300
 SAVE_PAD_INCHES = 0.02
+MAIN_AXIS_HEIGHT_FRACTION = 0.90
+BASELINE_AXIS_HEIGHT_FRACTION = 0.075
+AXIS_BREAK_GAP_FRACTION = 0.025
+BASELINE_AXIS_HALF_RANGE = 1.0
+MAJORITY_BASELINE_COLOR = "#000000"
+MAJORITY_BASELINE_LINESTYLE = "--"
+MAJORITY_BASELINE_LINEWIDTH = 2
+MAJORITY_BASELINE_ZORDER = 1.5
+AXIS_BREAK_MARK_SIZE = 0.012
+AXIS_BREAK_MARK_LINEWIDTH = 1.2
 
 STYLE_CONFIGS = MappingProxyType(
     {
@@ -699,6 +723,7 @@ def validate_plot_rows(rows: list[dict[str, Any]]) -> None:
 def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
     df = pd.DataFrame(rows)
     fig, axes = plt.subplots(len(BACKBONES), len(DATASETS), figsize=(FIGSIZE_X, FIGSIZE_Y), sharex=False, sharey=False)
+    baseline_axes = np.empty_like(axes)
     fig.subplots_adjust(
         bottom=BOTTOM,
         top=TOP,
@@ -713,8 +738,10 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
             ax = axes[row_idx, col_idx]
             if row_idx == 0:
                 letter = chr(97 + col_idx)
+                majority_baseline = MAJORITY_BASELINE_PCT[dataset]
                 ax.set_title(
-                    f"({letter}) {DATASET_LABELS[dataset]}",
+                    f"({letter}) {DATASET_LABELS[dataset]}"
+                    f" (Majority-Class: {majority_baseline:.2f}%)",
                     fontsize=TITLE_FONTSIZE,
                     fontweight="medium",
                     pad=TITLE_PAD,
@@ -749,8 +776,7 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
                 )
 
             ax.set_xticks(range(len(X_EPS_VALUES)))
-            ax.set_xticklabels(X_EPS_VALUES, rotation=30, ha="right")
-            ax.set_xlabel(r"$\epsilon$", fontsize=X_LABEL_FONTSIZE, fontweight="medium")
+            ax.tick_params(axis="x", which="both", bottom=False, labelbottom=False)
             ax.grid(
                 True,
                 color=GRID_COLOR,
@@ -769,15 +795,97 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
             else:
                 ax.set_ylabel("")
 
+            x0, y0, width, height = ax.get_position().bounds
+            baseline_height = height * BASELINE_AXIS_HEIGHT_FRACTION
+            break_gap = height * AXIS_BREAK_GAP_FRACTION
+            main_height = height * MAIN_AXIS_HEIGHT_FRACTION
+            ax.set_position(
+                [x0, y0 + baseline_height + break_gap, width, main_height]
+            )
+            ax.spines["bottom"].set_visible(False)
+
+            baseline_ax = fig.add_axes(
+                [x0, y0, width, baseline_height],
+                sharex=ax,
+                label=f"majority-{row_idx}-{col_idx}",
+            )
+            baseline_axes[row_idx, col_idx] = baseline_ax
+            majority_baseline = MAJORITY_BASELINE_PCT[dataset]
+            baseline_ax.axhline(
+                majority_baseline,
+                color=MAJORITY_BASELINE_COLOR,
+                linestyle=MAJORITY_BASELINE_LINESTYLE,
+                linewidth=MAJORITY_BASELINE_LINEWIDTH,
+                marker=None,
+                zorder=MAJORITY_BASELINE_ZORDER,
+                label=MAJORITY_LABEL,
+            )
+            baseline_ax.set_ylim(
+                majority_baseline - BASELINE_AXIS_HALF_RANGE,
+                majority_baseline + BASELINE_AXIS_HALF_RANGE,
+            )
+            baseline_ax.set_yticks([majority_baseline])
+            baseline_ax.set_yticklabels([f"{majority_baseline:.2f}"])
+            baseline_ax.set_xticks(range(len(X_EPS_VALUES)))
+            baseline_ax.set_xticklabels(X_EPS_VALUES, rotation=30, ha="right")
+            baseline_ax.set_xlabel(
+                r"$\epsilon$",
+                fontsize=X_LABEL_FONTSIZE,
+                fontweight="medium",
+            )
+            baseline_ax.grid(
+                True,
+                color=GRID_COLOR,
+                linestyle=GRID_LINESTYLE,
+                linewidth=GRID_LINEWIDTH,
+                alpha=GRID_ALPHA,
+            )
+            baseline_ax.tick_params(
+                axis="both",
+                which="major",
+                labelsize=TICKLABEL_FONTSIZE,
+            )
+            baseline_ax.spines["top"].set_visible(False)
+
+            for break_ax, break_y in ((ax, 0.0), (baseline_ax, 1.0)):
+                for break_x in (0.0, 1.0):
+                    break_path = MplPath(
+                        [
+                            (
+                                break_x - AXIS_BREAK_MARK_SIZE,
+                                break_y - AXIS_BREAK_MARK_SIZE,
+                            ),
+                            (
+                                break_x + AXIS_BREAK_MARK_SIZE,
+                                break_y + AXIS_BREAK_MARK_SIZE,
+                            ),
+                        ]
+                    )
+                    break_ax.add_patch(
+                        PathPatch(
+                            break_path,
+                            transform=break_ax.transAxes,
+                            facecolor="none",
+                            edgecolor="black",
+                            linewidth=AXIS_BREAK_MARK_LINEWIDTH,
+                            clip_on=False,
+                            zorder=10,
+                        )
+                    )
+
     handles, labels = axes[0, 0].get_legend_handles_labels()
-    if len(labels) != len(LINE_ORDER):
-        raise RuntimeError(f"Expected {len(LINE_ORDER)} legend labels, found {labels}")
+    baseline_handles, baseline_labels = baseline_axes[0, 0].get_legend_handles_labels()
+    handles.extend(baseline_handles)
+    labels.extend(baseline_labels)
+    expected_labels = [*LINE_ORDER, MAJORITY_LABEL]
+    if labels != expected_labels:
+        raise RuntimeError(f"Expected legend labels {expected_labels}, found {labels}")
     fig.legend(
         handles,
         labels,
         loc="lower center",
         bbox_to_anchor=LEGEND_BBOX,
-        ncol=len(LINE_ORDER),
+        ncol=len(expected_labels),
         fontsize=LEGEND_FONTSIZE,
         frameon=False,
         shadow=False,
@@ -785,6 +893,7 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
         handlelength=LEGEND_HANDLELENGTH,
         columnspacing=LEGEND_COLUMNSPACING,
     )
+    fig._figure1_baseline_axes = baseline_axes
     return fig, axes
 
 
