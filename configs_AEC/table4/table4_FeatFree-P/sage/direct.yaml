@@ -28,33 +28,22 @@ defaults:
       repeats: 1
     verify:
       patience: 150
-      repeats: 20
+      repeats: 10
 
 search_space:
   dataset:
     datasets:
       - cora
+      - lastfm
+      - citeseer
+      - facebook
   feature_transformation:
     features:
-      - sim
-    sim_reference_eps: 
-      - 0.00001
-      - 0.0001
-      - 0.001
-      - 0.01
-      - 0.1
-      - 1.0
-      - 2.0
-      - 3.0
-      - 4.0
-      - 5.0
-      - 6.0
-      - 7.0
-      - 8.0
-      - 9.0
-      - 10.0
+      - operator
+    sim_reference_eps: []
     feature_dim: []
-    scale: []
+    scale: 
+      - 1
     random_normal_mean: []
     random_normal_std: []
     shared_value: []
@@ -65,13 +54,7 @@ search_space:
     deepwalk_window_size: []
     deepwalk_workers: []
     deepwalk_undirected: []
-  feature_perturbation:
-    mechanisms:
-      - mbm
-      - hds
-      - pm
-    m:
-      - best
+  feature_perturbation: []
   calibrator:
     norm:
       - false
@@ -86,6 +69,7 @@ search_space:
       - 64
     smoother:
       - hoa
+      - kprop
   model:
     backbones:
       - sage

@@ -3,9 +3,17 @@ seed: 12345
 device:
   device: gpu
   cpu_worker_count: null
-  gpu_ids: [0,1,2,3,4,5,6,7]
+  gpu_ids: 
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
   max_parallel_per_gpu: 20
-  gpu_launch_interval_sec: 0.1
+  gpu_launch_interval_sec: 0.5
 
 defaults:
   dataset:
@@ -28,7 +36,7 @@ defaults:
       repeats: 1
     verify:
       patience: 150
-      repeats: 20
+      repeats: 10
 
 search_space:
   dataset:
@@ -36,27 +44,16 @@ search_space:
       - cora
   feature_transformation:
     features:
-      - sim
-    sim_reference_eps: 
-      - 0.00001
-      - 0.0001
-      - 0.001
-      - 0.01
-      - 0.1
+      - random_normal
+    sim_reference_eps: []
+    feature_dim:
+      - 1433
+    scale:
+      - 1
+    random_normal_mean: 
+      - 0
+    random_normal_std: 
       - 1.0
-      - 2.0
-      - 3.0
-      - 4.0
-      - 5.0
-      - 6.0
-      - 7.0
-      - 8.0
-      - 9.0
-      - 10.0
-    feature_dim: []
-    scale: []
-    random_normal_mean: []
-    random_normal_std: []
     shared_value: []
     degree_bucket_num_buckets: []
     degree_bucket_range_max: []
@@ -65,13 +62,7 @@ search_space:
     deepwalk_window_size: []
     deepwalk_workers: []
     deepwalk_undirected: []
-  feature_perturbation:
-    mechanisms:
-      - mbm
-      - hds
-      - pm
-    m:
-      - best
+  feature_perturbation: []
   calibrator:
     norm:
       - false
@@ -88,7 +79,7 @@ search_space:
       - hoa
   model:
     backbones:
-      - sage
+      - gat
     dropout:
       - 0.25
       - 0.5

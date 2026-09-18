@@ -36,8 +36,26 @@ search_space:
       - cora
   feature_transformation:
     features:
-      - sim
-    sim_reference_eps: 
+      - raw
+    sim_reference_eps: []
+    feature_dim: []
+    scale: []
+    random_normal_mean: []
+    random_normal_std: []
+    shared_value: []
+    degree_bucket_num_buckets: []
+    degree_bucket_range_max: []
+    deepwalk_walk_length: []
+    deepwalk_number_walks: []
+    deepwalk_window_size: []
+    deepwalk_workers: []
+    deepwalk_undirected: []
+  feature_perturbation:
+    mechanisms:
+      - pm
+      - mbm
+      - hds
+    x_eps:
       - 0.00001
       - 0.0001
       - 0.001
@@ -53,23 +71,6 @@ search_space:
       - 8.0
       - 9.0
       - 10.0
-    feature_dim: []
-    scale: []
-    random_normal_mean: []
-    random_normal_std: []
-    shared_value: []
-    degree_bucket_num_buckets: []
-    degree_bucket_range_max: []
-    deepwalk_walk_length: []
-    deepwalk_number_walks: []
-    deepwalk_window_size: []
-    deepwalk_workers: []
-    deepwalk_undirected: []
-  feature_perturbation:
-    mechanisms:
-      - mbm
-      - hds
-      - pm
     m:
       - best
   calibrator:

@@ -1,30 +1,15 @@
-import csv
-import json
 import os
-import sys
-import time
-import types
-import urllib.error
-import urllib.request
-from contextlib import contextmanager
-from dataclasses import dataclass, field
 from functools import partial
 from pathlib import Path
-from typing import Any, Callable, Mapping
-from urllib.parse import quote
+from typing import Any
 
-import numpy as np
 import pandas as pd
 import torch
 from torch_geometric.data import Data, InMemoryDataset, download_url
 from torch_geometric.datasets import (
     Actor,
     AttributedGraphDataset,
-    Flickr,
-    HeterophilousGraphDataset,
     Planetoid,
-    Reddit,
-    WikipediaNetwork,
 )
 from torch_geometric.transforms import ToSparseTensor
 from torch_geometric.utils import coalesce, to_undirected
@@ -42,79 +27,14 @@ except ImportError:
     RandomNodeSplit = None
 
 
-HF_DATASET_URL_TEMPLATE = "https://huggingface.co/datasets/{repo_id}/resolve/main/{path}?download=true"
-HTTP_USER_AGENT = "HZW-DP/1.0"
-HTTP_TIMEOUT_SECONDS = 120
-DOWNLOAD_CHUNK_SIZE_BYTES = 1024 * 1024
-DOWNLOAD_ATTEMPTS = 3
-
-LOADER_BUILTIN_PLANETOID = "builtin_planetoid"
-LOADER_BUILTIN_KARATECLUB = "builtin_karateclub"
-LOADER_BUILTIN_PYG = "builtin_pyg"
-LOADER_OGB_NODEPROP = "ogb_nodeprop"
-LOADER_HF_OGB_FEATURE_SWAP = "hf_ogb_feature_swap"
-LOADER_HF_CSV_NPY_GRAPH = "hf_csv_npy_graph"
-
-
-@dataclass(frozen=True)
-class DatasetSpec:
-    """Declarative specification for a benchmark dataset."""
-
-    canonical_name: str
-    loader_kind: str
-    loader_target: str | None = None
-    loader_kwargs: Mapping[str, Any] = field(default_factory=dict)
-
-
-@dataclass
-class RawDatasetBundle:
-    """Raw graph object emitted by a dataset-specific acquisition routine."""
-
-    data: Data
-
-
-def _builtin_benchmark_spec(
-    canonical_name: str,
-    loader_kind: str,
-    loader_target: str,
-) -> DatasetSpec:
-    return DatasetSpec(
-        canonical_name=canonical_name,
-        loader_kind=loader_kind,
-        loader_target=loader_target,
-    )
-
-
-def _text_attributed_graph_loader_kwargs(csv_path: str, feature_path: str) -> dict[str, str]:
-    return {
-        "csv_path": csv_path,
-        "feature_path": feature_path,
-        "node_id_column": "node_id",
-        "label_column": "label",
-        "neighbor_column": "neighbour",
-        "cached_csv_name": "graph.csv",
-        "cached_feature_name": "features.npy",
-    }
-
-
 class KarateClub(InMemoryDataset):
     """Local wrapper around the KarateClub node-classification benchmark format."""
 
     url = "https://raw.githubusercontent.com/benedekrozemberczki/karateclub/master/dataset/node_level"
-    available_datasets = {
-        "twitch",
-        "facebook",
-        "github",
-        "deezer",
-        "lastfm",
-        "wikipedia",
-    }
     raw_parts = ("edges", "features", "target")
 
     def __init__(self, root, name, transform=None, pre_transform=None):
         self.name = name.lower()
-        assert self.name in self.available_datasets
-
         super().__init__(root, transform, pre_transform)
         self.data, self.slices = self._load_processed_data()
 
@@ -171,81 +91,19 @@ class KarateClub(InMemoryDataset):
         return f"KarateClub-{self.name}()"
 
 
-#
-# Benchmark registry
-#
-DATASET_SPECS: dict[str, DatasetSpec] = {
-    "cora": _builtin_benchmark_spec("cora", LOADER_BUILTIN_PLANETOID, "cora"),
-    "citeseer": _builtin_benchmark_spec("citeseer", LOADER_BUILTIN_PLANETOID, "citeseer"),
-    "pubmed": _builtin_benchmark_spec("pubmed", LOADER_BUILTIN_PLANETOID, "pubmed"),
-    "actor": _builtin_benchmark_spec("actor", LOADER_BUILTIN_PYG, "actor"),
-    "chameleon": _builtin_benchmark_spec("chameleon", LOADER_BUILTIN_PYG, "chameleon"),
-    "squirrel": _builtin_benchmark_spec("squirrel", LOADER_BUILTIN_PYG, "squirrel"),
-    "roman-empire": _builtin_benchmark_spec(
-        "roman-empire", LOADER_BUILTIN_PYG, "roman-empire"
-    ),
-    "amazon-ratings": _builtin_benchmark_spec(
-        "amazon-ratings", LOADER_BUILTIN_PYG, "amazon-ratings"
-    ),
-    "attributedgraph-flickr": _builtin_benchmark_spec(
-        "attributedgraph-flickr", LOADER_BUILTIN_PYG, "attributedgraph-flickr"
-    ),
-    "flickr": _builtin_benchmark_spec("flickr", LOADER_BUILTIN_PYG, "flickr"),
-    "reddit": _builtin_benchmark_spec("reddit", LOADER_BUILTIN_PYG, "reddit"),
-    "facebook": _builtin_benchmark_spec("facebook", LOADER_BUILTIN_KARATECLUB, "facebook"),
-    "lastfm": _builtin_benchmark_spec("lastfm", LOADER_BUILTIN_KARATECLUB, "lastfm"),
-    "ogbn-arxiv": _builtin_benchmark_spec("ogbn-arxiv", LOADER_OGB_NODEPROP, "ogbn-arxiv"),
-    "ogbn-arxiv-TA": DatasetSpec(
-        canonical_name="ogbn-arxiv-TA",
-        loader_kind=LOADER_HF_OGB_FEATURE_SWAP,
-        loader_target="ogbn-arxiv",
-        loader_kwargs={
-            "repo_id": "Sherirto/CSTAG",
-            "feature_path": "Arxiv/Feature/Arxiv_roberta_base_512_cls.npy",
-            "cached_feature_name": "features.npy",
-        },
-    ),
-    "Books-Children": DatasetSpec(
-        canonical_name="Books-Children",
-        loader_kind=LOADER_HF_CSV_NPY_GRAPH,
-        loader_target="Sherirto/CSTAG",
-        loader_kwargs=_text_attributed_graph_loader_kwargs(
-            csv_path="Children/Children.csv",
-            feature_path="Children/Feature/Children_roberta_base_512_cls.npy",
-        ),
-    ),
-    "Books-History": DatasetSpec(
-        canonical_name="Books-History",
-        loader_kind=LOADER_HF_CSV_NPY_GRAPH,
-        loader_target="Sherirto/CSTAG",
-        loader_kwargs=_text_attributed_graph_loader_kwargs(
-            csv_path="History/History.csv",
-            feature_path="History/Feature/History_roberta_base_512_cls.npy",
-        ),
-    ),
-}
-
-
-BUILTIN_DATASET_BUILDERS = {
-    "cora": partial(Planetoid, name="cora"),
-    "citeseer": partial(Planetoid, name="citeseer"),
-    "pubmed": partial(Planetoid, name="pubmed"),
+DATASET_BUILDERS = {
     "actor": Actor,
-    "chameleon": partial(WikipediaNetwork, name="chameleon", geom_gcn_preprocess=True),
-    "squirrel": partial(WikipediaNetwork, name="squirrel", geom_gcn_preprocess=True),
-    "roman-empire": partial(HeterophilousGraphDataset, name="roman-empire"),
-    "amazon-ratings": partial(HeterophilousGraphDataset, name="amazon-ratings"),
-    "attributedgraph-flickr": partial(AttributedGraphDataset, name="Flickr"),
-    "flickr": Flickr,
-    "reddit": Reddit,
+    "citeseer": partial(Planetoid, name="citeseer"),
+    "cora": partial(Planetoid, name="cora"),
     "facebook": partial(KarateClub, name="facebook"),
+    "flickr": partial(AttributedGraphDataset, name="Flickr"),
     "lastfm": partial(KarateClub, name="lastfm", transform=FilterTopClass(10)),
 }
 
 
 _LOOKUP_TO_CANONICAL = {
     "".join(ch for ch in canonical_name.lower() if ch.isalnum()): canonical_name
-    for canonical_name in DATASET_SPECS
+    for canonical_name in DATASET_BUILDERS
 }
 
 
@@ -282,7 +140,7 @@ def build_split_transform(val_ratio, test_ratio):
 
 
 def list_supported_datasets() -> list[str]:
-    return sorted(DATASET_SPECS, key=str.casefold)
+    return sorted(DATASET_BUILDERS, key=str.casefold)
 
 
 def resolve_dataset_name(dataset: str) -> str:
@@ -303,350 +161,12 @@ def is_dataset_supported(dataset: str) -> bool:
     return True
 
 
-def _load_builtin_raw_dataset(spec: DatasetSpec, data_dir: str | Path) -> RawDatasetBundle:
-    dataset_name = spec.canonical_name
-    dataset = BUILTIN_DATASET_BUILDERS[dataset_name](root=os.path.join(str(data_dir), dataset_name))
-    return RawDatasetBundle(data=dataset[0])
-
-
-@contextmanager
-def _torch_load_compat_context():
-    original_torch_load = torch.load
-
-    def compat_torch_load(*args, **kwargs):
-        kwargs.setdefault("weights_only", False)
-        return original_torch_load(*args, **kwargs)
-
-    torch.load = compat_torch_load
-    try:
-        yield
-    finally:
-        torch.load = original_torch_load
-
-
-def _dataset_root(data_dir: str | Path, canonical_name: str) -> Path:
-    return Path(data_dir) / canonical_name
-
-
-def _hf_file_url(repo_id: str, repo_relative_path: str) -> str:
-    normalized_path = str(repo_relative_path).lstrip("/")
-    return HF_DATASET_URL_TEMPLATE.format(
-        repo_id=repo_id,
-        path=quote(normalized_path, safe="/"),
-    )
-
-
-def _download_to_cache(url: str, destination: Path) -> Path:
-    if destination.exists():
-        return destination
-
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = destination.with_suffix(destination.suffix + ".tmp")
-    request = urllib.request.Request(url, headers={"User-Agent": HTTP_USER_AGENT})
-
-    for attempt in range(1, DOWNLOAD_ATTEMPTS + 1):
-        try:
-            with urllib.request.urlopen(request, timeout=HTTP_TIMEOUT_SECONDS) as response, open(
-                tmp_path, "wb"
-            ) as handle:
-                while True:
-                    chunk = response.read(DOWNLOAD_CHUNK_SIZE_BYTES)
-                    if not chunk:
-                        break
-                    handle.write(chunk)
-            os.replace(tmp_path, destination)
-            return destination
-        except urllib.error.HTTPError:
-            if tmp_path.exists():
-                tmp_path.unlink()
-            raise
-        except Exception:
-            if tmp_path.exists():
-                tmp_path.unlink()
-            if attempt >= DOWNLOAD_ATTEMPTS:
-                raise
-            time.sleep(float(attempt))
-
-    return destination
-
-
-def _ensure_hf_cached_file(
-    root: Path,
-    *,
-    repo_id: str,
-    repo_relative_path: str,
-    cached_name: str,
-) -> Path:
-    cache_path = root / "raw" / cached_name
-    if cache_path.exists():
-        return cache_path
-    return _download_to_cache(_hf_file_url(repo_id, repo_relative_path), cache_path)
-
-
-def _load_npy_feature_matrix(path: Path, *, dataset_name: str) -> np.ndarray:
-    feature_matrix = np.load(path)
-    if feature_matrix.ndim != 2:
-        raise ValueError(
-            f"{dataset_name} feature matrix must be 2D, got shape {tuple(feature_matrix.shape)}"
-        )
-    return np.asarray(feature_matrix)
-
-
-def _set_max_csv_field_size_limit() -> None:
-    limit = sys.maxsize
-    while True:
-        try:
-            csv.field_size_limit(limit)
-            return
-        except OverflowError:
-            limit //= 10
-
-
-def _parse_neighbor_list(
-    raw_value: str,
-    *,
-    dataset_name: str,
-    row_index: int,
-) -> list[int]:
-    if raw_value is None:
-        raise ValueError(f"{dataset_name} row {row_index} is missing neighbour data")
-
-    text = raw_value.strip()
-    if text == "":
-        return []
-
-    try:
-        values = json.loads(text)
-    except json.JSONDecodeError as exc:
-        raise ValueError(
-            f"{dataset_name} row {row_index} has invalid neighbour JSON: {text!r}"
-        ) from exc
-
-    if not isinstance(values, list):
-        raise ValueError(f"{dataset_name} row {row_index} neighbour field must decode to a list")
-
-    neighbors: list[int] = []
-    for value in values:
-        if isinstance(value, bool):
-            raise ValueError(f"{dataset_name} row {row_index} neighbour entries must be integers")
-        try:
-            neighbors.append(int(value))
-        except (TypeError, ValueError) as exc:
-            raise ValueError(
-                f"{dataset_name} row {row_index} neighbour entry {value!r} is not an integer"
-            ) from exc
-    return neighbors
-
-
-def _validate_required_csv_fields(
-    fieldnames: set[str],
-    *,
-    dataset_name: str,
-    required_fields: set[str],
-) -> None:
-    missing_fields = required_fields - fieldnames
-    if missing_fields:
-        raise ValueError(
-            f"{dataset_name} CSV is missing required columns: {sorted(missing_fields)}"
-        )
-
-
-def _build_edge_index_array(edge_sources: list[int], edge_targets: list[int]) -> np.ndarray:
-    if not edge_sources:
-        return np.empty((2, 0), dtype=np.int64)
-    return np.vstack(
-        (
-            np.asarray(edge_sources, dtype=np.int64),
-            np.asarray(edge_targets, dtype=np.int64),
-        )
-    )
-
-
-def _read_text_attributed_graph_table(
-    *,
-    dataset_name: str,
-    csv_path: Path,
-    num_nodes: int,
-    node_id_column: str,
-    label_column: str,
-    neighbor_column: str,
-) -> tuple[np.ndarray, np.ndarray]:
-    label_vector = np.empty(num_nodes, dtype=np.int64)
-    seen_node_ids = np.zeros(num_nodes, dtype=bool)
-    source_nodes: list[int] = []
-    target_nodes: list[int] = []
-    row_count = 0
-
-    _set_max_csv_field_size_limit()
-
-    with open(csv_path, "r", encoding="utf-8", newline="") as handle:
-        reader = csv.DictReader(handle)
-        _validate_required_csv_fields(
-            set(reader.fieldnames or ()),
-            dataset_name=dataset_name,
-            required_fields={node_id_column, label_column, neighbor_column},
-        )
-
-        for row_count, row in enumerate(reader, start=1):
-            try:
-                node_id = int(row[node_id_column])
-            except (TypeError, ValueError) as exc:
-                raise ValueError(
-                    f"{dataset_name} row {row_count} has invalid node id {row[node_id_column]!r}"
-                ) from exc
-
-            if node_id < 0 or node_id >= num_nodes:
-                raise ValueError(
-                    f"{dataset_name} row {row_count} has node id {node_id} outside feature matrix range [0, {num_nodes - 1}]"
-                )
-            if seen_node_ids[node_id]:
-                raise ValueError(f"{dataset_name} CSV contains duplicate node id {node_id}")
-            seen_node_ids[node_id] = True
-
-            try:
-                label_vector[node_id] = int(row[label_column])
-            except (TypeError, ValueError) as exc:
-                raise ValueError(
-                    f"{dataset_name} row {row_count} has invalid label {row[label_column]!r}"
-                ) from exc
-
-            neighbors = _parse_neighbor_list(
-                row[neighbor_column],
-                dataset_name=dataset_name,
-                row_index=row_count,
-            )
-            for neighbor in neighbors:
-                if neighbor < 0 or neighbor >= num_nodes:
-                    raise ValueError(
-                        f"{dataset_name} row {row_count} contains neighbour {neighbor} outside feature matrix range [0, {num_nodes - 1}]"
-                    )
-            if neighbors:
-                source_nodes.extend([node_id] * len(neighbors))
-                target_nodes.extend(neighbors)
-
-    if row_count != num_nodes:
-        raise ValueError(
-            f"{dataset_name} feature matrix has {num_nodes} rows but CSV contains {row_count} rows"
-        )
-    if not bool(seen_node_ids.all()):
-        missing_node_ids = np.flatnonzero(~seen_node_ids)
-        preview = missing_node_ids[:10].tolist()
-        raise ValueError(
-            f"{dataset_name} CSV node ids must cover 0..{num_nodes - 1}; missing ids begin with {preview}"
-        )
-
-    return label_vector, _build_edge_index_array(source_nodes, target_nodes)
-
-
-def _load_hf_csv_npy_graph_dataset(spec: DatasetSpec, data_dir: str | Path) -> RawDatasetBundle:
-    root = _dataset_root(data_dir, spec.canonical_name)
-    repo_id = str(spec.loader_target)
-    loader_kwargs = spec.loader_kwargs
-
-    csv_path = _ensure_hf_cached_file(
-        root,
-        repo_id=repo_id,
-        repo_relative_path=str(loader_kwargs["csv_path"]),
-        cached_name=str(loader_kwargs["cached_csv_name"]),
-    )
-    feature_path = _ensure_hf_cached_file(
-        root,
-        repo_id=repo_id,
-        repo_relative_path=str(loader_kwargs["feature_path"]),
-        cached_name=str(loader_kwargs["cached_feature_name"]),
-    )
-
-    feature_matrix = _load_npy_feature_matrix(feature_path, dataset_name=spec.canonical_name)
-    num_nodes = int(feature_matrix.shape[0])
-    label_vector, graph_topology = _read_text_attributed_graph_table(
-        dataset_name=spec.canonical_name,
-        csv_path=csv_path,
-        num_nodes=num_nodes,
-        node_id_column=str(loader_kwargs["node_id_column"]),
-        label_column=str(loader_kwargs["label_column"]),
-        neighbor_column=str(loader_kwargs["neighbor_column"]),
-    )
-
-    data = Data(
-        x=torch.from_numpy(feature_matrix),
-        y=torch.from_numpy(label_vector),
-        edge_index=torch.from_numpy(graph_topology),
-    )
-    data.num_nodes = num_nodes
-    return RawDatasetBundle(data=data)
-
-
-def _resolve_ogb_nodeprop_dataset_class():
-    os.environ.setdefault("OUTDATED_IGNORE", "1")
-    from ogb.nodeproppred import PygNodePropPredDataset
-
-    return PygNodePropPredDataset
-
-
-def _ensure_ogb_download_is_non_interactive() -> None:
-    os.environ.setdefault("OUTDATED_IGNORE", "1")
-    if "outdated" not in sys.modules:
-        outdated_stub = types.ModuleType("outdated")
-        outdated_stub.check_outdated = lambda *args, **kwargs: (False, None)
-        sys.modules["outdated"] = outdated_stub
-
-    import ogb.nodeproppred.dataset_pyg as dataset_pyg_module
-
-    dataset_pyg_module.decide_download = lambda url: True
-
-
-def _load_ogb_nodeprop_dataset(spec: DatasetSpec, data_dir: str | Path) -> RawDatasetBundle:
-    _ensure_ogb_download_is_non_interactive()
-    dataset_cls = _resolve_ogb_nodeprop_dataset_class()
-
-    with _torch_load_compat_context():
-        dataset = dataset_cls(
-            name=str(spec.loader_target),
-            root=str(_dataset_root(data_dir, spec.canonical_name)),
-        )
-    return RawDatasetBundle(data=dataset[0])
-
-
-def _load_hf_ogb_feature_swap_dataset(spec: DatasetSpec, data_dir: str | Path) -> RawDatasetBundle:
-    root = _dataset_root(data_dir, spec.canonical_name)
-    loader_kwargs = spec.loader_kwargs
-    feature_path = _ensure_hf_cached_file(
-        root,
-        repo_id=str(loader_kwargs["repo_id"]),
-        repo_relative_path=str(loader_kwargs["feature_path"]),
-        cached_name=str(loader_kwargs["cached_feature_name"]),
-    )
-    feature_matrix = _load_npy_feature_matrix(feature_path, dataset_name=spec.canonical_name)
-
-    base_bundle = _load_ogb_nodeprop_dataset(spec, data_dir)
-    num_nodes = int(base_bundle.data.x.size(0))
-    if int(feature_matrix.shape[0]) != num_nodes:
-        raise ValueError(
-            f"{spec.canonical_name} feature matrix row count {feature_matrix.shape[0]} does not match OGB graph node count {num_nodes}"
-        )
-
-    base_bundle.data.x = torch.from_numpy(feature_matrix)
-    return base_bundle
-
-
-_RAW_DATASET_LOADERS: dict[str, Callable[[DatasetSpec, str | Path], RawDatasetBundle]] = {
-    LOADER_BUILTIN_PLANETOID: _load_builtin_raw_dataset,
-    LOADER_BUILTIN_KARATECLUB: _load_builtin_raw_dataset,
-    LOADER_BUILTIN_PYG: _load_builtin_raw_dataset,
-    LOADER_OGB_NODEPROP: _load_ogb_nodeprop_dataset,
-    LOADER_HF_OGB_FEATURE_SWAP: _load_hf_ogb_feature_swap_dataset,
-    LOADER_HF_CSV_NPY_GRAPH: _load_hf_csv_npy_graph_dataset,
-}
-
-
-def _load_raw_dataset(spec: DatasetSpec, data_dir: str | Path) -> RawDatasetBundle:
+def _load_raw_dataset(dataset_name: str, data_dir: str | Path) -> Data:
     Path(data_dir).mkdir(parents=True, exist_ok=True)
-
-    try:
-        loader = _RAW_DATASET_LOADERS[spec.loader_kind]
-    except KeyError as exc:
-        raise ValueError(f"Unsupported raw loader kind: {spec.loader_kind}") from exc
-    return loader(spec, data_dir)
+    dataset = DATASET_BUILDERS[dataset_name](
+        root=os.path.join(str(data_dir), dataset_name)
+    )
+    return dataset[0]
 
 
 def _validate_random_split_ratios(val_ratio: float, test_ratio: float) -> None:
@@ -786,7 +306,7 @@ def _validate_transductive_split_against_unlabeled_targets(
 def _finalize_benchmark_graph(
     data: Data,
     *,
-    spec: DatasetSpec,
+    dataset_name: str,
     num_nodes: int,
     num_classes: int,
     data_range: tuple[float, float] | None,
@@ -798,15 +318,15 @@ def _finalize_benchmark_graph(
     data.train_mask = data.train_mask.to(torch.bool)
     data.val_mask = data.val_mask.to(torch.bool)
     data.test_mask = data.test_mask.to(torch.bool)
-    data.name = spec.canonical_name
+    data.name = dataset_name
     data.num_classes = num_classes
     data.num_nodes = num_nodes
     return data
 
 
 def _build_standardized_benchmark_graph(
-    spec: DatasetSpec,
-    bundle: RawDatasetBundle,
+    dataset_name: str,
+    raw_data: Data,
     *,
     data_range: tuple[float, float] | None,
     val_ratio: float,
@@ -814,7 +334,6 @@ def _build_standardized_benchmark_graph(
 ) -> Data:
     _validate_random_split_ratios(val_ratio, test_ratio)
 
-    raw_data = bundle.data
     feature_matrix = _coerce_feature_matrix(raw_data.x)
     label_vector, unlabeled_mask = _coerce_label_vector(raw_data.y)
 
@@ -832,27 +351,10 @@ def _build_standardized_benchmark_graph(
 
     return _finalize_benchmark_graph(
         data,
-        spec=spec,
+        dataset_name=dataset_name,
         num_nodes=num_nodes,
         num_classes=int(label_vector.max().item()) + 1,
         data_range=data_range,
-    )
-
-
-def _standardize_loaded_data(
-    spec: DatasetSpec,
-    bundle: RawDatasetBundle,
-    *,
-    data_range: tuple[float, float] | None,
-    val_ratio: float,
-    test_ratio: float,
-) -> Data:
-    return _build_standardized_benchmark_graph(
-        spec,
-        bundle,
-        data_range=data_range,
-        val_ratio=val_ratio,
-        test_ratio=test_ratio,
     )
 
 
@@ -864,11 +366,10 @@ def load_dataset(
     test_ratio: dict(help="fraction of nodes used for test") = 0.25,
 ):
     canonical_name = resolve_dataset_name(dataset)
-    spec = DATASET_SPECS[canonical_name]
-    raw_bundle = _load_raw_dataset(spec, data_dir)
-    return _standardize_loaded_data(
-        spec,
-        raw_bundle,
+    raw_data = _load_raw_dataset(canonical_name, data_dir)
+    return _build_standardized_benchmark_graph(
+        canonical_name,
+        raw_data,
         data_range=data_range,
         val_ratio=val_ratio,
         test_ratio=test_ratio,

@@ -28,31 +28,17 @@ defaults:
       repeats: 1
     verify:
       patience: 150
-      repeats: 20
+      repeats: 10
 
 search_space:
   dataset:
     datasets:
-      - cora
+      - actor
+      - flickr
   feature_transformation:
     features:
-      - sim
-    sim_reference_eps: 
-      - 0.00001
-      - 0.0001
-      - 0.001
-      - 0.01
-      - 0.1
-      - 1.0
-      - 2.0
-      - 3.0
-      - 4.0
-      - 5.0
-      - 6.0
-      - 7.0
-      - 8.0
-      - 9.0
-      - 10.0
+      - raw
+    sim_reference_eps: []
     feature_dim: []
     scale: []
     random_normal_mean: []
@@ -67,9 +53,18 @@ search_space:
     deepwalk_undirected: []
   feature_perturbation:
     mechanisms:
-      - mbm
       - hds
-      - pm
+    x_eps:
+      - 0.001
+      - 0.01
+      - 0.1
+      - 1.0
+      - 2.0
+      - 3.0
+      - 4.0
+      - 6.0
+      - 8.0
+      - 10.0
     m:
       - best
   calibrator:
@@ -85,10 +80,10 @@ search_space:
       - 32
       - 64
     smoother:
-      - hoa
+      - kprop
   model:
     backbones:
-      - sage
+      - gat
     dropout:
       - 0.25
       - 0.5

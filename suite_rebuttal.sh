@@ -1,9 +1,0 @@
-export REBUTTAL_TEMP_GPU2_CAP15="${REBUTTAL_TEMP_GPU2_CAP15:-0}"
-
-# bash suite_rebuttal_clean_heter.sh
-# bash suite_rebuttal_featfree_heter.sh
-# bash suite_rebuttal_featfree_homo_rerun.sh
-bash suite_rebuttal_figure1_heter.sh
-bash suite_rebuttal_figure3_heter.sh
-bash suite_rebuttal_figure5_heter.sh
-bash suite_rebuttal_figure6_heter.sh
