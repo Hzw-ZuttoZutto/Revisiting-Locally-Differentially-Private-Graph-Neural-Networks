@@ -21,7 +21,7 @@ import numpy as np
 import yaml
 
 
-PAPER_ROOT = Path("/data/hzw/Rethinking_DP_GNN_runtime/paper_experiments")
+PAPER_ROOT = Path(__file__).resolve().parents[1] / "aec" / "reference"
 DEFAULT_FIGURE4_ROOT = PAPER_ROOT / "figure4_final"
 DEFAULT_OUTPUT_DIR = DEFAULT_FIGURE4_ROOT / "plots"
 

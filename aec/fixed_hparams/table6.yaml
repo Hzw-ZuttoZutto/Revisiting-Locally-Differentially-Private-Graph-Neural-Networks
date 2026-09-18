@@ -1,0 +1,4395 @@
+schema_version: 2
+table: table6
+points:
+- point_id: table6_cora_gat_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 202
+    x_steps: 32
+    learning_rate: '0.001'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gat_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 156
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gat_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 192
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gat_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 188
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gat_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 200
+    x_steps: 32
+    learning_rate: '0.001'
+    weight_decay: '0.001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gat_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 154
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gat_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 226
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gat_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 191
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gat_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 156
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gat_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 222
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gat_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 186
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gat_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 222
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gcn_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 190
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gcn_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 154
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gcn_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 202
+    x_steps: 32
+    learning_rate: '0.001'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gcn_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 188
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gcn_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 189
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gcn_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 223
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gcn_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 199
+    x_steps: 32
+    learning_rate: '0.001'
+    weight_decay: '0.001'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gcn_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 190
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gcn_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 191
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gcn_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 221
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gcn_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 221
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gcn_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 221
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_sage_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 191
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_sage_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 226
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_sage_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 228
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_sage_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 223
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_sage_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 223
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_sage_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 188
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_sage_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 160
+    x_steps: 16
+    learning_rate: '0.001'
+    weight_decay: '0.0001'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_sage_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 175
+    x_steps: 16
+    learning_rate: '0.0001'
+    weight_decay: '0.001'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_sage_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 133
+    x_steps: 8
+    learning_rate: '0.0001'
+    weight_decay: '0'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_sage_800
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 220
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_sage_1600
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 221
+    x_steps: 64
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_sage_3200
+  table: table6
+  setting: FeatFree-HOA
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: hoa
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 151
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gat_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 120
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gat_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 120
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gat_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 120
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gat_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 117
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gat_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 84
+    x_steps: 4
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gat_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 84
+    x_steps: 4
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gat_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 155
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gat_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 155
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gat_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 155
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gat_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 81
+    x_steps: 4
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gat_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 81
+    x_steps: 4
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gat_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gat
+    use_nfr: false
+  candidate:
+    candidate_id: 81
+    x_steps: 4
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gcn_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 119
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gcn_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 96
+    x_steps: 4
+    learning_rate: '0.001'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_gcn_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 82
+    x_steps: 4
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gcn_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 117
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gcn_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 117
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_gcn_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 117
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gcn_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 132
+    x_steps: 8
+    learning_rate: '0.001'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gcn_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 154
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_gcn_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 120
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gcn_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 112
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gcn_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 113
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_gcn_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: gcn
+    use_nfr: false
+  candidate:
+    candidate_id: 80
+    x_steps: 4
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_sage_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 119
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_sage_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 132
+    x_steps: 8
+    learning_rate: '0.001'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_cora_sage_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: cora
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 120
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_sage_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 116
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_sage_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 118
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_lastfm_sage_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: lastfm
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 118
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.25'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_sage_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 191
+    x_steps: 32
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_sage_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 156
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_citeseer_sage_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: citeseer
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 156
+    x_steps: 16
+    learning_rate: '0.01'
+    weight_decay: '0.01'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_sage_800
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 800
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 113
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_sage_1600
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 1600
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 113
+    x_steps: 8
+    learning_rate: '0.01'
+    weight_decay: '0.0001'
+    dropout: '0.5'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500
+- point_id: table6_facebook_sage_3200
+  table: table6
+  setting: FeatFree-Kprop
+  fixed_params:
+    dataset: facebook
+    feature: random_normal
+    sim_reference_eps: null
+    feature_dim: 3200
+    scale: '1'
+    feature_preprojection: null
+    preprojection_output_dim: null
+    random_normal_mean: '0'
+    random_normal_std: '1'
+    shared_value: null
+    degree_bucket_num_buckets: null
+    degree_bucket_range_max: null
+    deepwalk_walk_length: null
+    deepwalk_number_walks: null
+    deepwalk_window_size: null
+    deepwalk_workers: null
+    deepwalk_undirected: null
+    mechanism: mbm
+    x_eps: inf
+    m: best
+    norm: false
+    norm_scale: none
+    smoother: kprop
+    backbone: sage
+    use_nfr: false
+  candidate:
+    candidate_id: 81
+    x_steps: 4
+    learning_rate: '0.01'
+    weight_decay: '0.001'
+    dropout: '0.75'
+    tao2: none
+  defaults:
+    dataset:
+      data_range:
+      - 0.0
+      - 1.0
+      val_ratio: 0.25
+      test_ratio: 0.25
+    model:
+      hidden_dim: 16
+    trainer:
+      optimizer: adam
+      gradient_clip: false
+      gradient_clip_max_norm: 1.0
+      sim_epoch_refresh: false
+      show_progress: false
+      log_every_epoch: false
+    stage:
+      grid:
+        patience: 80
+        repeats: 1
+        max_epochs: 300
+      verify:
+        patience: 150
+        repeats: 10
+        max_epochs: 500

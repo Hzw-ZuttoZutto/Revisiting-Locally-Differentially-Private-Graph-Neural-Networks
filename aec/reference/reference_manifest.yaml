@@ -1,0 +1,51 @@
+schema_version: 2
+figures:
+  1:
+    points: 504
+    seed_rows: 5040
+    repeats:
+    - 10
+  6:
+    points: 252
+    seed_rows: 2520
+    repeats:
+    - 10
+  3:
+    points: 90
+    seed_rows: 1800
+    repeats:
+    - 20
+  4:
+    points: 121
+    seed_rows: 1210
+    repeats:
+    - 10
+  5:
+    points: 81
+    seed_rows: 810
+    repeats:
+    - 10
+  7:
+    points: 121
+    seed_rows: 1210
+    repeats:
+    - 10
+files:
+  aec/fixed_hparams/figure1.yaml: bbbc0ac17a0ba10351175274ff31f87f83ba1758b68ea0f9420285014c150918
+  aec/fixed_hparams/figure3.yaml: c27ef1a856b86701d7dac17c2b6bec9175e2ec7acdd5e3f085f7b18b6a28e94e
+  aec/fixed_hparams/figure4.yaml: 42c65cf48aa1ea21ee376006f6319259f1e90bf8a8c1a0eacae8d5472fa81361
+  aec/fixed_hparams/figure5.yaml: c14612e04e63433bd74360e0e923a9c757f371cc0a6dfe07e24d6953f37fe99f
+  aec/fixed_hparams/figure6.yaml: 2cc37d5a6c4a2a16a663c2f7e928f4a2ddcdfb686a2892d0e30198ed0af40373
+  aec/fixed_hparams/figure7.yaml: e62aad6e07e60778060b7cd7df37bf9d13861525612074d105e2f64e42e5e1c7
+  aec/reference/figure1_plot_data.csv: 334557539edc96cc8e064a01d824e7050b0cd565c2184492a28648a586c0a893
+  aec/reference/figure1_points.csv: 3d53e0d9be46ae3711019e5ca50b7d76e91f5c24ce91fb951d03304a8a20e81b
+  aec/reference/figure3_plot_data.csv: 3652608e46bfe5ec0a77c92b90e2c6f93737c86c4aa6b73ea8e3c6da7095a550
+  aec/reference/figure3_points.csv: d13b9cf1767163b2bc45d205998493c6ef3278d63a1d2500aba677f5ad93414d
+  aec/reference/figure4_plot_data.csv: ca8c15b0fd909fe036d925c2b0b1f9896f685a574b942d19e541e399ea5598d2
+  aec/reference/figure4_points.csv: 25082a8ceb2750464ed847b40a80d7a1b31bce2800ee276e95420b793a53232a
+  aec/reference/figure5_plot_data.csv: 36abfdb126f15db8b90f289d72861794fa7327a988dcb347da38219eac27dad6
+  aec/reference/figure5_points.csv: 250b9d2773fdc8d0f5cea3161f353b08e340c7676f15253003d15bdf4af0794f
+  aec/reference/figure6_plot_data.csv: 9b95f85dc1266ecfa6469ac0fed83cd9a2b65a83fadeb7c7270643aff6d25a96
+  aec/reference/figure6_points.csv: 296715dfcff5f5aa6d2cac89a32ebd7c0d48b61d845c73609ed40d09d9aa617b
+  aec/reference/figure7_plot_data.csv: a00f461a1d63b48a4bf705a25e7ed1ef140248c0718ff4b6ca095cd7c24446f8
+  aec/reference/figure7_points.csv: f71e205f299fa752e9dca440b125207bad08ea2d0db6afed2dd39d4d79f7c992

@@ -26,11 +26,9 @@ import yaml
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PAPER_ROOT = Path("/data/hzw/Rethinking_DP_GNN_runtime/paper_experiments")
+PAPER_ROOT = REPO_ROOT / "aec" / "reference"
 DEFAULT_MAIN_LONG_CSV = PAPER_ROOT / "main_add_10seed_backfill" / "test_acc_long.csv"
-DEFAULT_FEATFREE_ROOT = Path(
-    "/data/hzw/Rethinking_DP_GNN_runtime/rebuttal_experiments/featfree_homo_rerun/HOA"
-)
+DEFAULT_FEATFREE_ROOT = REPO_ROOT / "aec" / "reference"
 DEFAULT_CLEAN_REFERENCE_MANIFEST = PAPER_ROOT / "clean_reference" / "manifest.csv"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "rebuttal_figure"
 OUTPUT_STEM = "figure1"
@@ -39,7 +37,7 @@ PLOT_DATA_FILENAME = f"{OUTPUT_STEM}_plot_data.csv"
 FROZEN_STYLE_VERSION = "paper_figure1_reference_v1"
 EXPECTED_PYTHON_VERSION = "3.10.20"
 EXPECTED_MATPLOTLIB_VERSION = "3.10.9"
-EXPECTED_ENV_PREFIX = Path("/home/hzw/miniconda3/envs/HZWDP")
+EXPECTED_ENV_PREFIX = None
 
 BACKBONES = ("gcn", "sage", "gat")
 BACKBONE_LABELS = MappingProxyType({"gcn": "GCN", "sage": "GraphSAGE", "gat": "GAT"})
@@ -203,7 +201,7 @@ def parse_args() -> argparse.Namespace:
 def validate_render_environment() -> None:
     problems: list[str] = []
     actual_prefix = Path(sys.prefix).resolve()
-    if actual_prefix != EXPECTED_ENV_PREFIX.resolve():
+    if EXPECTED_ENV_PREFIX is not None and actual_prefix != EXPECTED_ENV_PREFIX.resolve():
         problems.append(f"environment prefix is {actual_prefix}, expected {EXPECTED_ENV_PREFIX}")
     if platform.python_version() != EXPECTED_PYTHON_VERSION:
         problems.append(

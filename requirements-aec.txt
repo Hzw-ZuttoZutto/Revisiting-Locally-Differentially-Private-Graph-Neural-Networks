@@ -1,0 +1,6 @@
+# AEC notebook layer
+-r requirements.txt
+nbformat>=5.10,<6
+nbclient>=0.10,<1
+jupyter>=1.0,<2
+ipykernel>=6.29,<7

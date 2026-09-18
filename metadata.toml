@@ -1,0 +1,17 @@
+[artifact]
+name = "Rethinking DP-GNN AEC artifact"
+version = "1.0"
+description = "Three notebook entry points for direct figures, fixed-hyperparameter reruns, and scaled/full hyperparameter searches."
+license = "To be completed before submission"
+
+[artifact.execution]
+entrypoint = "notebooks/notebook_1_direct.ipynb"
+python = ">=3.10"
+accelerator = "GPU optional for notebook 1; CUDA GPU for notebooks 2 and 3"
+
+[artifact.badges]
+requested = ["available", "functional", "reproduced"]
+
+[artifact.provenance]
+reference_manifest = "aec/reference/reference_manifest.yaml"
+claim_coverage = "aec/claim_coverage.yaml"

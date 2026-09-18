@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_ROOT="$SCRIPT_DIR/configs_AEC/figure1/LDPGNN"
 OUTPUT_ROOT="$SCRIPT_DIR/experiments_AEC/figure1/LDPGNN"
 PYTHON_BIN="${PYTHON_BIN:-python}"
-GPU_IDS='[1,2,3,5,6,7]'
+GPU_IDS='[0,2,3,4,6,7]'
 MAX_PARALLEL_PER_GPU=10
 
 usage() {
@@ -92,7 +92,7 @@ trap cleanup EXIT
 
 echo
 echo "Execution settings:"
-echo "  GPUs: 1,2,3,5,6,7"
+echo "  GPUs: 0,2,3,4,6,7"
 echo "  max_parallel_per_gpu: $MAX_PARALLEL_PER_GPU"
 echo "  log directory: $LOG_ROOT"
 
@@ -118,7 +118,7 @@ import yaml
 
 path = Path(sys.argv[1])
 data = yaml.safe_load(path.read_text(encoding="utf-8"))
-assert data["device"]["gpu_ids"] == [1, 2, 3, 5, 6, 7]
+assert data["device"]["gpu_ids"] == [0, 2, 3, 4, 6, 7]
 assert data["device"]["max_parallel_per_gpu"] == 10
 PY
 

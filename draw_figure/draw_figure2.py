@@ -17,10 +17,9 @@ from matplotlib.axes import Axes
 from matplotlib.ticker import FixedLocator, FuncFormatter, LogLocator, NullFormatter
 
 
-RUNTIME_SCRIPTS_DIR = Path("/data/hzw/Rethinking_DP_GNN_runtime/scripts")
-DEFAULT_OUTPUT_DIR = Path(
-    "/data/hzw/Rethinking_DP_GNN_runtime/paper_experiments/alpha_epsilon_m_cora"
-)
+REPO_ROOT = Path(__file__).resolve().parents[1]
+RUNTIME_SCRIPTS_DIR = REPO_ROOT / "aec" / "analytic"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "outputs" / "figure2"
 AXIS_FONT_SCALE = 1.4
 TICK_FONT_SCALE = AXIS_FONT_SCALE * 1.2
 ANNOTATION_FONT_SCALE = 1.4 * 1.2

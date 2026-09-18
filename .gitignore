@@ -146,4 +146,7 @@ test.ipynb
 *.job
 test.py
 output
-
+# AEC generated outputs and temporary execution plans
+outputs/
+work/
+.venv/

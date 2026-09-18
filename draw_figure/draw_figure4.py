@@ -22,7 +22,7 @@ from matplotlib.ticker import MultipleLocator
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PAPER_ROOT = Path("/data/hzw/Rethinking_DP_GNN_runtime/paper_experiments")
+PAPER_ROOT = Path(__file__).resolve().parents[1] / "aec" / "reference"
 DEFAULT_FIGURE5_ROOT = PAPER_ROOT / "figure5_final"
 DEFAULT_FIGURE5_ADD_ROOT = PAPER_ROOT / "figure5_final_add"
 DEFAULT_FIGURE5_ADD_AGAIN_ROOT = PAPER_ROOT / "figure5_final_add_again"
