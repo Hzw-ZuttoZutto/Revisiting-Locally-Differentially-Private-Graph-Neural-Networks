@@ -18,7 +18,7 @@ from matplotlib.ticker import FixedLocator, FuncFormatter, LogLocator, NullForma
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-RUNTIME_SCRIPTS_DIR = REPO_ROOT / "aec" / "analytic"
+RUNTIME_SCRIPTS_DIR = REPO_ROOT / "scripts" / "aec" / "analytic"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "outputs" / "figure2"
 AXIS_FONT_SCALE = 1.4
 TICK_FONT_SCALE = AXIS_FONT_SCALE * 1.2

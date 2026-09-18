@@ -22,20 +22,13 @@ from matplotlib.ticker import MultipleLocator
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PAPER_ROOT = Path(__file__).resolve().parents[1] / "aec" / "reference"
+PAPER_ROOT = Path(__file__).resolve().parents[1] / "scripts" / "aec" / "reference"
 DEFAULT_FIGURE5_ROOT = PAPER_ROOT / "figure5_final"
 DEFAULT_FIGURE5_ADD_ROOT = PAPER_ROOT / "figure5_final_add"
 DEFAULT_FIGURE5_ADD_AGAIN_ROOT = PAPER_ROOT / "figure5_final_add_again"
 DEFAULT_OUTPUT_DIR = DEFAULT_FIGURE5_ROOT / "plots"
 DEFAULT_FEATFREE_MANIFEST = (
-    REPO_ROOT
-    / "rebuttal_experiments"
-    / "featfree_homo_rerun"
-    / "HOA"
-    / "cora"
-    / "sage"
-    / "random_projected.yaml"
-    / "manifest.csv"
+    REPO_ROOT / "scripts" / "aec" / "reference" / "reference_metrics.yaml"
 )
 FEATFREE_LABEL = r"$\mathsf{FeatFree}$"
 

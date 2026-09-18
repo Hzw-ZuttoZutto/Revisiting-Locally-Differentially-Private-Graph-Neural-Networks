@@ -31,7 +31,7 @@ from draw_figure.draw_figure4 import (  # noqa: E402
 )
 
 
-PAPER_ROOT = Path(__file__).resolve().parents[1] / "aec" / "reference"
+PAPER_ROOT = Path(__file__).resolve().parents[1] / "scripts" / "aec" / "reference"
 DEFAULT_FIGURE6_ROOT = PAPER_ROOT / "figure6"
 DEFAULT_FIGURE6_ADD_ROOT = PAPER_ROOT / "figure6_add"
 DEFAULT_FIGURE6_ADD_AGAIN_ROOT = PAPER_ROOT / "figure6_add_again"

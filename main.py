@@ -10,7 +10,7 @@ import torch
 from tqdm.auto import tqdm
 from datasets import load_dataset
 from models import NodeClassifier
-from pre_smoothing_feature_cache import prepare_pre_smoothing_input
+from scripts.pre_smoothing_feature_cache import prepare_pre_smoothing_input
 from trainer import Trainer
 from transforms import FeatureTransform, FeaturePerturbation, NFR
 from utils import print_args, WandbLogger, add_parameters_as_argument, \

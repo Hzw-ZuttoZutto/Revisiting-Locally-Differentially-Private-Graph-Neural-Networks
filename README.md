@@ -10,7 +10,7 @@ source .venv/bin/activate
 python -m jupyter notebook notebooks/notebook_1_direct.ipynb
 ```
 
-Notebook 1 is CPU-only and reads the compact reference tables under `aec/reference/`. It generates the eight paper figures without requiring the original multi-gigabyte experiment trees.
+Notebook 1 is CPU-only and reads the compact reference tables under `scripts/aec/reference/`. It generates the eight paper figures without requiring the original multi-gigabyte experiment trees.
 
 Notebook 2 reruns selected points with fixed hyperparameters. Set `AEC_EXECUTE=1` to execute training; otherwise it prints the planned jobs. After execution, the runner aggregates the produced CSVs into the figure/table input before rendering. Set `AEC_GPU_IDS` and `AEC_MAX_PARALLEL_PER_GPU` for the target machine. The default is one visible GPU and one concurrent job per GPU.
 
@@ -18,7 +18,7 @@ Notebook 3 keeps the full search configuration path and defaults to the claim-co
 
 ## Figure and claim map
 
-The exact datasets, methods, axes, and scaled coverage are declared in `aec/claim_coverage.yaml`. Every figure cell writes PDF, PNG, plot-data, and a run manifest under `outputs/`.
+The exact datasets, methods, axes, and scaled coverage are declared in `scripts/aec/claim_coverage.yaml`. Figure cells display PNGs inline; generated PDF/CSV/LaTeX files are not written by default.
 
 The compact reference tables preserve the plotted statistics and ten-seed rows used to compute the displayed summaries. The same notebooks also generate Table 4 and Table 6. Their settings are emitted with the implementation labels `FeatFree-P`, `FeatFree-Kprop`, and `FeatFree-HOA`. The original lab result trees are not required by the notebooks.
 

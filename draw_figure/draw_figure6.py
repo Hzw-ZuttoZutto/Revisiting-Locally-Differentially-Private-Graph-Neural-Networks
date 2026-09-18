@@ -24,9 +24,9 @@ if str(REPO_ROOT) not in sys.path:
 from draw_figure import draw_figure1 as reference
 
 
-DEFAULT_MAIN_ROOT = REPO_ROOT / "aec" / "reference"
-DEFAULT_FEATFREE_ROOT = REPO_ROOT / "aec" / "reference"
-DEFAULT_CLEAN_ROOT = REPO_ROOT / "aec" / "reference"
+DEFAULT_MAIN_ROOT = REPO_ROOT / "scripts" / "aec" / "reference"
+DEFAULT_FEATFREE_ROOT = REPO_ROOT / "scripts" / "aec" / "reference"
+DEFAULT_CLEAN_ROOT = REPO_ROOT / "scripts" / "aec" / "reference"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "rebuttal_figure"
 OUTPUT_STEM = "figure1_heter"
 PLOT_DATA_FILENAME = f"{OUTPUT_STEM}_plot_data.csv"

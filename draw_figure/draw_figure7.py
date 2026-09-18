@@ -34,8 +34,8 @@ plt.rcParams["figure.facecolor"] = BACKGROUND_COLOR
 plt.rcParams["savefig.facecolor"] = BACKGROUND_COLOR
 
 
-DEFAULT_FIGURE5_ROOT = REPO_ROOT / "aec" / "reference" / "figure7_plot_data.csv"
-DEFAULT_FEATFREE_MANIFEST = REPO_ROOT / "aec" / "reference" / "reference_metrics.yaml"
+DEFAULT_FIGURE5_ROOT = REPO_ROOT / "scripts" / "aec" / "reference" / "figure7_plot_data.csv"
+DEFAULT_FEATFREE_MANIFEST = REPO_ROOT / "scripts" / "aec" / "reference" / "reference_metrics.yaml"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "rebuttal_figure"
 EXPECTED_MANIFEST_ROWS = 168
 FEATFREE_LABEL = r"$\mathsf{FeatFree}$"

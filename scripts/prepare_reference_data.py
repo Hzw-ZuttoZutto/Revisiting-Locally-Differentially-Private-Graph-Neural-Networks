@@ -38,19 +38,23 @@ def main():
     runtime = args.runtime_root.resolve()
     paper = runtime / "paper_experiments"
     rebuttal = runtime / "rebuttal_experiments"
-    ref = REPO / "aec/reference"
-    fixed = REPO / "aec/fixed_hparams"
+    ref = REPO / "scripts/aec/reference"
+    fixed = REPO / "scripts/aec/fixed_hparams"
     ref.mkdir(parents=True, exist_ok=True)
     fixed.mkdir(parents=True, exist_ok=True)
     from draw_figure import draw_figure7 as f7
     from hparams_search_scripts import mechanism_stage_utils as u
 
+    from draw_figure import draw_figure6 as f6
+    heter_main = f6.load_main_rows(rebuttal / "figure1_heter", bootstrap_samples=1000, bootstrap_seed=12345)
+    heter_featfree = f6.load_featfree_rows(rebuttal / "featfree_heter" / "HOA", bootstrap_samples=1000, bootstrap_seed=12345)
+    heter_clean = f6.load_clean_rows(rebuttal / "clean_heter", bootstrap_samples=1000, bootstrap_seed=12345)
     tables = {
-        1: read_csv(REPO / "rebuttal_figure/figure1_plot_data.csv"),
+        1: read_csv(paper / "main_add_10seed_backfill/plots/main_add_10seed_panel_plot_data.csv"),
         3: read_csv(paper / "figure4_final/plots/figure4_final_panel_plot_data.csv"),
         4: read_csv(paper / "figure5_final/plots/figure5_final_norm_scale_plot_data.csv"),
         5: read_csv(paper / "figure6/plots/figure6_tao2_plot_data.csv"),
-        6: read_csv(REPO / "rebuttal_figure/figure1_heter_plot_data.csv"),
+        6: heter_main + heter_featfree + heter_clean,
         7: f7.build_plot_rows(f7.load_records(rebuttal / "figure5_heter/figure5.yaml"),
                             bootstrap_samples=1000, bootstrap_seed=12345),
     }

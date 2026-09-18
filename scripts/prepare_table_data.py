@@ -34,7 +34,7 @@ def extract(manifest, setting, table, points=None):
 
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument("--experiments-root",type=Path,required=True); args=ap.parse_args(); root=args.experiments_root
-    out=Path(__file__).resolve().parents[1]/"aec/reference"; out.mkdir(parents=True,exist_ok=True)
+    out=Path(__file__).resolve().parents[1]/"scripts/aec/reference"; out.mkdir(parents=True,exist_ok=True)
     t4=[]; p4=[]
     for p in sorted((root/"table4").glob("table4_FeatFree-P/*/direct.yaml/manifest.csv")):
         t4.extend(extract(p,"FeatFree-P","table4",p4))

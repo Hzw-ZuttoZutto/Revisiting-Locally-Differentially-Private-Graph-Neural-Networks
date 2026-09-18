@@ -26,9 +26,9 @@ import yaml
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PAPER_ROOT = REPO_ROOT / "aec" / "reference"
+PAPER_ROOT = REPO_ROOT / "scripts" / "aec" / "reference"
 DEFAULT_MAIN_LONG_CSV = PAPER_ROOT / "main_add_10seed_backfill" / "test_acc_long.csv"
-DEFAULT_FEATFREE_ROOT = REPO_ROOT / "aec" / "reference"
+DEFAULT_FEATFREE_ROOT = REPO_ROOT / "scripts" / "aec" / "reference"
 DEFAULT_CLEAN_REFERENCE_MANIFEST = PAPER_ROOT / "clean_reference" / "manifest.csv"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "rebuttal_figure"
 OUTPUT_STEM = "figure1"
