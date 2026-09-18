@@ -52,7 +52,6 @@ def build_model_args(backbone, seed):
         "--random_normal_std", "1",
         "--smoother", "hoa",
         "--norm", "false",
-        "--collect_grad_stats", "false",
         "--gradient_clip", "false",
         "--gradient_clip_max_norm", "1.0",
         "--sim_epoch_refresh", "false",
@@ -116,7 +115,7 @@ def run_one(backbone, repeat_id, base_seed):
         }
 
     model.validation_step = validation_step_with_counts
-    best_metrics = trainer.fit(model, data, diagnostic_dir=None)
+    best_metrics = trainer.fit(model, data)
     best_epoch = int(best_metrics["epoch"])
     stat = epoch_stats[best_epoch - 1]
     test_n = stat["test_n"]

@@ -54,14 +54,11 @@ OUTER_AXIS_NAMES = (
     "smoother",
     "backbone",
     "use_nfr",
-    "sanity_check",
-    "node_ratio",
 )
 
 SUMMARY_METRICS = (
     ("val/acc", "val_acc", True),
     ("test/acc", "test_acc", True),
-    ("sanity_e_pg", "sanity_e_pg", False),
 )
 
 GRID_STAGE_DIRNAME = "grid"
@@ -257,10 +254,6 @@ def normalized_outer_fixed_params(fixed_params: dict[str, Any]) -> dict[str, Any
         if name == "feature_preprojection" and is_default_feature_preprojection_value(value):
             value = None
         if name == "preprojection_output_dim" and not bool(fixed_params.get("feature_preprojection")):
-            value = None
-        if name == "sanity_check" and not bool(fixed_params.get("sanity_check")):
-            value = None
-        if name == "node_ratio" and not bool(fixed_params.get("sanity_check")):
             value = None
         ordered[name] = value
     return ordered
@@ -553,11 +546,6 @@ def _summary_fieldnames() -> list[str]:
         "test_acc_min",
         "test_acc_max",
         "n",
-        "sanity_e_pg_mean",
-        "sanity_e_pg_std",
-        "sanity_e_pg_min",
-        "sanity_e_pg_max",
-        "sanity_e_pg_n",
     ]
 
 
@@ -644,28 +632,6 @@ def _sorted_aggregate_rows(
                 "n": int(val_summary["n"]),
             }
         )
-        sanity_summary = metric_summaries["sanity_e_pg"]
-        if sanity_summary is None:
-            aggregated[-1].update(
-                {
-                    "sanity_e_pg_mean": None,
-                    "sanity_e_pg_std": None,
-                    "sanity_e_pg_min": None,
-                    "sanity_e_pg_max": None,
-                    "sanity_e_pg_n": None,
-                }
-            )
-        else:
-            aggregated[-1].update(
-                {
-                    "sanity_e_pg_mean": sanity_summary["mean"],
-                    "sanity_e_pg_std": sanity_summary["std"],
-                    "sanity_e_pg_min": sanity_summary["min"],
-                    "sanity_e_pg_max": sanity_summary["max"],
-                    "sanity_e_pg_n": int(sanity_summary["n"]),
-                }
-            )
-
     aggregated.sort(
         key=lambda row: (
             -float(row["val_acc_mean"]),
@@ -717,22 +683,7 @@ def write_grid_ranking(job_dir: Path, ranking_rows: list[dict[str, Any]]) -> Non
                 "test_acc_min": canonical_float_text(row["test_acc_min"]),
                 "test_acc_max": canonical_float_text(row["test_acc_max"]),
                 "n": row["n"],
-                "sanity_e_pg_mean": "",
-                "sanity_e_pg_std": "",
-                "sanity_e_pg_min": "",
-                "sanity_e_pg_max": "",
-                "sanity_e_pg_n": "",
             }
-            if row.get("sanity_e_pg_mean") is not None:
-                payload.update(
-                    {
-                        "sanity_e_pg_mean": canonical_float_text(row["sanity_e_pg_mean"]),
-                        "sanity_e_pg_std": canonical_float_text(row["sanity_e_pg_std"]),
-                        "sanity_e_pg_min": canonical_float_text(row["sanity_e_pg_min"]),
-                        "sanity_e_pg_max": canonical_float_text(row["sanity_e_pg_max"]),
-                        "sanity_e_pg_n": row["sanity_e_pg_n"],
-                    }
-                )
             writer.writerow(payload)
 
 
@@ -784,22 +735,7 @@ def write_verify_summary(job_dir: Path, summary_rows: list[dict[str, Any]]) -> N
                 "test_acc_min": canonical_float_text(row["test_acc_min"]),
                 "test_acc_max": canonical_float_text(row["test_acc_max"]),
                 "n": row["n"],
-                "sanity_e_pg_mean": "",
-                "sanity_e_pg_std": "",
-                "sanity_e_pg_min": "",
-                "sanity_e_pg_max": "",
-                "sanity_e_pg_n": "",
             }
-            if row.get("sanity_e_pg_mean") is not None:
-                payload.update(
-                    {
-                        "sanity_e_pg_mean": canonical_float_text(row["sanity_e_pg_mean"]),
-                        "sanity_e_pg_std": canonical_float_text(row["sanity_e_pg_std"]),
-                        "sanity_e_pg_min": canonical_float_text(row["sanity_e_pg_min"]),
-                        "sanity_e_pg_max": canonical_float_text(row["sanity_e_pg_max"]),
-                        "sanity_e_pg_n": row["sanity_e_pg_n"],
-                    }
-                )
             writer.writerow(payload)
 
 

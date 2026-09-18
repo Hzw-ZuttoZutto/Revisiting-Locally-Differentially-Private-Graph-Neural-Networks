@@ -63,14 +63,6 @@ def main() -> None:
         },
         "recommended_command": recommended_command,
     }
-    if winner.get("sanity_e_pg_mean") not in (None, ""):
-        best_config["verify_metrics"]["sanity_e_pg"] = {
-            "mean": float(winner["sanity_e_pg_mean"]),
-            "std": float(winner["sanity_e_pg_std"]),
-            "min": float(winner["sanity_e_pg_min"]),
-            "max": float(winner["sanity_e_pg_max"]),
-            "n": int(winner["sanity_e_pg_n"]),
-        }
     mechanism_stage_utils.write_yaml_file(
         mechanism_stage_utils.best_config_path(job_dir),
         best_config,

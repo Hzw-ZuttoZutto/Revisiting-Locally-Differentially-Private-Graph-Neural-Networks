@@ -16,7 +16,6 @@ defaults:
     hidden_dim: 16
   trainer:
     optimizer: adam
-    collect_grad_stats: false
     gradient_clip: false
     gradient_clip_max_norm: 1.0
     sim_epoch_refresh: false

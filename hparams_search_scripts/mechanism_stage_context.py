@@ -120,14 +120,6 @@ def _append_feature_specific_args(parts: list[str], fixed_params: dict[str, Any]
         _append_bool(parts, "deepwalk_undirected", bool(fixed_params["deepwalk_undirected"]))
 
 
-def _append_diagnostic_args(parts: list[str], fixed_params: dict[str, Any]) -> None:
-    if not bool(fixed_params.get("sanity_check", False)):
-        return
-
-    _append_bool(parts, "sanity_check", True)
-    _append_flag(parts, "node_ratio", fixed_params["node_ratio"])
-
-
 def build_main_base_args(ctx: JobContext) -> list[str]:
     parts = [
         "main.py",
@@ -159,7 +151,6 @@ def build_main_base_args(ctx: JobContext) -> list[str]:
     parts.extend(["--data_range", str(data_range[0]), str(data_range[1])])
 
     _append_feature_specific_args(parts, ctx.fixed_params)
-    _append_diagnostic_args(parts, ctx.fixed_params)
     if ctx.fixed_params.get("smoother") is not None:
         parts.extend(["--smoother", str(ctx.fixed_params["smoother"])])
 
@@ -167,11 +158,6 @@ def build_main_base_args(ctx: JobContext) -> list[str]:
     if bool(ctx.fixed_params["norm"]) and str(ctx.fixed_params["norm_scale"]) != "none":
         _append_flag(parts, "norm_scale", ctx.fixed_params["norm_scale"])
 
-    _append_bool(
-        parts,
-        "collect_grad_stats",
-        bool(ctx.defaults["trainer"]["collect_grad_stats"]),
-    )
     _append_bool(
         parts,
         "gradient_clip",

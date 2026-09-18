@@ -295,7 +295,6 @@ def run_one(
     best_metrics = trainer.fit(
         model,
         data,
-        diagnostic_dir=None,
         epoch_end_data_refresh_fn=build_sim_epoch_refresh_callback(args),
     )
     best_epoch = int(best_metrics["epoch"])

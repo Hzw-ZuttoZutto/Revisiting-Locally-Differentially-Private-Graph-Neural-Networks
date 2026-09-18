@@ -40,7 +40,6 @@ MANIFEST_COLUMNS = [
     "best_verify_val_acc_std",
     "best_verify_test_acc_mean",
     "best_verify_test_acc_std",
-    "best_verify_sanity_e_pg_mean",
     "best_config_path",
     "recommended_command_path",
     "error_message",
@@ -226,9 +225,6 @@ def _load_best_outputs_into_row(row: dict[str, str], job_dir: Path) -> None:
     row["best_verify_val_acc_std"] = mechanism_stage_utils.canonical_search_value(val_metrics.get("std"))
     row["best_verify_test_acc_mean"] = mechanism_stage_utils.canonical_search_value(test_metrics.get("mean"))
     row["best_verify_test_acc_std"] = mechanism_stage_utils.canonical_search_value(test_metrics.get("std"))
-    sanity_metrics = verify_metrics.get("sanity_e_pg")
-    if isinstance(sanity_metrics, dict):
-        row["best_verify_sanity_e_pg_mean"] = mechanism_stage_utils.canonical_search_value(sanity_metrics.get("mean"))
     row["best_config_path"] = str(mechanism_stage_utils.best_config_path(job_dir))
     row["recommended_command_path"] = str(mechanism_stage_utils.recommended_command_path(job_dir))
 
@@ -240,13 +236,10 @@ def _normalized_job_spec_for_comparison(job_spec: dict[str, object]) -> dict[str
 
     fixed_params = normalized.get("fixed_params")
     if isinstance(fixed_params, dict):
-        fixed_params_normalized = dict(fixed_params)
-        for axis_name in mechanism_stage_utils.OUTER_AXIS_NAMES:
-            if axis_name not in fixed_params_normalized:
-                if axis_name == "sanity_check":
-                    fixed_params_normalized[axis_name] = False
-                else:
-                    fixed_params_normalized[axis_name] = None
+        fixed_params_normalized = {
+            axis_name: fixed_params.get(axis_name)
+            for axis_name in mechanism_stage_utils.OUTER_AXIS_NAMES
+        }
         normalized["fixed_params"] = fixed_params_normalized
 
     return normalized
@@ -359,32 +352,6 @@ def _uses_figure3_grouped_state_runner(config_path: Path, fixed_params: dict[str
     return True
 
 
-def _uses_figure10_grouped_state_runner(config_path: Path, fixed_params: dict[str, Any]) -> bool:
-    if config_path.parent.name != 'figure10':
-        return False
-    if not config_path.name.startswith('x_steps='):
-        return False
-    if str(fixed_params.get('feature', '')).strip().lower() != 'random_normal':
-        return False
-    if str(fixed_params.get('smoother', '')).strip().lower() != 'hoa':
-        return False
-    if str(fixed_params.get('backbone', '')).strip().lower() != 'sage':
-        return False
-    if not _bool_fixed_param(fixed_params.get('sanity_check', False)):
-        return False
-    if _bool_fixed_param(fixed_params.get('use_nfr', False)):
-        return False
-    if str(fixed_params.get('mechanism', '')).strip().lower() != 'mbm':
-        return False
-    if str(fixed_params.get('m', '')).strip().lower() != 'best':
-        return False
-    if str(fixed_params.get('norm_scale', '')).strip().lower() != 'none':
-        return False
-    if _bool_fixed_param(fixed_params.get('norm', False)):
-        return False
-    return True
-
-
 def _uses_semantic_raw_grouped_state_runner(fixed_params: dict[str, Any]) -> bool:
     if str(fixed_params.get('feature', '')).strip().lower() != 'raw':
         return False
@@ -463,7 +430,6 @@ def _job_grouped_runner_mode(
         )
     if (
         _uses_figure3_grouped_state_runner(config_path, fixed_params)
-        or _uses_figure10_grouped_state_runner(config_path, fixed_params)
         or _uses_semantic_raw_grouped_state_runner(fixed_params)
         or _uses_semantic_random_normal_grouped_state_runner(fixed_params)
         or _uses_semantic_sim_grouped_state_runner(job_spec, fixed_params)
