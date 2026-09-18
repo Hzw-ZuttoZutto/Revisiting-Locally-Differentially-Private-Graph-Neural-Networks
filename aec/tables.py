@@ -5,16 +5,18 @@ from collections import defaultdict
 from pathlib import Path
 from .paths import REFERENCE_ROOT, OUTPUT_ROOT
 
-def _read(table):
-    with (REFERENCE_ROOT/f"{table}_seed_rows.csv").open(newline="",encoding="utf-8") as h: return list(csv.DictReader(h))
+def _read(table, mode=None):
+    candidate = REFERENCE_ROOT/f"{table}_{mode}_seed_rows.csv" if mode and mode.startswith(("fixed","search")) else REFERENCE_ROOT/f"{table}_seed_rows.csv"
+    if not candidate.is_file(): candidate = REFERENCE_ROOT/f"{table}_seed_rows.csv"
+    with candidate.open(newline="",encoding="utf-8") as h: return list(csv.DictReader(h))
 
 def _num(values):
     xs=[float(v) for v in values]
     mean=sum(xs)/len(xs); std=(sum((x-mean)**2 for x in xs)/(len(xs)-1))**0.5 if len(xs)>1 else 0.0
     return mean,std
 
-def summarize(table):
-    rows=_read(table); groups=defaultdict(list)
+def summarize(table, mode=None):
+    rows=_read(table, mode); groups=defaultdict(list)
     for r in rows:
         key=(r["setting"],r["backbone"],r["dataset"],r.get("feature_dim",""))
         groups[key].append(r["test_acc"])
@@ -26,7 +28,7 @@ def summarize(table):
 def render_table(table, *, mode="reference", destination=None):
     destination=Path(destination or OUTPUT_ROOT)/table
     destination.mkdir(parents=True,exist_ok=True)
-    summary=summarize(table)
+    summary=summarize(table, mode)
     fields=list(summary[0]) if summary else []
     with (destination/f"{table}.csv").open("w",newline="",encoding="utf-8") as h:
         w=csv.DictWriter(h,fieldnames=fields); w.writeheader(); w.writerows(summary)
@@ -58,6 +60,6 @@ def render_table(table, *, mode="reference", destination=None):
         for r in summary: tex.append(f"{r['backbone'].upper()} & {r['setting']} & {r['feature_dim']} & {r['dataset']} & {r['test_acc_mean']:.2f} ({r['test_acc_std']:.2f}) \\")
     tex += [r"\bottomrule", r"\end{tabular}"]
     (destination/f"{table}.tex").write_text("\n".join(tex)+"\n",encoding="utf-8")
-    payload={"table":table,"mode":mode,"rows":len(summary),"seed_rows":len(_read(table))}
+    payload={"table":table,"mode":mode,"rows":len(summary),"seed_rows":len(_read(table, mode))}
     (destination/"run_manifest.json").write_text(json.dumps(payload,indent=2),encoding="utf-8")
     print(json.dumps(payload,indent=2)); return payload

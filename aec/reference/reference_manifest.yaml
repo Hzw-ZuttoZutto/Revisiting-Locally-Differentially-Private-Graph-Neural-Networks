@@ -49,3 +49,17 @@ files:
   aec/reference/figure6_points.csv: 296715dfcff5f5aa6d2cac89a32ebd7c0d48b61d845c73609ed40d09d9aa617b
   aec/reference/figure7_plot_data.csv: a00f461a1d63b48a4bf705a25e7ed1ef140248c0718ff4b6ca095cd7c24446f8
   aec/reference/figure7_points.csv: f71e205f299fa752e9dca440b125207bad08ea2d0db6afed2dd39d4d79f7c992
+  aec/fixed_hparams/table4.yaml: aa408d36bfa02fd85c604a0e1b4e50fa89e8b8c061449ee22e7cf534f4a1b6e8
+  aec/fixed_hparams/table6.yaml: e5224bc909c93d4bb7a822a5f583c3fa74bc37f4be0c37c9fed1392f01771bbe
+  aec/reference/table4_seed_rows.csv: d68541d47e0390895dc579f2b39df8b1977f1a44f2da7bdcaa8be2c86854b63d
+  aec/reference/table6_seed_rows.csv: 532364eabdd91c24f45da81fa523bd2ba630f04d30497ed5076284ef6836b9fb
+tables:
+  table4:
+    seed_rows: 120
+    settings:
+    - FeatFree-P
+  table6:
+    seed_rows: 720
+    settings:
+    - FeatFree-Kprop
+    - FeatFree-HOA

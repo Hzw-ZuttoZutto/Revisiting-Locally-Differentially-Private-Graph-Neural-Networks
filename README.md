@@ -12,9 +12,9 @@ python -m jupyter notebook notebooks/notebook_1_direct.ipynb
 
 Notebook 1 is CPU-only and reads the compact reference tables under `aec/reference/`. It generates the eight paper figures without requiring the original multi-gigabyte experiment trees.
 
-Notebook 2 reruns selected points with fixed hyperparameters. Set `AEC_EXECUTE=1` to execute training; otherwise it prints the planned jobs. Set `AEC_GPU_IDS` and `AEC_MAX_PARALLEL_PER_GPU` for the target machine. The default is one visible GPU and one concurrent job per GPU.
+Notebook 2 reruns selected points with fixed hyperparameters. Set `AEC_EXECUTE=1` to execute training; otherwise it prints the planned jobs. After execution, the runner aggregates the produced CSVs into the figure/table input before rendering. Set `AEC_GPU_IDS` and `AEC_MAX_PARALLEL_PER_GPU` for the target machine. The default is one visible GPU and one concurrent job per GPU.
 
-Notebook 3 keeps the full search configuration path and defaults to the claim-coverage scaled mode. Set `AEC_MODE=full` to inspect or run the full configuration expansion. Full mode is intended for authors with sufficient compute; the scaled mode is the AEC evaluation path.
+Notebook 3 keeps the full search configuration path and defaults to the claim-coverage scaled mode. Set `AEC_MODE=full` to inspect or run the full configuration expansion. When search execution is enabled, completed manifests are matched back to the compact figure tables before rendering. Full mode is intended for authors with sufficient compute; the scaled mode is the AEC evaluation path.
 
 ## Figure and claim map
 

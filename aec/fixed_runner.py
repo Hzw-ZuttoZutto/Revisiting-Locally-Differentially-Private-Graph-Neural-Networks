@@ -49,16 +49,59 @@ def run_fixed(figure_id:int, *, repeats:int=3, limit:int|None=None, execute:bool
             point=point_map[job["point_id"]]; out=root/f"job_{index:05d}"; cmd=_command(point,int(job["seed"]),out); job={**job,"command":cmd,"output":str(out)}
             handle.write(json.dumps(job)+"\n")
             if execute: subprocess.run(cmd,cwd=str(REPO_ROOT),check=True)
+    if execute: _collect_generated_plot_data(figure_id, jobs)
     print(f"planned {len(jobs)} fixed jobs for figure {figure_id}; execute={execute}")
     return jobs
 
 def run_fixed_table(table:str, *, repeats:int=3, execute:bool=False)->dict[str,object]:
-    rows=[]; path=REFERENCE_ROOT/f"{table}_seed_rows.csv"
+    path=FIXED_ROOT/f"{table}.yaml"; data=yaml.safe_load(path.read_text(encoding="utf-8")) if path.is_file() else {"points":[]}
+    points=list(data.get("points",[])); out=WORK_ROOT/"fixed_runs"/table; out.mkdir(parents=True,exist_ok=True)
+    manifest=out/"run_manifest.jsonl"; planned=[]
+    with manifest.open("w",encoding="utf-8") as handle:
+        for index, point in enumerate(points):
+            for repeat in range(1,repeats+1):
+                seed=12345+repeat-1; job={"table":table,"point_id":point.get("point_id"),"setting":point.get("setting"),"dataset":point.get("fixed_params",{}).get("dataset"),"backbone":point.get("fixed_params",{}).get("backbone"),"feature_dim":point.get("fixed_params",{}).get("feature_dim"),"repeat":repeat,"seed":seed}
+                out_dir=out/f"job_{index:04d}_repeat_{repeat:02d}"; job["output"]=str(out_dir); job["command"]=_command(point,seed,out_dir); handle.write(json.dumps(job)+"\n"); planned.append(job)
+                if execute: subprocess.run(job["command"],cwd=str(REPO_ROOT),check=True)
+    if execute: _collect_table_outputs(table, planned)
+    print(f"planned {len(planned)} {table} jobs; execute={execute}"); return {"table":table,"jobs":planned}
+
+def _collect_table_outputs(table, planned):
     import csv
-    with path.open(newline="",encoding="utf-8") as h: raw=list(csv.DictReader(h))
-    seen=set()
-    for r in raw:
-        key=(r["setting"],r["dataset"],r["backbone"],r.get("feature_dim",""))
-        if key not in seen: seen.add(key); rows.append({"table":table,"setting":r["setting"],"dataset":r["dataset"],"backbone":r["backbone"],"feature_dim":r.get("feature_dim",""),"repeats":repeats})
-    out=WORK_ROOT/"fixed_runs"/table; out.mkdir(parents=True,exist_ok=True); (out/"run_plan.json").write_text(json.dumps({"table":table,"jobs":rows,"execute":execute},indent=2)); print(f"planned {len(rows)} {table} groups")
-    return {"table":table,"jobs":rows}
+    rows=[]
+    for job in planned:
+        files=sorted(Path(job["output"]).rglob("*.csv"));
+        if not files: continue
+        with files[-1].open(newline="",encoding="utf-8") as handle: records=list(csv.DictReader(handle))
+        if not records: continue
+        rec=records[-1]; rows.append({"table":table,"setting":job["setting"],"dataset":job["dataset"],"backbone":job["backbone"],"feature_dim":job.get("feature_dim") or "","seed":job["seed"],"val_acc":rec.get("val/acc",""),"test_acc":rec.get("test/acc","")})
+    if rows:
+        path=REFERENCE_ROOT/f"{table}_fixed_seed_rows.csv"
+        with path.open("w",newline="",encoding="utf-8") as handle:
+            writer=csv.DictWriter(handle,fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
+
+
+def _collect_generated_plot_data(figure_id, jobs):
+    import csv, math
+    ref_path=REFERENCE_ROOT/f"figure{figure_id}_plot_data.csv"
+    if not ref_path.is_file(): return
+    with ref_path.open(newline="",encoding="utf-8") as handle: reference=list(csv.DictReader(handle))
+    values={}
+    for job in jobs:
+        point_id=job.get("point_id")
+        if not point_id: continue
+        pattern=f"job_*_repeat_{int(job['repeat']):02d}/**/*.csv"
+        for path in sorted((WORK_ROOT/"fixed_runs"/f"figure{figure_id}").glob(pattern)):
+            with path.open(newline="",encoding="utf-8") as handle: rows=list(csv.DictReader(handle))
+            if not rows: continue
+            row=max(rows,key=lambda r: float(r.get("epoch",0) or 0))
+            try: values.setdefault(point_id,[]).append((float(row["val/acc"]),float(row["test/acc"])))
+            except (KeyError,ValueError): continue
+    for row in reference:
+        samples=values.get(row.get("point_id"),[])
+        if len(samples)<1: continue
+        vals=[x[1] for x in samples]; val=[x[0] for x in samples]; mean=sum(vals)/len(vals); std=(sum((x-mean)**2 for x in vals)/(len(vals)-1))**0.5 if len(vals)>1 else 0.0; half=1.96*std/math.sqrt(len(vals)) if vals else 0.0
+        row["test_acc_mean"]=f"{mean:.12g}"; row["test_acc_std"]=f"{std:.12g}"; row["test_acc_ci_low"]=f"{mean-half:.12g}"; row["test_acc_ci_high"]=f"{mean+half:.12g}"; row["test_acc_min"]=f"{min(vals):.12g}"; row["test_acc_max"]=f"{max(vals):.12g}"; row["val_acc_mean"]=f"{sum(val)/len(val):.12g}"; row["n"]=str(len(vals))
+    out=WORK_ROOT/"fixed_runs"/f"figure{figure_id}"/"plot_data.csv"
+    with out.open("w",newline="",encoding="utf-8") as handle:
+        writer=csv.DictWriter(handle,fieldnames=list(reference[0])); writer.writeheader(); writer.writerows(reference)
