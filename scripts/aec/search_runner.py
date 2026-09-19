@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import csv, json, math, subprocess, sys
+import csv, json, math, re, subprocess, sys
 from pathlib import Path
 from typing import Any
 import yaml
-from .paths import parse_gpu_ids, max_parallel_per_gpu, WORK_ROOT
+from .paths import FIXED_ROOT, REFERENCE_ROOT, parse_gpu_ids, max_parallel_per_gpu, WORK_ROOT
 
 REPO_ROOT=Path(__file__).resolve().parents[2]
 
@@ -14,6 +14,30 @@ PIPELINE_AXES = {
     "figure3_pipeline3": {"mechanism": "mbm", "smoother": "hoa", "use_nfr": "true"},
     "figure3_pipeline4": {"mechanism": "pm", "smoother": "hoa", "use_nfr": "true"},
 }
+
+
+def _fixed_point_id_by_result_index(figure_id: int) -> dict[int, str]:
+    path = FIXED_ROOT / f"figure{figure_id}.yaml"
+    if not path.is_file():
+        return {}
+    points = (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("points", [])
+    selected = []
+    for point in points:
+        fixed = point.get("fixed_params", point)
+        dataset = str(fixed.get("dataset", "")).lower()
+        backbone = str(fixed.get("backbone", "")).lower()
+        if figure_id == 1 and dataset not in {"cora", "facebook"}:
+            continue
+        if figure_id == 6 and (dataset not in {"actor", "flickr"} or backbone != "sage"):
+            continue
+        if fixed.get("mechanism"):
+            selected.append(str(point.get("point_id", "")))
+    return {index: point_id for index, point_id in enumerate(selected) if point_id}
+
+
+def _result_index(job_dir: str) -> int | None:
+    matches = re.findall(r"(?:^|/)result_(\d+)(?:/|$)", str(job_dir).replace("\\", "/"))
+    return int(matches[-1]) if matches else None
 
 def _configs(figure_id: int) -> list[Path]:
     roots={1:REPO_ROOT/"configs_AEC/figure1",3:REPO_ROOT/"configs_AEC/figure3",4:REPO_ROOT/"configs_AEC/figure4",5:REPO_ROOT/"configs_AEC/figure5",6:REPO_ROOT/"configs_AEC/figure6",7:REPO_ROOT/"configs_AEC/figure7","table4":REPO_ROOT/"configs_AEC/table4","table6":REPO_ROOT/"configs_AEC/table6"}
@@ -110,16 +134,52 @@ def _aggregate_search_output(figure_id, mode):
             with path.open(newline="",encoding="utf-8") as handle:
                 manifests.extend(csv.DictReader(handle))
     def eq(row,a,b): return str(row.get(a,"" )).lower()==str(b).lower()
+    def apply_manifest(out, manifest):
+        mean=float(manifest["best_verify_test_acc_mean"])
+        std=float(manifest.get("best_verify_test_acc_std") or 0.0)
+        n=int(manifest.get("verify_done") or 1)
+        half=1.96*std/math.sqrt(max(n,1))
+        out["test_acc_mean"]=f"{mean:.12g}"
+        out["test_acc_std"]=f"{std:.12g}"
+        out["test_acc_ci_low"]=f"{mean-half:.12g}"
+        out["test_acc_ci_high"]=f"{mean+half:.12g}"
+        out["val_acc_mean"]=manifest.get("best_verify_val_acc_mean", out.get("val_acc_mean", ""))
+        out["n"]=str(n)
+
+    fixed_point_map = _fixed_point_id_by_result_index(figure_id) if mode == "fixed" else {}
+    fixed_manifests = {}
+    if fixed_point_map:
+        for manifest in manifests:
+            point_id = fixed_point_map.get(_result_index(manifest.get("job_dir", "")))
+            if point_id:
+                fixed_manifests[point_id] = manifest
+
     missing = []
     for out in rows:
+        pipeline = out.get("pipeline", "")
+        expected_axes = PIPELINE_AXES.get(pipeline)
+
+        if fixed_point_map:
+            # Fixed runs are bound to the point index used to create result_N,
+            # never to display axes such as epsilon or norm_scale. Baseline
+            # lines intentionally remain the frozen reference values.
+            if figure_id in {1, 6} and expected_axes is None:
+                continue
+            point_id = out.get("point_id", "")
+            if point_id not in fixed_point_map.values():
+                continue
+            manifest = fixed_manifests.get(point_id)
+            if not manifest or manifest.get("best_verify_test_acc_mean", "") == "":
+                missing.append({"point_id": point_id, "pipeline": pipeline})
+                continue
+            apply_manifest(out, manifest)
+            continue
+
         # Figure 1 and Figure 6 contain fixed baseline lines whose x-axis is
         # privacy budget for presentation only. They must remain frozen and
         # must never be replaced by a privacy-method manifest.
-        if figure_id in {1, 6}:
-            pipeline = out.get("pipeline", "")
-            expected_axes = PIPELINE_AXES.get(pipeline)
-            if expected_axes is None:
-                continue
+        if figure_id in {1, 6} and expected_axes is None:
+            continue
         candidates=[]
         for m in manifests:
             if out.get("dataset") and not eq(m,"dataset",out["dataset"]): continue
@@ -142,9 +202,7 @@ def _aggregate_search_output(figure_id, mode):
                 "x_eps": out.get("x_eps", ""),
             })
             continue
-        m=candidates[0]
-        mean=float(m["best_verify_test_acc_mean"]); std=float(m.get("best_verify_test_acc_std") or 0.0); n=int(m.get("verify_done") or 1); half=1.96*std/math.sqrt(max(n,1))
-        out["test_acc_mean"]=f"{mean:.12g}"; out["test_acc_std"]=f"{std:.12g}"; out["test_acc_ci_low"]=f"{mean-half:.12g}"; out["test_acc_ci_high"]=f"{mean+half:.12g}"; out["val_acc_mean"]=m.get("best_verify_val_acc_mean",out.get("val_acc_mean","")); out["n"]=str(n)
+        apply_manifest(out, candidates[0])
     if missing:
         sample = "; ".join(str(item) for item in missing[:5])
         raise RuntimeError(
