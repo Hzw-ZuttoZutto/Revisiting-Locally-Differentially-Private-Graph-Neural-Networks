@@ -1259,7 +1259,7 @@ def build_batch_spec(
                             )
                             for norm_scale in norm_scale_values:
                                 configured_smoother_values = list(search_space["calibrator"]["smoother"])
-                                # Legacy operator configs with both smoothers were historically collapsed
+                                # Operator configs with multiple smoothers use one direct HOA job.
                                 # into one HOA-style direct job. A single smoother is now explicit.
                                 smoother_values = (
                                     [None]

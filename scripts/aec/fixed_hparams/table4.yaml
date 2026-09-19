@@ -7,31 +7,16 @@ points:
   fixed_params:
     dataset: cora
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: gat
     use_nfr: false
   candidate:
-    candidate_id: 185
     x_steps: 32
     learning_rate: '0.01'
     weight_decay: '0.0001'
@@ -57,42 +42,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_lastfm_gat_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: lastfm
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: gat
     use_nfr: false
   candidate:
-    candidate_id: 114
     x_steps: 8
     learning_rate: '0.01'
     weight_decay: '0.0001'
@@ -118,42 +86,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_citeseer_gat_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: citeseer
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: gat
     use_nfr: false
   candidate:
-    candidate_id: 153
     x_steps: 16
     learning_rate: '0.01'
     weight_decay: '0.001'
@@ -179,42 +130,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_facebook_gat_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: facebook
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: gat
     use_nfr: false
   candidate:
-    candidate_id: 41
     x_steps: 2
     learning_rate: '0.01'
     weight_decay: '0.0001'
@@ -240,42 +174,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_cora_gcn_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: cora
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: gcn
     use_nfr: false
   candidate:
-    candidate_id: 109
     x_steps: 8
     learning_rate: '0.01'
     weight_decay: '0'
@@ -301,42 +218,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_lastfm_gcn_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: lastfm
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: gcn
     use_nfr: false
   candidate:
-    candidate_id: 182
     x_steps: 32
     learning_rate: '0.01'
     weight_decay: '0'
@@ -362,42 +262,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_citeseer_gcn_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: citeseer
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: gcn
     use_nfr: false
   candidate:
-    candidate_id: 81
     x_steps: 4
     learning_rate: '0.01'
     weight_decay: '0.001'
@@ -423,42 +306,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_facebook_gcn_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: facebook
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: gcn
     use_nfr: false
   candidate:
-    candidate_id: 39
     x_steps: 2
     learning_rate: '0.01'
     weight_decay: '0'
@@ -484,42 +350,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_cora_sage_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: cora
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: sage
     use_nfr: false
   candidate:
-    candidate_id: 222
     x_steps: 64
     learning_rate: '0.01'
     weight_decay: '0.0001'
@@ -545,42 +394,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_lastfm_sage_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: lastfm
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: sage
     use_nfr: false
   candidate:
-    candidate_id: 184
     x_steps: 32
     learning_rate: '0.01'
     weight_decay: '0.0001'
@@ -606,42 +438,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_citeseer_sage_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: citeseer
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: sage
     use_nfr: false
   candidate:
-    candidate_id: 117
     x_steps: 8
     learning_rate: '0.01'
     weight_decay: '0.001'
@@ -667,42 +482,25 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
 - point_id: table4_facebook_sage_
   table: table4
   setting: FeatFree-P
   fixed_params:
     dataset: facebook
     feature: operator
-    sim_reference_eps: null
-    feature_dim: null
     scale: '1'
     feature_preprojection: false
-    preprojection_output_dim: null
-    random_normal_mean: null
-    random_normal_std: null
-    shared_value: null
-    degree_bucket_num_buckets: null
-    degree_bucket_range_max: null
-    deepwalk_walk_length: null
-    deepwalk_number_walks: null
-    deepwalk_window_size: null
-    deepwalk_workers: null
-    deepwalk_undirected: null
     mechanism: mbm
     x_eps: inf
     m: best
     norm: false
     norm_scale: none
-    smoother: null
     backbone: sage
     use_nfr: false
   candidate:
-    candidate_id: 41
     x_steps: 2
     learning_rate: '0.01'
     weight_decay: '0.0001'
@@ -728,8 +526,6 @@ points:
       grid:
         patience: 80
         repeats: 1
-        max_epochs: 300
       verify:
         patience: 150
         repeats: 10
-        max_epochs: 500
