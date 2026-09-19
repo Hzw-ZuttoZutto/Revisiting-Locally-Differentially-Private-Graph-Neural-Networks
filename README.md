@@ -23,8 +23,6 @@ Open the notebook in Jupyter and run its configuration cell first, followed by t
 python -m jupyter notebook notebooks/
 ```
 
-Notebook 2 and Notebook 3 each contain a dedicated configuration cell. Edit `AEC_EXECUTE`, `AEC_GPU_IDS`, `AEC_MAX_PARALLEL_PER_GPU`, and (in Notebook 3) `AEC_MODE` there, then run that cell before the setup cell. No shell variables are required.
-
 ### Run automatically from the command line
 
 Use `nbconvert` to execute a notebook from top to bottom without opening the notebook UI. The executed notebook is written back to the same path.
