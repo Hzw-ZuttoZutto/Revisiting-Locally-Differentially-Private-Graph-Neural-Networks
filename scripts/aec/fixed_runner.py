@@ -157,7 +157,7 @@ def _one_candidate_config(
         "cpu_worker_count": None,
         "gpu_ids": selected_gpu_ids,
         "max_parallel_per_gpu": selected_parallel,
-        "gpu_launch_interval_sec": 0.1,
+        "gpu_launch_interval_sec": 0.01,
     }
 
     clean_defaults = dict(defaults)
