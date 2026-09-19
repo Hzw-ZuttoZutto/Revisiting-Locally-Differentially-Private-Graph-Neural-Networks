@@ -1,31 +1,84 @@
 # Rethinking DP-GNN Artifact Evaluation
 
-This artifact provides three reproducibility entry points for the paper figures. The notebooks are intentionally separated by the amount of computation they perform.
-
 ## Quick start
 
 ```bash
 bash scripts/setup_env.sh
 source .venv/bin/activate
-python -m jupyter notebook notebooks/notebook_1_direct.ipynb
 ```
 
-Notebook 1 is CPU-only and reads the compact reference tables under `scripts/aec/reference/`. It generates the eight paper figures without requiring the original multi-gigabyte experiment trees.
+## Two ways to run the notebooks
 
-Notebook 2 reruns selected points with fixed hyperparameters. Set `AEC_EXECUTE=1` to execute training; otherwise it prints the planned jobs. After execution, the runner aggregates the produced CSVs into the figure/table input before rendering. Set `AEC_GPU_IDS` and `AEC_MAX_PARALLEL_PER_GPU` for the target machine. The default is one visible GPU and one concurrent job per GPU.
+### Run manually in Jupyter
 
-Notebook 3 keeps the full search configuration path and defaults to the claim-coverage scaled mode. Set `AEC_MODE=full` to inspect or run the full configuration expansion. When search execution is enabled, completed manifests are matched back to the compact figure tables before rendering. Full mode is intended for authors with sufficient compute; the scaled mode is the AEC evaluation path.
+Open the notebook in Jupyter and run the setup cell followed by the figure/table cells one by one. This is useful when you want to inspect each generated figure or change the GPU settings between runs.
 
-## Figure and claim map
+```bash
+python -m jupyter notebook notebooks/
+```
 
-The exact datasets, methods, axes, and scaled coverage are declared in `scripts/aec/claim_coverage.yaml`. Figure cells display PNGs inline; generated PDF/CSV/LaTeX files are not written by default.
+For Notebook 2 and Notebook 3, set the execution variables before opening Jupyter:
 
-The compact reference tables preserve the plotted statistics and ten-seed rows used to compute the displayed summaries. The same notebooks also generate Table 4 and Table 6. Their settings are emitted with the implementation labels `FeatFree-P`, `FeatFree-Kprop`, and `FeatFree-HOA`. The original lab result trees are not required by the notebooks.
+```bash
+export AEC_EXECUTE=1
+export AEC_GPU_IDS=0
+export AEC_MAX_PARALLEL_PER_GPU=1
+export AEC_MODE=scaled
+python -m jupyter notebook notebooks/
+```
 
-## Portability
+### Run automatically from the command line
 
-All artifact paths are resolved relative to the repository root. The notebooks do not depend on `/data/hzw`, `/home/hzw`, or repository symlinks. Dataset acquisition and CUDA availability are checked at runtime; no experiment is started automatically by opening Notebook 1.
+Use `nbconvert` to execute a notebook from top to bottom without opening the notebook UI. The executed notebook is written back to the same path.
 
-## AEC expectations
+```bash
+python -m jupyter nbconvert --execute --to notebook --inplace \
+  notebooks/notebook_1_direct.ipynb
+```
 
-The direct notebook demonstrates functionality and exact figure generation. The fixed-hyperparameter notebook and the scaled search notebook provide independent reruns for the main trends. Full search is retained as a transparent author path and is not the default evaluator path because the complete search is substantially longer than a one-day evaluation budget.
+For Notebook 2:
+
+```bash
+AEC_EXECUTE=1 AEC_GPU_IDS=0 AEC_MAX_PARALLEL_PER_GPU=1 \
+python -m jupyter nbconvert --execute --to notebook --inplace \
+  notebooks/notebook_2_fixed_hparams.ipynb
+```
+
+For Notebook 3 claim-coverage scaled mode:
+
+```bash
+AEC_EXECUTE=1 AEC_MODE=scaled AEC_GPU_IDS=0 AEC_MAX_PARALLEL_PER_GPU=1 \
+python -m jupyter nbconvert --execute --to notebook --inplace \
+  notebooks/notebook_3_full_search.ipynb
+```
+
+For the complete search, replace `AEC_MODE=scaled` with `AEC_MODE=full`.
+
+## Which notebook to run
+
+### Notebook 1: Direct results
+
+Notebook 1 is the fastest entry point. It uses the experiment result data that we have already produced and directly generates the same figures and the corresponding tables shown in the paper. It does not run training or hyperparameter search.
+
+Open `notebooks/notebook_1_direct.ipynb` from the Jupyter interface.
+
+### Notebook 2: Fixed hyperparameters
+
+Notebook 2 uses the hyperparameters that we have already searched. It reruns the data points needed by the paper and then generates the same figures and corresponding tables.
+
+Set `AEC_EXECUTE=1` to run the experiments. Without this variable, the notebook only prints the execution plan. GPU selection and per-GPU concurrency are controlled with `AEC_GPU_IDS` and `AEC_MAX_PARALLEL_PER_GPU`.
+
+Open `notebooks/notebook_2_fixed_hparams.ipynb` from the Jupyter interface after setting the execution variables above.
+
+### Notebook 3: Hyperparameter search
+
+Notebook 3 runs our hyperparameter search scripts and has two modes:
+
+- **claim-coverage scaled mode** includes the core results needed to support the experimental conclusions.
+- **full mode** runs the complete experiment configuration and is the complete reproduction path.
+
+Both modes run the same YAML-driven hyperparameter search pipeline used by the repository. They produce the hyperparameters needed for the data points rerun by Notebook 2, and then generate the corresponding figures and tables.
+
+The default mode is `claim-coverage scaled`. In manual mode, leave `AEC_MODE` unset or set it to `scaled`. Set `AEC_MODE=full` when manually running the complete search.
+
+Each notebook displays the generated PNG figures and Table 4/Table 6 directly in the notebook.

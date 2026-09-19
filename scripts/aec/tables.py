@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import csv, math
+import csv
 from collections import defaultdict
 from pathlib import Path
 from .paths import REFERENCE_ROOT
@@ -28,11 +28,11 @@ def table4_summary():
         if key not in best or val>best[key][0]: best[key]=(val,r)
     rows=[]; datasets=["cora","lastfm","citeseer","facebook"]
     for backbone in ["gcn","sage","gat"]:
-        for setting in ["Best-LDP","gain","FeatFree-P"]:
+        for setting in ["Best-LDP","FeatFree-P"]:
             cells=[]
             for dataset in datasets:
                 ffmean,ffstd=_stats(groups[(backbone,dataset)]); br=best[(backbone,dataset)][1]; bmean=float(br["test_acc_mean"]); bstd=float(br["test_acc_std"]);
-                cells.append((bmean,bstd) if setting=="Best-LDP" else ((ffmean-bmean, math.sqrt(max(0,ffstd**2+bstd**2))) if setting=="gain" else (ffmean,ffstd)))
+                cells.append((bmean,bstd) if setting=="Best-LDP" else (ffmean,ffstd))
             rows.append((backbone.upper(),setting,cells))
     return rows
 
@@ -57,8 +57,7 @@ def render_table(table, *, mode="reference", destination=None):
     rows=table4_summary() if table=="table4" else table6_summary()
     lines=["| Backbone | Setting | "+" | ".join(datasets)+" |","|---|---|"+"---|"*4]
     for backbone,setting,cells in rows:
-        if table=="table6": values=[f"{m:.2f} ({s:.2f}) [d={d}]" for m,s,d in cells]
-        elif setting=="gain": values=[f"+{m:.2f}" if m>=0 else f"{m:.2f}" for m,_,*rest in cells]
-        else: values=[f"{m:.2f} ({s:.2f})" for m,s,*rest in cells]
+        if table=="table6": values=[f"{m:.2f} ± {s:.2f}" for m,s,d in cells]
+        else: values=[f"{m:.2f} ± {s:.2f}" for m,s,*rest in cells]
         lines.append(f"| {backbone} | {setting} | "+" | ".join(values)+" |")
     markdown="\n".join(lines)+"\n"; _display(markdown); return {"table":table,"mode":mode,"displayed":True,"rows":len(rows)}
