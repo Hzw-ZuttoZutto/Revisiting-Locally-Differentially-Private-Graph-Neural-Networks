@@ -3,10 +3,17 @@ from __future__ import annotations
 import csv
 from collections import defaultdict
 from pathlib import Path
-from .paths import REFERENCE_ROOT
+from .paths import REFERENCE_ROOT, WORK_ROOT
 
 def _read(path):
     with Path(path).open(newline="",encoding="utf-8") as h: return list(csv.DictReader(h))
+
+def _table_seed_rows(table, mode):
+    if mode != "reference":
+        candidate = WORK_ROOT / "search" / table / mode / f"{table}_seed_rows.csv"
+        if candidate.is_file(): return _read(candidate)
+        raise FileNotFoundError(f"No generated table data for {table} mode={mode}; run the experiment first")
+    return _read(REFERENCE_ROOT / f"{table}_seed_rows.csv")
 
 def _stats(rows):
     vals=[float(r["test_acc"]) for r in rows]; mean=sum(vals)/len(vals); std=(sum((x-mean)**2 for x in vals)/(len(vals)-1))**0.5 if len(vals)>1 else 0.; return mean,std
@@ -17,8 +24,8 @@ def _display(markdown):
         display(Markdown(markdown))
     except Exception: print(markdown)
 
-def table4_summary():
-    ff=_read(REFERENCE_ROOT/"table4_seed_rows.csv"); groups=defaultdict(list)
+def table4_summary(mode="reference"):
+    ff=_table_seed_rows("table4",mode); groups=defaultdict(list)
     for r in ff: groups[(r["backbone"],r["dataset"])].append(r)
     plot=_read(REFERENCE_ROOT/"figure1_plot_data.csv"); best={}
     for r in plot:
@@ -36,8 +43,8 @@ def table4_summary():
             rows.append((backbone.upper(),setting,cells))
     return rows
 
-def table6_summary():
-    raw=_read(REFERENCE_ROOT/"table6_seed_rows.csv"); grouped=defaultdict(list)
+def table6_summary(mode="reference"):
+    raw=_table_seed_rows("table6",mode); grouped=defaultdict(list)
     for r in raw: grouped[(r["setting"],r["backbone"],r["dataset"],r["feature_dim"])].append(r)
     selected={}; datasets=["cora","lastfm","citeseer","facebook"]
     for key,items in grouped.items():
@@ -54,7 +61,7 @@ def table6_summary():
 
 def render_table(table, *, mode="reference", destination=None):
     datasets=["Cora","LastFM","CiteSeer","Facebook"]
-    rows=table4_summary() if table=="table4" else table6_summary()
+    rows=table4_summary(mode) if table=="table4" else table6_summary(mode)
     lines=["| Backbone | Setting | "+" | ".join(datasets)+" |","|---|---|"+"---|"*4]
     for backbone,setting,cells in rows:
         if table=="table6": values=[f"{m:.2f} ± {s:.2f}" for m,s,d in cells]

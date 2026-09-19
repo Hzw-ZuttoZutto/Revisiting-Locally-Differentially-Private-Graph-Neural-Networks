@@ -80,7 +80,7 @@ def main():
             return [portable(v) for v in value]
         if isinstance(value, Path) or isinstance(value, str) and value.startswith('/'):
             return provenance(value)
-        if value == 'attributedgraph-flickr':
+        if value == 'flickr':
             return 'flickr'
         return value
 
@@ -118,7 +118,7 @@ def main():
                 metrics = [(int(r['seed']), float(r['val/acc']), float(r['test/acc'])) for r in source_records]
             old_spec = yaml.safe_load((job / 'job_spec.yaml').read_text())
             params = {k: v for k, v in old_spec['fixed_params'].items() if k in u.OUTER_AXIS_NAMES}
-            params['dataset'] = 'flickr' if params['dataset'] == 'attributedgraph-flickr' else params['dataset']
+            params['dataset'] = 'flickr' if params['dataset'] == 'flickr' else params['dataset']
             defaults = copy.deepcopy(old_spec['defaults'])
             defaults.pop('diagnostics', None)
             defaults['trainer'].pop('collect_grad_stats', None)

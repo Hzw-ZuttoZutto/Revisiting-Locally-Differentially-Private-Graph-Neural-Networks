@@ -16,11 +16,15 @@ def _import_draw(name):
 
 def _source_table(figure_id, mode):
     if mode.startswith("fixed"):
+        p=WORK_ROOT/"search"/f"figure{figure_id}"/"fixed"/"plot_data.csv"
+        if p.is_file(): return p
         p=WORK_ROOT/"fixed_runs"/f"figure{figure_id}"/"plot_data.csv"
         if p.is_file(): return p
     if mode.startswith("search"):
         p=WORK_ROOT/"search"/f"figure{figure_id}"/mode.split("_",1)[-1]/"plot_data.csv"
         if p.is_file(): return p
+    if mode != "reference":
+        raise FileNotFoundError(f"No generated plot data for figure {figure_id} mode={mode}; run the experiment first")
     return REFERENCE_ROOT/FIGURE_TABLES[figure_id]
 
 def _show_png(path):

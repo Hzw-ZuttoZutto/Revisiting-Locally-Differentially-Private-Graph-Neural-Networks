@@ -64,8 +64,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 0ecd6391cafe
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -82,7 +82,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_1bfeff69ecfc3fc3
     bootstrap_key: 0.0001|-6
     bootstrap_val_key: 0.0001|-6
@@ -149,8 +149,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 0b88bad61f0c
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -167,7 +167,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_a65cbbb1bc1e879d
     bootstrap_key: 0.0001|-5
     bootstrap_val_key: 0.0001|-5
@@ -234,8 +234,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: ff8d8e646ee0
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -252,7 +252,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_8cfc3c64ed65c508
     bootstrap_key: 0.0001|-4
     bootstrap_val_key: 0.0001|-4
@@ -319,8 +319,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: a0ab6bc74717
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -337,7 +337,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_0e86c12796dffab2
     bootstrap_key: 0.0001|-3
     bootstrap_val_key: 0.0001|-3
@@ -404,8 +404,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 2dfe5fa3ac8b
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -422,7 +422,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_eb7e5ea5c4d43e18
     bootstrap_key: 0.0001|-2
     bootstrap_val_key: 0.0001|-2
@@ -489,8 +489,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: bfd00feef28d
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -507,7 +507,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_c4789d0fa876b87f
     bootstrap_key: 0.0001|-1
     bootstrap_val_key: 0.0001|-1
@@ -574,8 +574,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: f97652e3abf1
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -592,7 +592,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_f47bf026bd0c7085
     bootstrap_key: 0.0001|0
     bootstrap_val_key: 0.0001|0
@@ -659,8 +659,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: b0c387a72f80
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -677,7 +677,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_fae3c8a158de3273
     bootstrap_key: 0.0001|1
     bootstrap_val_key: 0.0001|1
@@ -744,8 +744,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 66fdb352d20d
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -762,7 +762,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_3c7a8f671b14d307
     bootstrap_key: 0.0001|2
     bootstrap_val_key: 0.0001|2
@@ -829,8 +829,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 2fd9a6fce71a
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -847,7 +847,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_182814c7ae825983
     bootstrap_key: 0.0001|3
     bootstrap_val_key: 0.0001|3
@@ -914,8 +914,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 0f7bc85db5f3
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -932,7 +932,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_fa274d8830458808
     bootstrap_key: 0.0001|4
     bootstrap_val_key: 0.0001|4
@@ -999,8 +999,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 46b580289610
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1017,7 +1017,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_eafe2b8f51622d42
     bootstrap_key: 0.0001|5
     bootstrap_val_key: 0.0001|5
@@ -1084,8 +1084,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 89c4868f4a79
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1102,7 +1102,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_110ae45fa48952cc
     bootstrap_key: 0.0001|6
     bootstrap_val_key: 0.0001|6
@@ -1169,8 +1169,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: '887820580809'
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1187,7 +1187,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_2b702fc6ae3eeb92
     bootstrap_key: 0.0001|7
     bootstrap_val_key: 0.0001|7
@@ -1254,8 +1254,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 58f08ce852fc
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1272,7 +1272,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_fafdbd0110f67038
     bootstrap_key: 0.0001|8
     bootstrap_val_key: 0.0001|8
@@ -1339,8 +1339,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: e9d5a3bdf814
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1357,7 +1357,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_88689c42e2ee7203
     bootstrap_key: 0.0001|9
     bootstrap_val_key: 0.0001|9
@@ -1424,8 +1424,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 413f03df7df8
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1442,7 +1442,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_26e4b955885d0ccb
     bootstrap_key: 0.0001|10
     bootstrap_val_key: 0.0001|10
@@ -1509,8 +1509,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: b767a8e1f731
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1527,7 +1527,7 @@ points:
     weight_decay: '0'
     dropout: '0.75'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_2a59e3769fce7588
     bootstrap_key: 0.0001|11
     bootstrap_val_key: 0.0001|11
@@ -1594,8 +1594,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: d742912f9827
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1612,7 +1612,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_46dac18ddc5d0547
     bootstrap_key: 0.0001|12
     bootstrap_val_key: 0.0001|12
@@ -1679,8 +1679,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 2b2f0f264ae5
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1697,7 +1697,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_dc54f343b903f3cd
     bootstrap_key: 0.0001|13
     bootstrap_val_key: 0.0001|13
@@ -1764,8 +1764,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 9424435b4799
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1782,7 +1782,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_24c48e58298b9156
     bootstrap_key: 0.0001|14
     bootstrap_val_key: 0.0001|14
@@ -1849,8 +1849,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: dcaf3eef7bec
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1867,7 +1867,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_12644bcb8e872a3a
     bootstrap_key: 0.0001|15
     bootstrap_val_key: 0.0001|15
@@ -1934,8 +1934,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: f26e0e4698fb
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -1952,7 +1952,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_198c709bc2330590
     bootstrap_key: 0.0001|16
     bootstrap_val_key: 0.0001|16
@@ -2019,8 +2019,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: a2b0a8b1f814
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.0001'
@@ -2037,7 +2037,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.0001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_21a7b8802cb1c0d5
     bootstrap_key: 0.0001|17
     bootstrap_val_key: 0.0001|17
@@ -2104,8 +2104,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 0005e082777b
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2122,7 +2122,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_eb493d3dfe38e919
     bootstrap_key: 0.001|-6
     bootstrap_val_key: 0.001|-6
@@ -2189,8 +2189,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 8f52bba22e3c
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2207,7 +2207,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_0c346238f87c2e18
     bootstrap_key: 0.001|-5
     bootstrap_val_key: 0.001|-5
@@ -2274,8 +2274,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 1b4f09a3732f
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2292,7 +2292,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_e500d17b76b489c2
     bootstrap_key: 0.001|-4
     bootstrap_val_key: 0.001|-4
@@ -2359,8 +2359,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 2f9f2bed8152
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2377,7 +2377,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_a307e029285b11ff
     bootstrap_key: 0.001|-3
     bootstrap_val_key: 0.001|-3
@@ -2444,8 +2444,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: ffe5b854c216
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2462,7 +2462,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_f5d89ef201fff025
     bootstrap_key: 0.001|-2
     bootstrap_val_key: 0.001|-2
@@ -2529,8 +2529,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: a7e988854142
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2547,7 +2547,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_5ba81954ec60c017
     bootstrap_key: 0.001|-1
     bootstrap_val_key: 0.001|-1
@@ -2614,8 +2614,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 1a9b510df501
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2632,7 +2632,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_ceadfef8602c01d7
     bootstrap_key: 0.001|0
     bootstrap_val_key: 0.001|0
@@ -2699,8 +2699,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 949257ca12ac
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2717,7 +2717,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_4da708470c72c8c6
     bootstrap_key: 0.001|1
     bootstrap_val_key: 0.001|1
@@ -2784,8 +2784,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 9ca00f052bf0
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2802,7 +2802,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_f2bedeaa205c1e25
     bootstrap_key: 0.001|2
     bootstrap_val_key: 0.001|2
@@ -2869,8 +2869,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: b7c83953edea
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2887,7 +2887,7 @@ points:
     weight_decay: '0'
     dropout: '0.75'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_313050cc9ff82e7a
     bootstrap_key: 0.001|3
     bootstrap_val_key: 0.001|3
@@ -2954,8 +2954,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: a89cf97e8136
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -2972,7 +2972,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_30b17d769f822eaf
     bootstrap_key: 0.001|4
     bootstrap_val_key: 0.001|4
@@ -3039,8 +3039,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: e67079cf23e3
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3057,7 +3057,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_0e49f0920e9df2e4
     bootstrap_key: 0.001|5
     bootstrap_val_key: 0.001|5
@@ -3124,8 +3124,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 2b95616cc51a
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3142,7 +3142,7 @@ points:
     weight_decay: '0'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_1f4b02a6c8fed99a
     bootstrap_key: 0.001|6
     bootstrap_val_key: 0.001|6
@@ -3209,8 +3209,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: fcdf31e398de
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3227,7 +3227,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_e42f3560eaebf6b5
     bootstrap_key: 0.001|7
     bootstrap_val_key: 0.001|7
@@ -3294,8 +3294,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: d57f36e18a94
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3312,7 +3312,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_0684212b2001b46f
     bootstrap_key: 0.001|8
     bootstrap_val_key: 0.001|8
@@ -3379,8 +3379,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 971d16ffc08a
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3397,7 +3397,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_73b705136be226a4
     bootstrap_key: 0.001|9
     bootstrap_val_key: 0.001|9
@@ -3464,8 +3464,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 967cdc9fef56
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3482,7 +3482,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_a91aa933e0820981
     bootstrap_key: 0.001|10
     bootstrap_val_key: 0.001|10
@@ -3549,8 +3549,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: b29f2ae5a310
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3567,7 +3567,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_9fd1f8c92892b8d7
     bootstrap_key: 0.001|11
     bootstrap_val_key: 0.001|11
@@ -3634,8 +3634,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 0a18ceb4a778
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3652,7 +3652,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_7e1a87509b3a18a3
     bootstrap_key: 0.001|12
     bootstrap_val_key: 0.001|12
@@ -3719,8 +3719,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 063ab6e71487
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3737,7 +3737,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_484afc8bbfd5cafc
     bootstrap_key: 0.001|13
     bootstrap_val_key: 0.001|13
@@ -3804,8 +3804,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 7fee8d015aa7
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3822,7 +3822,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_2d290f64acfcb10f
     bootstrap_key: 0.001|14
     bootstrap_val_key: 0.001|14
@@ -3889,8 +3889,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: be597fe58f6f
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3907,7 +3907,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_d788e3e113215499
     bootstrap_key: 0.001|15
     bootstrap_val_key: 0.001|15
@@ -3974,8 +3974,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 9b8be2bc9207
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -3992,7 +3992,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_7ae5ce3d867dffeb
     bootstrap_key: 0.001|16
     bootstrap_val_key: 0.001|16
@@ -4059,8 +4059,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: b56b5ca2090e
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.001'
@@ -4077,7 +4077,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.001/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_035035d5aa65ef05
     bootstrap_key: 0.001|17
     bootstrap_val_key: 0.001|17
@@ -4144,8 +4144,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: e8cd794d1a21
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -4162,7 +4162,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_1a3f8a02dffb690c
     bootstrap_key: 0.01|-6
     bootstrap_val_key: 0.01|-6
@@ -4229,8 +4229,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 5494ab55730b
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -4247,7 +4247,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_adb7739cc15eac65
     bootstrap_key: 0.01|-5
     bootstrap_val_key: 0.01|-5
@@ -4314,8 +4314,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 66864af8dcc0
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -4332,7 +4332,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_53a83d8bf55a05ea
     bootstrap_key: 0.01|-4
     bootstrap_val_key: 0.01|-4
@@ -4399,8 +4399,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: c297230263d2
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -4417,7 +4417,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_dccf1fd145163963
     bootstrap_key: 0.01|-3
     bootstrap_val_key: 0.01|-3
@@ -4484,8 +4484,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 40f9ddbd557a
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -4502,7 +4502,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_cfee1474bd4c51e6
     bootstrap_key: 0.01|-2
     bootstrap_val_key: 0.01|-2
@@ -4569,8 +4569,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: ef22b4904fd0
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -4587,7 +4587,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_94c430b267b9c4f1
     bootstrap_key: 0.01|-1
     bootstrap_val_key: 0.01|-1
@@ -4654,8 +4654,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 359d0dcbc152
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -4672,7 +4672,7 @@ points:
     weight_decay: '0'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_ccfd34e182982f74
     bootstrap_key: 0.01|0
     bootstrap_val_key: 0.01|0
@@ -4739,8 +4739,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 3267db5e0e20
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -4757,7 +4757,7 @@ points:
     weight_decay: '0'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_a14c09dd054539f4
     bootstrap_key: 0.01|1
     bootstrap_val_key: 0.01|1
@@ -4824,8 +4824,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: c8f97e9a754c
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -4842,7 +4842,7 @@ points:
     weight_decay: '0'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_35942db2dda21233
     bootstrap_key: 0.01|2
     bootstrap_val_key: 0.01|2
@@ -4909,8 +4909,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 5265ddb697ef
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -4927,7 +4927,7 @@ points:
     weight_decay: '0'
     dropout: '0.75'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_04949c56806eb69a
     bootstrap_key: 0.01|3
     bootstrap_val_key: 0.01|3
@@ -4994,8 +4994,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 8cfb8f3aab17
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5012,7 +5012,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_a6ad2725867d4d31
     bootstrap_key: 0.01|4
     bootstrap_val_key: 0.01|4
@@ -5079,8 +5079,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: aa5a288ce8e8
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5097,7 +5097,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_80944c3259f5a12f
     bootstrap_key: 0.01|5
     bootstrap_val_key: 0.01|5
@@ -5164,8 +5164,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 4c87509789da
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5182,7 +5182,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_fbb079c5648e2e6c
     bootstrap_key: 0.01|6
     bootstrap_val_key: 0.01|6
@@ -5249,8 +5249,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 0b4b9b1c2434
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5267,7 +5267,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_5477e96d5bf8857e
     bootstrap_key: 0.01|7
     bootstrap_val_key: 0.01|7
@@ -5334,8 +5334,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 592bef5dbdcb
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5352,7 +5352,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_9c942d24ea721f9b
     bootstrap_key: 0.01|8
     bootstrap_val_key: 0.01|8
@@ -5419,8 +5419,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 421ca4e6ba7b
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5437,7 +5437,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_a8d35578802ee7f5
     bootstrap_key: 0.01|9
     bootstrap_val_key: 0.01|9
@@ -5504,8 +5504,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 9fe4a7026254
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5522,7 +5522,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_16171f4716678c57
     bootstrap_key: 0.01|10
     bootstrap_val_key: 0.01|10
@@ -5589,8 +5589,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 4e9f1df539cd
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5607,7 +5607,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_847a3fc80312705e
     bootstrap_key: 0.01|11
     bootstrap_val_key: 0.01|11
@@ -5674,8 +5674,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: e169da86d57f
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5692,7 +5692,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_881e393036b49210
     bootstrap_key: 0.01|12
     bootstrap_val_key: 0.01|12
@@ -5759,8 +5759,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: ecb5950183bd
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5777,7 +5777,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_e20450b0ffb89c99
     bootstrap_key: 0.01|13
     bootstrap_val_key: 0.01|13
@@ -5844,8 +5844,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: d807626e41b9
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5862,7 +5862,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_a3805e40c14c85e1
     bootstrap_key: 0.01|14
     bootstrap_val_key: 0.01|14
@@ -5929,8 +5929,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 489078db4437
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -5947,7 +5947,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_819466abc98e201d
     bootstrap_key: 0.01|15
     bootstrap_val_key: 0.01|15
@@ -6014,8 +6014,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 95aee8972021
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -6032,7 +6032,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_8fb537aa983db1f1
     bootstrap_key: 0.01|16
     bootstrap_val_key: 0.01|16
@@ -6099,8 +6099,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: e89dea80c290
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.01'
@@ -6117,7 +6117,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.01/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_fc1f019b2f69fe7a
     bootstrap_key: 0.01|17
     bootstrap_val_key: 0.01|17
@@ -6184,8 +6184,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 1ae08306adb2
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -6202,7 +6202,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_907f8faac7f9e826
     bootstrap_key: 0.1|-6
     bootstrap_val_key: 0.1|-6
@@ -6269,8 +6269,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 541248c55d81
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -6287,7 +6287,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_f7ea7d82597415d6
     bootstrap_key: 0.1|-5
     bootstrap_val_key: 0.1|-5
@@ -6354,8 +6354,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 14bca8f575ac
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -6372,7 +6372,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_e5190c362e0b26a9
     bootstrap_key: 0.1|-4
     bootstrap_val_key: 0.1|-4
@@ -6439,8 +6439,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: faaa8169a516
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -6457,7 +6457,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_bba821297f98884d
     bootstrap_key: 0.1|-3
     bootstrap_val_key: 0.1|-3
@@ -6524,8 +6524,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 5cc402cc7a8f
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -6542,7 +6542,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_e9cce9a14b6ea455
     bootstrap_key: 0.1|-2
     bootstrap_val_key: 0.1|-2
@@ -6609,8 +6609,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 8dee28f9e62d
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -6627,7 +6627,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_cc0bd7fc06d4d7e2
     bootstrap_key: 0.1|-1
     bootstrap_val_key: 0.1|-1
@@ -6694,8 +6694,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: fcb3243391de
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -6712,7 +6712,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_e9a4e9fc8e37d89f
     bootstrap_key: 0.1|0
     bootstrap_val_key: 0.1|0
@@ -6779,8 +6779,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 1b96b89ef2a3
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -6797,7 +6797,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_1e3b17b91d82459d
     bootstrap_key: 0.1|1
     bootstrap_val_key: 0.1|1
@@ -6864,8 +6864,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 5a4a6d2df33c
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -6882,7 +6882,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_7481182dc2005ab8
     bootstrap_key: 0.1|2
     bootstrap_val_key: 0.1|2
@@ -6949,8 +6949,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: c7085149f7f0
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -6967,7 +6967,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_c97b68c90632eaac
     bootstrap_key: 0.1|3
     bootstrap_val_key: 0.1|3
@@ -7034,8 +7034,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: acbf8eb05bc6
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7052,7 +7052,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.5'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_27c93a513562ef1e
     bootstrap_key: 0.1|4
     bootstrap_val_key: 0.1|4
@@ -7119,8 +7119,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 6785cd2300fc
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7137,7 +7137,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_5ee27377fd372a12
     bootstrap_key: 0.1|5
     bootstrap_val_key: 0.1|5
@@ -7204,8 +7204,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 534ac258a82a
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7222,7 +7222,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_942d901b43faef5c
     bootstrap_key: 0.1|6
     bootstrap_val_key: 0.1|6
@@ -7289,8 +7289,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: dda111d87aaf
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7307,7 +7307,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_6dab67c9d00bc97d
     bootstrap_key: 0.1|7
     bootstrap_val_key: 0.1|7
@@ -7374,8 +7374,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 26d4be241d65
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7392,7 +7392,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_d44a0cc9455948c7
     bootstrap_key: 0.1|8
     bootstrap_val_key: 0.1|8
@@ -7459,8 +7459,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: f30ddab4ee07
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7477,7 +7477,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_0837fe8d1e697cc1
     bootstrap_key: 0.1|9
     bootstrap_val_key: 0.1|9
@@ -7544,8 +7544,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 896e0107faa9
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7562,7 +7562,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_8e930ebd93458097
     bootstrap_key: 0.1|10
     bootstrap_val_key: 0.1|10
@@ -7629,8 +7629,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: e840ec0dd8aa
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7647,7 +7647,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_528d17e63ef70f5a
     bootstrap_key: 0.1|11
     bootstrap_val_key: 0.1|11
@@ -7714,8 +7714,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 02a55c8bb46c
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7732,7 +7732,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_93c3158e961899ad
     bootstrap_key: 0.1|12
     bootstrap_val_key: 0.1|12
@@ -7799,8 +7799,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 1fee4e7d988f
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7817,7 +7817,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_c22e7abb7402d5c8
     bootstrap_key: 0.1|13
     bootstrap_val_key: 0.1|13
@@ -7884,8 +7884,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 8c3b5763f542
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7902,7 +7902,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_865aef3dad0805ba
     bootstrap_key: 0.1|14
     bootstrap_val_key: 0.1|14
@@ -7969,8 +7969,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: ce3a50c40a97
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -7987,7 +7987,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_41634d95ff6f8b45
     bootstrap_key: 0.1|15
     bootstrap_val_key: 0.1|15
@@ -8054,8 +8054,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 22f4cadc1937
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -8072,7 +8072,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_00efea94f1b299f6
     bootstrap_key: 0.1|16
     bootstrap_val_key: 0.1|16
@@ -8139,8 +8139,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 7324ce30ef2f
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '0.1'
@@ -8157,7 +8157,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=0.1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_8079d9bd853811db
     bootstrap_key: 0.1|17
     bootstrap_val_key: 0.1|17
@@ -8224,8 +8224,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 17545c42d433
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -8242,7 +8242,7 @@ points:
     weight_decay: '0'
     dropout: '0.75'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.015625/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_d34cf53cdb2f4b7a
     bootstrap_key: 1.0|-6
     bootstrap_val_key: 1.0|-6
@@ -8309,8 +8309,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: bd69a33b825a
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -8327,7 +8327,7 @@ points:
     weight_decay: '0'
     dropout: '0.75'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.03125/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_9c9f260508caa91d
     bootstrap_key: 1.0|-5
     bootstrap_val_key: 1.0|-5
@@ -8394,8 +8394,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: eed826d1b997
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -8412,7 +8412,7 @@ points:
     weight_decay: '0'
     dropout: '0.75'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.0625/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_e9b24ed1a0fa8f55
     bootstrap_key: 1.0|-4
     bootstrap_val_key: 1.0|-4
@@ -8479,8 +8479,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 4988ff7ec795
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -8497,7 +8497,7 @@ points:
     weight_decay: '0'
     dropout: '0.75'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.125/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_5152afc28c692209
     bootstrap_key: 1.0|-3
     bootstrap_val_key: 1.0|-3
@@ -8564,8 +8564,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 083089fc5bf0
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -8582,7 +8582,7 @@ points:
     weight_decay: '0'
     dropout: '0.75'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.25/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_f0fddc8b2e13605d
     bootstrap_key: 1.0|-2
     bootstrap_val_key: 1.0|-2
@@ -8649,8 +8649,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: cd996bf914f9
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -8667,7 +8667,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=0.5/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_e29835cea9f3c9f2
     bootstrap_key: 1.0|-1
     bootstrap_val_key: 1.0|-1
@@ -8734,8 +8734,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 3197481aa329
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -8752,7 +8752,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_ef86831e7d842fd3
     bootstrap_key: 1.0|0
     bootstrap_val_key: 1.0|0
@@ -8819,8 +8819,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: f70ba4e936ca
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -8837,7 +8837,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_7731fd608063d782
     bootstrap_key: 1.0|1
     bootstrap_val_key: 1.0|1
@@ -8904,8 +8904,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 524d7665b438
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -8922,7 +8922,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_e502e784f2a46287
     bootstrap_key: 1.0|2
     bootstrap_val_key: 1.0|2
@@ -8989,8 +8989,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: eedc6a0cb968
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9007,7 +9007,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_84b01126f766a8c5
     bootstrap_key: 1.0|3
     bootstrap_val_key: 1.0|3
@@ -9074,8 +9074,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 58f6d8ecbb91
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9092,7 +9092,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_fc4ec658d08b4f19
     bootstrap_key: 1.0|4
     bootstrap_val_key: 1.0|4
@@ -9159,8 +9159,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 1badca3139c1
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9177,7 +9177,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_8e7c92dc81f1145c
     bootstrap_key: 1.0|5
     bootstrap_val_key: 1.0|5
@@ -9244,8 +9244,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: db27720474b8
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9262,7 +9262,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=64/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_f19a67af132dbbcb
     bootstrap_key: 1.0|6
     bootstrap_val_key: 1.0|6
@@ -9329,8 +9329,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 9060a8fda47a
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9347,7 +9347,7 @@ points:
     weight_decay: '0.01'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=128/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_79acdeadadc6b291
     bootstrap_key: 1.0|7
     bootstrap_val_key: 1.0|7
@@ -9414,8 +9414,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 89be647fc78e
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9432,7 +9432,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=256/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_e465b5796ace22e6
     bootstrap_key: 1.0|8
     bootstrap_val_key: 1.0|8
@@ -9499,8 +9499,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: d5bcdad653ff
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9517,7 +9517,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=512/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_28f664b455e3e846
     bootstrap_key: 1.0|9
     bootstrap_val_key: 1.0|9
@@ -9584,8 +9584,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 128bf2288331
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9602,7 +9602,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=1024/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_7b1d694b07713e8c
     bootstrap_key: 1.0|10
     bootstrap_val_key: 1.0|10
@@ -9669,8 +9669,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: aaa1e06043ee
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9687,7 +9687,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=2048/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_c0750d1e79a297ec
     bootstrap_key: 1.0|11
     bootstrap_val_key: 1.0|11
@@ -9754,8 +9754,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 67b1631bc48f
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9772,7 +9772,7 @@ points:
     weight_decay: '0.001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=4096/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_3e1ebc2845fac02e
     bootstrap_key: 1.0|12
     bootstrap_val_key: 1.0|12
@@ -9839,8 +9839,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: be6daddcbd2c
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9857,7 +9857,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=8192/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_32e59248e36788fc
     bootstrap_key: 1.0|13
     bootstrap_val_key: 1.0|13
@@ -9924,8 +9924,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 0dd71509e99d
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -9942,7 +9942,7 @@ points:
     weight_decay: '0.0001'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=16384/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_abf3951e6c5b192c
     bootstrap_key: 1.0|14
     bootstrap_val_key: 1.0|14
@@ -10009,8 +10009,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: e65c6e46689b
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -10027,7 +10027,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=32768/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_8d24ac1ebf6ff196
     bootstrap_key: 1.0|15
     bootstrap_val_key: 1.0|15
@@ -10094,8 +10094,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: 5c63c6068b7b
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -10112,7 +10112,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=65536/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_eea59ed5c8eebc32
     bootstrap_key: 1.0|16
     bootstrap_val_key: 1.0|16
@@ -10179,8 +10179,8 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: d2a5c69591cf
-  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows:
   - source: figure5_heter
     epsilon: '1.0'
@@ -10197,7 +10197,7 @@ points:
     weight_decay: '0'
     dropout: '0.25'
     tao2: none
-    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=attributedgraph-flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
+    source_job_dir: historical/rebuttal_experiments/figure5_heter/figure5.yaml/dataset=flickr/feature=raw/mechanism=mbm/x_eps=1/m=best/norm=true/norm_scale=131072/smoother=hoa/backbone=sage/use_nfr=false
     point_id: f7_aae9fbc8b21ee9f8
     bootstrap_key: 1.0|17
     bootstrap_val_key: 1.0|17
@@ -10264,7 +10264,7 @@ points:
   base_seed: 12345
   reference_repeats: 10
   source_job_id: c5fd4a8c187d
-  source_job: historical/rebuttal_experiments/featfree_heter/HOA/attributedgraph-flickr/sage/random_projected.yaml/dataset=attributedgraph-flickr/feature=random_normal/feature_dim=12047/random_normal_mean=0/random_normal_std=1/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=hoa/backbone=sage/use_nfr=false
-  source_config: historical/rebuttal_experiments/featfree_heter/HOA/attributedgraph-flickr/sage/random_projected.yaml/dataset=attributedgraph-flickr/feature=random_normal/feature_dim=12047/random_normal_mean=0/random_normal_std=1/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
+  source_job: historical/rebuttal_experiments/featfree_heter/HOA/flickr/sage/random_projected.yaml/dataset=flickr/feature=random_normal/feature_dim=12047/random_normal_mean=0/random_normal_std=1/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=hoa/backbone=sage/use_nfr=false
+  source_config: historical/rebuttal_experiments/featfree_heter/HOA/flickr/sage/random_projected.yaml/dataset=flickr/feature=random_normal/feature_dim=12047/random_normal_mean=0/random_normal_std=1/mechanism=mbm/x_eps=inf/m=best/norm=false/smoother=hoa/backbone=sage/use_nfr=false/job_spec.yaml
   plot_rows: []
   scalar_baseline: true

@@ -11,12 +11,14 @@ def extract(manifest, setting, table, points=None):
     for m in read_csv(manifest):
         job=Path(m["job_dir"])
         rank=int(m.get("best_rank") or 1); cid=int(m.get("best_candidate_id") or 0)
+        best=yaml.safe_load((job/"best_config.yaml").read_text(encoding="utf-8"))
+        cid=int(best.get("best_candidate",{}).get("candidate_id",cid))
         if points is not None:
-            spec=yaml.safe_load((job/"job_spec.yaml").read_text(encoding="utf-8")); best=yaml.safe_load((job/"best_config.yaml").read_text(encoding="utf-8")); points.append({"point_id": table + "_" + m["dataset"] + "_" + m["backbone"] + "_" + str(m.get("feature_dim", "")), "table": table, "setting": setting, "fixed_params": spec.get("fixed_params",{}), "candidate": best.get("best_candidate",{}), "defaults": spec.get("defaults",{})})
+            spec=yaml.safe_load((job/"job_spec.yaml").read_text(encoding="utf-8")); points.append({"point_id": table + "_" + m["dataset"] + "_" + m["backbone"] + "_" + str(m.get("feature_dim", "")), "table": table, "setting": setting, "fixed_params": spec.get("fixed_params",{}), "candidate": best.get("best_candidate",{}), "defaults": spec.get("defaults",{})})
         selected=[]
-        for child in sorted((job/"verify_top5").glob(f"rank={rank:02d}__repeat=*")):
+        for child in sorted((job/"verify_top5").glob("rank=*__repeat=*")):
             match=re.match(r"rank=(\d+)__repeat=(\d+)__candidate=(\d+)__",child.name)
-            if not match: continue
+            if not match or int(match.group(3)) != cid: continue
             files=sorted(child.glob("*.csv"))
             if len(files)==1:
                 r=read_csv(files[0]);
@@ -25,7 +27,7 @@ def extract(manifest, setting, table, points=None):
         if len(selected) < 10: raise RuntimeError(f"{job}: expected 10 selected seeds, found {len(selected)}")
         for r in selected[:10]:
             rows.append({
-                "table":table,"setting":setting,"dataset":m["dataset"].replace("attributedgraph-flickr","flickr"),
+                "table":table,"setting":setting,"dataset":m["dataset"].replace("flickr","flickr"),
                 "backbone":m["backbone"].lower(),"feature_dim":m.get("feature_dim",""),
                 "smoother":m.get("smoother",""),"seed":r.get("seed",""),
                 "val_acc":r.get("val/acc",""),"test_acc":r.get("test/acc",""),

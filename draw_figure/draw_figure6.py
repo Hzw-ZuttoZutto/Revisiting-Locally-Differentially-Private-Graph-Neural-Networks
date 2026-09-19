@@ -33,17 +33,17 @@ PLOT_DATA_FILENAME = f"{OUTPUT_STEM}_plot_data.csv"
 
 BACKBONES = reference.BACKBONES
 BACKBONE_LABELS = reference.BACKBONE_LABELS
-DATASETS = ("actor", "attributedgraph-flickr")
+DATASETS = ("actor", "flickr")
 DATASET_LABELS = {
     "actor": "Actor",
-    "attributedgraph-flickr": "Flickr",
+    "flickr": "Flickr",
 }
 # Global label-prior baselines audited from the raw dataset labels.  Keep these
 # separate from the plotted experiment rows: they are dataset statistics, not
 # trained-method results.
 MAJORITY_BASELINE_PCT = {
     "actor": 100.0 * 1965 / 7600,
-    "attributedgraph-flickr": 100.0 * 888 / 7575,
+    "flickr": 100.0 * 888 / 7575,
 }
 X_EPS_VALUES = reference.X_EPS_VALUES
 PIPELINE_LABELS = reference.PIPELINE_LABELS
@@ -97,8 +97,8 @@ MAJORITY_BASELINE_LINEWIDTH = 2
 MAJORITY_BASELINE_ZORDER = 1.5
 PANEL_Y_TICKS = {
     ("gcn", "actor"): (25.0, 27.5, 30.0),
-    ("gcn", "attributedgraph-flickr"): (25.0, 37.5, 50.0, 62.5),
-    ("gat", "attributedgraph-flickr"): (20.0, 30.0, 40.0, 50.0),
+    ("gcn", "flickr"): (25.0, 37.5, 50.0, 62.5),
+    ("gat", "flickr"): (20.0, 30.0, 40.0, 50.0),
 }
 
 

@@ -108,7 +108,7 @@ def load_manifest_index(manifest_path: Path) -> dict[tuple[Decimal, Decimal], di
         )
 
     expected = {
-        "dataset": "attributedgraph-flickr",
+        "dataset": "flickr",
         "feature": "raw",
         "mechanism": "mbm",
         "m": "best",
@@ -179,7 +179,7 @@ def load_featfree_reference(manifest_path: Path) -> float:
 
     manifest_row = manifest_rows[0]
     expected_manifest = {
-        "dataset": "attributedgraph-flickr",
+        "dataset": "flickr",
         "feature": "random_normal",
         "feature_dim": "12047",
         "mechanism": "mbm",
@@ -245,7 +245,7 @@ def load_featfree_reference(manifest_path: Path) -> float:
             raise RuntimeError(f"Expected one row in {csv_files[0]}, found {len(result_rows)}")
         result = result_rows[0]
         expected_result = {
-            "dataset": "attributedgraph-flickr",
+            "dataset": "flickr",
             "feature": "random_normal",
             "smoother": "hoa",
             "model": "sage",

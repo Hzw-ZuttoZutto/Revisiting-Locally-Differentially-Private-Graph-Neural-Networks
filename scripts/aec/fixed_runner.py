@@ -1,107 +1,97 @@
 from __future__ import annotations
 
-import json, os, subprocess, sys
+import json, tempfile
 from pathlib import Path
-from typing import Any
 import yaml
-from .paths import REFERENCE_ROOT, FIXED_ROOT, WORK_ROOT, parse_gpu_ids, max_parallel_per_gpu
+from .paths import REFERENCE_ROOT, FIXED_ROOT, WORK_ROOT
+from .search_runner import run_search, _aggregate_search_output
 
 REPO_ROOT=Path(__file__).resolve().parents[2]
 
-def fixed_points(figure_id: int) -> list[dict[str,Any]]:
+def fixed_points(figure_id:int):
     path=FIXED_ROOT/f"figure{figure_id}.yaml"
     if not path.is_file(): return []
-    data=yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    return list(data.get("points", data.get("rows", [])))
+    return list((yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("points",[]))
 
 def _coverage(figure_id, points):
-    out=[]
+    result=[]
     for point in points:
-        fp=point.get("fixed_params", point)
-        if figure_id==1 and str(fp.get("dataset","")).lower() not in {"cora","facebook"}: continue
-        if figure_id==6 and (str(fp.get("dataset","")).lower() not in {"actor","flickr"} or str(fp.get("backbone","")).lower()!="sage"): continue
-        if not fp.get("mechanism") or str(fp.get("feature","")) not in {"raw","random_normal","operator"}: continue
-        out.append(point)
-    return out
+        fp=point.get("fixed_params",point); dataset=str(fp.get("dataset","")).lower(); backbone=str(fp.get("backbone","")).lower()
+        if figure_id==1 and dataset not in {"cora","facebook"}: continue
+        if figure_id==6 and (dataset not in {"actor","flickr"} or backbone!="sage"): continue
+        if not fp.get("mechanism"): continue
+        result.append(point)
+    return result
 
-def plan_fixed_jobs(figure_id: int, *, repeats:int=3, limit:int|None=None) -> list[dict[str,object]]:
-    jobs=[]
-    for point in _coverage(figure_id,fixed_points(figure_id)):
-        fp=point.get("fixed_params",point); cand=point.get("candidate",{})
-        for repeat in range(1,repeats+1):
-            jobs.append({"figure_id":figure_id,"point_id":point.get("point_id"),"dataset":fp.get("dataset"),"backbone":fp.get("backbone"),"mechanism":fp.get("mechanism"),"x_eps":fp.get("x_eps"),"repeat":repeat,"seed":12345+repeat-1,"candidate":cand})
+def plan_fixed_jobs(figure_id:int, *, repeats:int=3, limit:int|None=None):
+    points=_coverage(figure_id,fixed_points(figure_id))
+    jobs=[{"figure_id":figure_id,"point_id":p.get("point_id"),"dataset":p.get("fixed_params",{}).get("dataset"),"backbone":p.get("fixed_params",{}).get("backbone"),"mechanism":p.get("fixed_params",{}).get("mechanism"),"x_eps":p.get("fixed_params",{}).get("x_eps"),"repeats":repeats} for p in points]
     return jobs if limit is None else jobs[:limit]
 
-def _bool(value): return str(value).lower() in {"true","1","yes"}
+def _one_candidate_config(point, repeats:int, gpu_ids=None, max_parallel=None):
+    fp=point.get("fixed_params",point); cand=point.get("candidate",{}); defaults=point.get("defaults",{}) or {}
+    feature=str(fp.get("feature","raw")); feature_cfg={k:[] for k in ("sim_reference_eps","feature_dim","scale","feature_preprojection","preprojection_output_dim","random_normal_mean","random_normal_std","shared_value","degree_bucket_num_buckets","degree_bucket_range_max","deepwalk_walk_length","deepwalk_number_walks","deepwalk_window_size","deepwalk_workers","deepwalk_undirected")}
+    feature_cfg["features"]=[feature]; feature_cfg["scale"]=[fp.get("scale",1)]
+    for k in feature_cfg:
+        if k not in {"features","scale"} and fp.get(k) is not None: feature_cfg[k]=[fp[k]]
+    if feature=="sim": feature_cfg["sim_reference_eps"]=[fp.get("sim_reference_eps")]
+    perturb={"mechanisms":[fp.get("mechanism")],"x_eps":[fp.get("x_eps")],"m":[fp.get("m","best")]}
+    norm=bool(fp.get("norm",False)); cal={"norm":[norm],"norm_scale":[fp.get("norm_scale","none")] if norm else [],"x_steps":[cand.get("x_steps",0)],"smoother":[fp.get("smoother")] if fp.get("smoother") not in (None,"none","") else ["hoa"]}
+    nfr=bool(fp.get("use_nfr",False)); nfr_cfg={"use_nfr":[nfr],"tao2":[cand.get("tao2")] if nfr else []}
+    device={"device":"gpu","cpu_worker_count":None,"gpu_ids":gpu_ids or [0],"max_parallel_per_gpu":max_parallel or 1,"gpu_launch_interval_sec":0.1}
+    clean_defaults=dict(defaults)
+    clean_stage=dict(clean_defaults.get("stage",{}))
+    clean_grid=dict(clean_stage.get("grid",{})); clean_verify=dict(clean_stage.get("verify",{}))
+    clean_grid.pop("max_epochs",None); clean_verify.pop("max_epochs",None)
+    clean_grid["repeats"]=1; clean_verify["repeats"]=repeats
+    clean_stage["grid"]=clean_grid; clean_stage["verify"]=clean_verify; clean_defaults["stage"]=clean_stage
+    return {"seed":12345,"device":device,"defaults":clean_defaults,"search_space":{"dataset":{"datasets":[fp.get("dataset")]},"feature_transformation":feature_cfg,"feature_perturbation":perturb,"calibrator":cal,"model":{"backbones":[fp.get("backbone")],"dropout":[cand.get("dropout",0.5)]},"trainer":{"learning_rate":[cand.get("learning_rate",0.001)],"weight_decay":[cand.get("weight_decay",0.0)]},"nfr":nfr_cfg}}
 
-def _command(point, seed, out):
-    fp=point.get("fixed_params",point); defaults=point.get("defaults",{}) or {}; model=defaults.get("model",{}); trainer=defaults.get("trainer",{}); data=defaults.get("dataset",{}); cand=point.get("candidate",{})
-    args=[sys.executable,str(REPO_ROOT/"main.py"),"--dataset",str(fp["dataset"]),"--feature",str(fp.get("feature","raw")),"--mechanism",str(fp.get("mechanism","mbm")),"--x_eps",str(fp.get("x_eps","inf")),"--m",str(fp.get("m","best")),"--model",str(fp.get("backbone","sage")),"--hidden_dim",str(model.get("hidden_dim",16)),"--optimizer",str(trainer.get("optimizer","adam")),"--device","cuda","--val_ratio",str(data.get("val_ratio",.25)),"--test_ratio",str(data.get("test_ratio",.25)),"--data_range",*map(str,data.get("data_range",[0.,1.])),"--norm",str(bool(fp.get("norm",False))).lower(),"--gradient_clip",str(bool(trainer.get("gradient_clip",False))).lower(),"--gradient_clip_max_norm",str(trainer.get("gradient_clip_max_norm",1.0)),"--sim_epoch_refresh",str(bool(trainer.get("sim_epoch_refresh",False))).lower(),"--show_progress","false","--log_every_epoch","false","--x_steps",str(cand.get("x_steps",0)),"--learning_rate",str(cand.get("learning_rate",.001)),"--weight_decay",str(cand.get("weight_decay",0.)),"--dropout",str(cand.get("dropout",.5)),"--max_epochs",str((defaults.get("stage",{}).get("verify",{}) or {}).get("max_epochs",500)),"--patience",str((defaults.get("stage",{}).get("verify",{}) or {}).get("patience",150)),"-s",str(seed),"-r","1","-o",str(out)]
-    if fp.get("smoother") not in (None,"","none"): args += ["--smoother",str(fp["smoother"])]
-    if _bool(fp.get("use_nfr",False)) and cand.get("tao2") not in (None,"none",""): args += ["--use_nfr","true","--tao2",str(cand["tao2"])]
-    return args
-
-def run_fixed(figure_id:int, *, repeats:int=3, limit:int|None=None, execute:bool=False)->list[dict[str,object]]:
-    points=_coverage(figure_id,fixed_points(figure_id)); point_map={p.get("point_id"):p for p in points}; jobs=plan_fixed_jobs(figure_id,repeats=repeats,limit=limit); root=WORK_ROOT/"fixed_runs"/f"figure{figure_id}"; root.mkdir(parents=True,exist_ok=True)
-    manifest=root/"run_manifest.jsonl"
-    with manifest.open("w",encoding="utf-8") as handle:
-        for index,job in enumerate(jobs):
-            point=point_map[job["point_id"]]; out=root/f"job_{index:05d}"; cmd=_command(point,int(job["seed"]),out); job={**job,"command":cmd,"output":str(out)}
-            handle.write(json.dumps(job)+"\n")
-            if execute: subprocess.run(cmd,cwd=str(REPO_ROOT),check=True)
-    if execute: _collect_generated_plot_data(figure_id, jobs)
-    print(f"planned {len(jobs)} fixed jobs for figure {figure_id}; execute={execute}")
+def run_fixed(figure_id:int, *, repeats:int=3, limit:int|None=None, execute:bool=False):
+    points=_coverage(figure_id,fixed_points(figure_id)); jobs=plan_fixed_jobs(figure_id,repeats=repeats,limit=limit); root=WORK_ROOT/"search"/f"figure{figure_id}"/"fixed"
+    root.mkdir(parents=True,exist_ok=True)
+    for idx,job in enumerate(jobs):
+        point=next(p for p in points if p.get("point_id")==job["point_id"]); config=root/f"point_{idx:05d}.yaml"; config.write_text(yaml.safe_dump(_one_candidate_config(point,repeats),sort_keys=False),encoding="utf-8")
+        if execute: run_search(config,mode="full",output_root=root/f"result_{idx:05d}",dry_run=False)
+    if execute: _aggregate_search_output(figure_id,"fixed")
+    print(f"planned {len(jobs)} fixed YAML jobs for figure {figure_id}; execute={execute}")
     return jobs
 
-def run_fixed_table(table:str, *, repeats:int=3, execute:bool=False)->dict[str,object]:
-    path=FIXED_ROOT/f"{table}.yaml"; data=yaml.safe_load(path.read_text(encoding="utf-8")) if path.is_file() else {"points":[]}
-    points=list(data.get("points",[])); out=WORK_ROOT/"fixed_runs"/table; out.mkdir(parents=True,exist_ok=True)
-    manifest=out/"run_manifest.jsonl"; planned=[]
-    with manifest.open("w",encoding="utf-8") as handle:
-        for index, point in enumerate(points):
-            for repeat in range(1,repeats+1):
-                seed=12345+repeat-1; job={"table":table,"point_id":point.get("point_id"),"setting":point.get("setting"),"dataset":point.get("fixed_params",{}).get("dataset"),"backbone":point.get("fixed_params",{}).get("backbone"),"feature_dim":point.get("fixed_params",{}).get("feature_dim"),"repeat":repeat,"seed":seed}
-                out_dir=out/f"job_{index:04d}_repeat_{repeat:02d}"; job["output"]=str(out_dir); job["command"]=_command(point,seed,out_dir); handle.write(json.dumps(job)+"\n"); planned.append(job)
-                if execute: subprocess.run(job["command"],cwd=str(REPO_ROOT),check=True)
-    if execute: _collect_table_outputs(table, planned)
-    print(f"planned {len(planned)} {table} jobs; execute={execute}"); return {"table":table,"jobs":planned}
+def run_fixed_table(table:str, *, repeats:int=3, execute:bool=False):
+    path=FIXED_ROOT/f"{table}.yaml"; points=list((yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("points",[])) if path.is_file() else []
+    root=WORK_ROOT/"search"/table/"fixed"; root.mkdir(parents=True,exist_ok=True); jobs=[]
+    for idx,point in enumerate(points):
+        config=root/f"point_{idx:05d}.yaml"; config.write_text(yaml.safe_dump(_one_candidate_config(point,repeats),sort_keys=False),encoding="utf-8"); jobs.append({"table":table,"point_id":point.get("point_id"),"config":str(config)})
+        if execute: run_search(config,mode="full",output_root=root/f"result_{idx:05d}",dry_run=False)
+    print(f"planned {len(jobs)} {table} YAML jobs; execute={execute}"); return {"table":table,"jobs":jobs}
 
-def _collect_table_outputs(table, planned):
-    import csv
-    rows=[]
-    for job in planned:
-        files=sorted(Path(job["output"]).rglob("*.csv"));
-        if not files: continue
-        with files[-1].open(newline="",encoding="utf-8") as handle: records=list(csv.DictReader(handle))
-        if not records: continue
-        rec=records[-1]; rows.append({"table":table,"setting":job["setting"],"dataset":job["dataset"],"backbone":job["backbone"],"feature_dim":job.get("feature_dim") or "","seed":job["seed"],"val_acc":rec.get("val/acc",""),"test_acc":rec.get("test/acc","")})
+
+def _collect_table_outputs(table, points, root):
+    import csv, re
+    point_by_id={p.get("point_id"):p for p in points}; rows=[]
+    for result in sorted(root.glob("result_*")):
+        manifests=sorted(result.rglob("manifest.csv"))
+        if not manifests: continue
+        with manifests[0].open(newline="",encoding="utf-8") as handle: manifest=next(csv.DictReader(handle),None)
+        if not manifest: continue
+        job=Path(manifest["job_dir"]); best_path=job/"best_config.yaml"
+        if not best_path.is_file(): continue
+        best=yaml.safe_load(best_path.read_text(encoding="utf-8")); cid=int(best.get("best_candidate",{}).get("candidate_id",0)); point_id=None
+        for p in points:
+            fp=p.get("fixed_params",{})
+            if fp.get("dataset")==manifest.get("dataset") and fp.get("backbone")==manifest.get("backbone") and str(fp.get("feature_dim",""))==str(manifest.get("feature_dim","")):
+                point_id=p.get("point_id"); break
+        if point_id is None: continue
+        point=point_by_id[point_id]; fp=point.get("fixed_params",{}); setting=point.get("setting")
+        for child in sorted((job/"verify_top5").glob("rank=*__repeat=*")):
+            match=re.match(r"rank=(\\d+)__repeat=(\\d+)__candidate=(\\d+)__",child.name)
+            if not match or int(match.group(3)) != cid: continue
+            files=sorted(child.glob("*.csv"));
+            if len(files)!=1: continue
+            with files[0].open(newline="",encoding="utf-8") as handle: rec=next(csv.DictReader(handle),None)
+            if not rec: continue
+            rows.append({"table":table,"setting":setting,"dataset":str(fp.get("dataset")).replace("flickr","flickr"),"backbone":fp.get("backbone",""),"feature_dim":fp.get("feature_dim","") or "","seed":rec.get("seed",""),"val_acc":rec.get("val/acc",""),"test_acc":rec.get("test/acc","")})
     if rows:
-        path=REFERENCE_ROOT/f"{table}_fixed_seed_rows.csv"
-        with path.open("w",newline="",encoding="utf-8") as handle:
+        out=root/f"{table}_seed_rows.csv"
+        with out.open("w",newline="",encoding="utf-8") as handle:
             writer=csv.DictWriter(handle,fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
-
-
-def _collect_generated_plot_data(figure_id, jobs):
-    import csv, math
-    ref_path=REFERENCE_ROOT/f"figure{figure_id}_plot_data.csv"
-    if not ref_path.is_file(): return
-    with ref_path.open(newline="",encoding="utf-8") as handle: reference=list(csv.DictReader(handle))
-    values={}
-    for job in jobs:
-        point_id=job.get("point_id")
-        if not point_id: continue
-        pattern=f"job_*_repeat_{int(job['repeat']):02d}/**/*.csv"
-        for path in sorted((WORK_ROOT/"fixed_runs"/f"figure{figure_id}").glob(pattern)):
-            with path.open(newline="",encoding="utf-8") as handle: rows=list(csv.DictReader(handle))
-            if not rows: continue
-            row=max(rows,key=lambda r: float(r.get("epoch",0) or 0))
-            try: values.setdefault(point_id,[]).append((float(row["val/acc"]),float(row["test/acc"])))
-            except (KeyError,ValueError): continue
-    for row in reference:
-        samples=values.get(row.get("point_id"),[])
-        if len(samples)<1: continue
-        vals=[x[1] for x in samples]; val=[x[0] for x in samples]; mean=sum(vals)/len(vals); std=(sum((x-mean)**2 for x in vals)/(len(vals)-1))**0.5 if len(vals)>1 else 0.0; half=1.96*std/math.sqrt(len(vals)) if vals else 0.0
-        row["test_acc_mean"]=f"{mean:.12g}"; row["test_acc_std"]=f"{std:.12g}"; row["test_acc_ci_low"]=f"{mean-half:.12g}"; row["test_acc_ci_high"]=f"{mean+half:.12g}"; row["test_acc_min"]=f"{min(vals):.12g}"; row["test_acc_max"]=f"{max(vals):.12g}"; row["val_acc_mean"]=f"{sum(val)/len(val):.12g}"; row["n"]=str(len(vals))
-    out=WORK_ROOT/"fixed_runs"/f"figure{figure_id}"/"plot_data.csv"
-    with out.open("w",newline="",encoding="utf-8") as handle:
-        writer=csv.DictWriter(handle,fieldnames=list(reference[0])); writer.writeheader(); writer.writerows(reference)

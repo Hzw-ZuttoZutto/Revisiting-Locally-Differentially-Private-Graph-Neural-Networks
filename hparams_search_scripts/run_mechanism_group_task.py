@@ -21,7 +21,7 @@ try:
     from hparams_search_scripts import mechanism_stage_utils
     from main import build_parser, finalize_parsed_args, repeat_seed, seed_everything, to_scalar_metrics
     from models import HOA, KProp, NodeClassifier
-    from pre_smoothing_feature_cache import _capture_rng_state, _restore_rng_state, prepare_pre_smoothing_input
+    from scripts.pre_smoothing_feature_cache import _capture_rng_state, _restore_rng_state, prepare_pre_smoothing_input
     from trainer import Trainer
     from utils import from_args
 except ModuleNotFoundError:
@@ -30,7 +30,7 @@ except ModuleNotFoundError:
     import mechanism_stage_utils  # type: ignore
     from main import build_parser, finalize_parsed_args, repeat_seed, seed_everything, to_scalar_metrics  # type: ignore
     from models import HOA, KProp, NodeClassifier  # type: ignore
-    from pre_smoothing_feature_cache import _capture_rng_state, _restore_rng_state, prepare_pre_smoothing_input  # type: ignore
+    from scripts.pre_smoothing_feature_cache import _capture_rng_state, _restore_rng_state, prepare_pre_smoothing_input  # type: ignore
     from trainer import Trainer  # type: ignore
     from utils import from_args  # type: ignore
 
