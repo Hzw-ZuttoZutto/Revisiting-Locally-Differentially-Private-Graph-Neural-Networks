@@ -1,6 +1,15 @@
 ## Quick start
 
-Configuring enviroments: 
+The core stack requires Python 3.10 or 3.11. Python 3.13 is not supported by `torch-sparse==0.6.18`. If the cluster exposes a matching interpreter, select it explicitly:
+
+```bash
+PYTHON_BIN=python3.10 bash scripts/setup_env.sh
+source .venv/bin/activate
+```
+
+The setup script installs `torch-sparse` from the PyG wheel index after installing torch. If the automatically derived wheel URL does not match the cluster CUDA build, set `PYG_WHL_URL` to the matching URL from [data.pyg.org](https://data.pyg.org/).
+
+Configuring environments:
 ```bash
 bash scripts/setup_env.sh
 source .venv/bin/activate
