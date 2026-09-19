@@ -8,6 +8,13 @@ from .paths import parse_gpu_ids, max_parallel_per_gpu, WORK_ROOT
 
 REPO_ROOT=Path(__file__).resolve().parents[2]
 
+PIPELINE_AXES = {
+    "figure3_pipeline1": {"mechanism": "mbm", "smoother": "kprop", "use_nfr": "false"},
+    "figure3_pipeline2": {"mechanism": "hds", "smoother": "kprop", "use_nfr": "false"},
+    "figure3_pipeline3": {"mechanism": "mbm", "smoother": "hoa", "use_nfr": "true"},
+    "figure3_pipeline4": {"mechanism": "pm", "smoother": "hoa", "use_nfr": "true"},
+}
+
 def _configs(figure_id: int) -> list[Path]:
     roots={1:REPO_ROOT/"configs_AEC/figure1",3:REPO_ROOT/"configs_AEC/figure3",4:REPO_ROOT/"configs_AEC/figure4",5:REPO_ROOT/"configs_AEC/figure5",6:REPO_ROOT/"configs_AEC/figure6",7:REPO_ROOT/"configs_AEC/figure7","table4":REPO_ROOT/"configs_AEC/table4","table6":REPO_ROOT/"configs_AEC/table6"}
     if figure_id == 5:
@@ -103,7 +110,16 @@ def _aggregate_search_output(figure_id, mode):
             with path.open(newline="",encoding="utf-8") as handle:
                 manifests.extend(csv.DictReader(handle))
     def eq(row,a,b): return str(row.get(a,"" )).lower()==str(b).lower()
+    missing = []
     for out in rows:
+        # Figure 1 and Figure 6 contain fixed baseline lines whose x-axis is
+        # privacy budget for presentation only. They must remain frozen and
+        # must never be replaced by a privacy-method manifest.
+        if figure_id in {1, 6}:
+            pipeline = out.get("pipeline", "")
+            expected_axes = PIPELINE_AXES.get(pipeline)
+            if expected_axes is None:
+                continue
         candidates=[]
         for m in manifests:
             if out.get("dataset") and not eq(m,"dataset",out["dataset"]): continue
@@ -113,12 +129,27 @@ def _aggregate_search_output(figure_id, mode):
             if out.get("smoother") and not eq(m,"smoother",out["smoother"]): continue
             if out.get("norm") and not eq(m,"norm",out["norm"]): continue
             if out.get("norm_scale") and not eq(m,"norm_scale",out["norm_scale"]): continue
+            if expected_axes:
+                if any(not eq(m, key, value) for key, value in expected_axes.items()): continue
             if m.get("best_verify_test_acc_mean","")=="": continue
             candidates.append(m)
-        if not candidates: continue
+        if not candidates:
+            missing.append({
+                "source": out.get("source", ""),
+                "pipeline": out.get("pipeline", ""),
+                "dataset": out.get("dataset", ""),
+                "backbone": out.get("backbone", ""),
+                "x_eps": out.get("x_eps", ""),
+            })
+            continue
         m=candidates[0]
         mean=float(m["best_verify_test_acc_mean"]); std=float(m.get("best_verify_test_acc_std") or 0.0); n=int(m.get("verify_done") or 1); half=1.96*std/math.sqrt(max(n,1))
         out["test_acc_mean"]=f"{mean:.12g}"; out["test_acc_std"]=f"{std:.12g}"; out["test_acc_ci_low"]=f"{mean-half:.12g}"; out["test_acc_ci_high"]=f"{mean+half:.12g}"; out["val_acc_mean"]=m.get("best_verify_val_acc_mean",out.get("val_acc_mean","")); out["n"]=str(n)
+    if missing:
+        sample = "; ".join(str(item) for item in missing[:5])
+        raise RuntimeError(
+            f"Missing completed fixed/search results for {len(missing)} plot rows; sample: {sample}"
+        )
     root.mkdir(parents=True,exist_ok=True); output=root/"plot_data.csv"
     with output.open("w",newline="",encoding="utf-8") as handle:
         writer=csv.DictWriter(handle,fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
