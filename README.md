@@ -1,18 +1,16 @@
 ## Quick start
 
-The core stack requires Python 3.10 or 3.11. Python 3.13 is not supported by `torch-sparse==0.6.18`. If the cluster exposes a matching interpreter, select it explicitly:
+Create the isolated Conda environment and install all dependencies:
 
-```bash
-PYTHON_BIN=python3.10 bash scripts/setup_env.sh
-source .venv/bin/activate
-```
-
-The setup script installs `torch-sparse` from the PyG wheel index after installing torch. If the automatically derived wheel URL does not match the cluster CUDA build, set `PYG_WHL_URL` to the matching URL from [data.pyg.org](https://data.pyg.org/).
-
-Configuring environments:
 ```bash
 bash scripts/setup_env.sh
-source .venv/bin/activate
+conda activate rethinking-dp-gnn-aec
+```
+
+The setup script creates the environment with Python 3.10 and installs the PyTorch, PyG, notebook, and experiment dependencies. Then open the notebooks:
+
+```bash
+python -m jupyter notebook notebooks/
 ```
 
 ## Two ways to run the notebooks
