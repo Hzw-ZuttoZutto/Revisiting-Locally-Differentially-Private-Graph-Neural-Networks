@@ -17,26 +17,13 @@ python -m jupyter notebook notebooks/
 
 ### Run manually in Jupyter
 
-Open the notebook in Jupyter and run the setup cell followed by the figure/table cells one by one. This is useful when you want to inspect each generated figure or change the GPU settings between runs.
+Open the notebook in Jupyter and run its configuration cell first, followed by the setup cell and the figure/table cells one by one. This is useful when you want to inspect each generated figure or change the GPU settings between runs.
 
 ```bash
 python -m jupyter notebook notebooks/
 ```
 
-For Notebook 2 and Notebook 3, set the execution variables before opening Jupyter:
-
-```bash
-# Actually run the training/search commands.
-export AEC_EXECUTE=1
-# Comma-separated GPU IDs available to the notebook.
-export AEC_GPU_IDS=0
-# Maximum number of concurrent jobs assigned to each GPU.
-export AEC_MAX_PARALLEL_PER_GPU=1
-# Use the claim-coverage scaled search mode for Notebook 3.
-export AEC_MODE=scaled
-# Open all three notebooks in Jupyter for manual execution.
-python -m jupyter notebook notebooks/
-```
+Notebook 2 and Notebook 3 each contain a dedicated configuration cell. Edit `AEC_EXECUTE`, `AEC_GPU_IDS`, `AEC_MAX_PARALLEL_PER_GPU`, and (in Notebook 3) `AEC_MODE` there, then run that cell before the setup cell. No shell variables are required.
 
 ### Run automatically from the command line
 
@@ -47,23 +34,19 @@ python -m jupyter nbconvert --execute --to notebook --inplace \
   notebooks/notebook_1_direct.ipynb
 ```
 
-For Notebook 2:
+Before running Notebook 2, set `AEC_EXECUTE = True` in its configuration cell if you want to start the fixed-hyperparameter reruns. Then execute the notebook:
 
 ```bash
-AEC_EXECUTE=1 AEC_GPU_IDS=0 AEC_MAX_PARALLEL_PER_GPU=1 \
 python -m jupyter nbconvert --execute --to notebook --inplace \
   notebooks/notebook_2_fixed_hparams.ipynb
 ```
 
-For Notebook 3 claim-coverage scaled mode:
+For Notebook 3, set `AEC_EXECUTE = True` and choose `AEC_MODE = "scaled"` or `AEC_MODE = "full"` in its configuration cell, then execute:
 
 ```bash
-AEC_EXECUTE=1 AEC_MODE=scaled AEC_GPU_IDS=0 AEC_MAX_PARALLEL_PER_GPU=1 \
 python -m jupyter nbconvert --execute --to notebook --inplace \
   notebooks/notebook_3_full_search.ipynb
 ```
-
-For the complete search, replace `AEC_MODE=scaled` with `AEC_MODE=full`.
 
 ## Which notebook to run
 
@@ -77,9 +60,9 @@ Open `notebooks/notebook_1_direct.ipynb` from the Jupyter interface.
 
 Notebook 2 uses the hyperparameters that we have already searched. It reruns the data points needed by the paper and then generates the same figures and corresponding tables.
 
-Set `AEC_EXECUTE=1` to run the experiments. Without this variable, the notebook only prints the execution plan. GPU selection and per-GPU concurrency are controlled with `AEC_GPU_IDS` and `AEC_MAX_PARALLEL_PER_GPU`.
+Edit the configuration cell to set `AEC_EXECUTE = True` when running the experiments. With `False`, the notebook only prints the execution plan. GPU selection and per-GPU concurrency are configured in the same cell.
 
-Open `notebooks/notebook_2_fixed_hparams.ipynb` from the Jupyter interface after setting the execution variables above.
+Open `notebooks/notebook_2_fixed_hparams.ipynb` from the Jupyter interface and run the configuration cell first.
 
 ### Notebook 3: Hyperparameter search
 
@@ -90,6 +73,6 @@ Notebook 3 runs our hyperparameter search scripts and has two modes:
 
 Both modes run the same YAML-driven hyperparameter search pipeline used by our experiments. They produce the hyperparameters needed for the data points rerun by Notebook 2, and then generate the corresponding figures and tables.
 
-The default mode is `claim-coverage scaled`. In manual mode, leave `AEC_MODE` unset or set it to `scaled`. Set `AEC_MODE=full` when manually running the complete search.
+The default mode is `claim-coverage scaled`. Set `AEC_MODE = "full"` in the configuration cell when manually running the complete search.
 
 Each notebook displays the generated PNG figures and Table 4/Table 6 directly in the notebook.
