@@ -85,8 +85,8 @@ Open `notebooks/notebook_2_fixed_hparams.ipynb` from the Jupyter interface after
 
 Notebook 3 runs our hyperparameter search scripts and has two modes:
 
-- **claim-coverage scaled mode** includes the core results needed to support the experimental conclusions.  
-- **full mode** runs the complete experiment configuration and is the complete reproduction path.           
+- **claim-coverage scaled mode** includes the core results needed to support the experimental conclusions.
+- **full mode** runs the complete experiment configuration and is the complete reproduction path.
 
 Both modes run the same YAML-driven hyperparameter search pipeline used by our experiments. They produce the hyperparameters needed for the data points rerun by Notebook 2, and then generate the corresponding figures and tables.
 

@@ -3,7 +3,13 @@ from __future__ import annotations
 import json, tempfile
 from pathlib import Path
 import yaml
-from .paths import REFERENCE_ROOT, FIXED_ROOT, WORK_ROOT
+from .paths import (
+    REFERENCE_ROOT,
+    FIXED_ROOT,
+    WORK_ROOT,
+    parse_gpu_ids,
+    max_parallel_per_gpu,
+)
 from .search_runner import run_search, _aggregate_search_output
 
 REPO_ROOT=Path(__file__).resolve().parents[2]
@@ -38,14 +44,18 @@ def _one_candidate_config(point, repeats:int, gpu_ids=None, max_parallel=None):
     perturb={"mechanisms":[fp.get("mechanism")],"x_eps":[fp.get("x_eps")],"m":[fp.get("m","best")]}
     norm=bool(fp.get("norm",False)); cal={"norm":[norm],"norm_scale":[fp.get("norm_scale","none")] if norm else [],"x_steps":[cand.get("x_steps",0)],"smoother":[fp.get("smoother")] if fp.get("smoother") not in (None,"none","") else ["hoa"]}
     nfr=bool(fp.get("use_nfr",False)); nfr_cfg={"use_nfr":[nfr],"tao2":[cand.get("tao2")] if nfr else []}
-    device={"device":"gpu","cpu_worker_count":None,"gpu_ids":gpu_ids or [0],"max_parallel_per_gpu":max_parallel or 1,"gpu_launch_interval_sec":0.1}
+    # Resolve these at notebook execution time so the evaluator can choose the
+    # visible GPUs and per-GPU concurrency without editing generated YAML.
+    selected_gpu_ids = parse_gpu_ids() if gpu_ids is None else list(gpu_ids)
+    selected_parallel = max_parallel_per_gpu() if max_parallel is None else int(max_parallel)
+    device={"device":"gpu","cpu_worker_count":None,"gpu_ids":selected_gpu_ids,"max_parallel_per_gpu":selected_parallel,"gpu_launch_interval_sec":0.1}
     clean_defaults=dict(defaults)
     clean_stage=dict(clean_defaults.get("stage",{}))
     clean_grid=dict(clean_stage.get("grid",{})); clean_verify=dict(clean_stage.get("verify",{}))
     clean_grid.pop("max_epochs",None); clean_verify.pop("max_epochs",None)
     clean_grid["repeats"]=1; clean_verify["repeats"]=repeats
     clean_stage["grid"]=clean_grid; clean_stage["verify"]=clean_verify; clean_defaults["stage"]=clean_stage
-    return {"seed":12345,"device":device,"defaults":clean_defaults,"search_space":{"dataset":{"datasets":[fp.get("dataset")]},"feature_transformation":feature_cfg,"feature_perturbation":perturb,"calibrator":cal,"model":{"backbones":[fp.get("backbone")],"dropout":[cand.get("dropout",0.5)]},"trainer":{"learning_rate":[cand.get("learning_rate",0.001)],"weight_decay":[cand.get("weight_decay",0.0)]},"nfr":nfr_cfg}}
+    return {"seed":int(point.get("base_seed",12345)),"device":device,"defaults":clean_defaults,"search_space":{"dataset":{"datasets":[fp.get("dataset")]},"feature_transformation":feature_cfg,"feature_perturbation":perturb,"calibrator":cal,"model":{"backbones":[fp.get("backbone")],"dropout":[cand.get("dropout",0.5)]},"trainer":{"learning_rate":[cand.get("learning_rate",0.001)],"weight_decay":[cand.get("weight_decay",0.0)]},"nfr":nfr_cfg}}
 
 def run_fixed(figure_id:int, *, repeats:int=3, limit:int|None=None, execute:bool=False):
     points=_coverage(figure_id,fixed_points(figure_id)); jobs=plan_fixed_jobs(figure_id,repeats=repeats,limit=limit); root=WORK_ROOT/"search"/f"figure{figure_id}"/"fixed"
