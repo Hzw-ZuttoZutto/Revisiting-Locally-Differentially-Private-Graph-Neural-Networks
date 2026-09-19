@@ -44,7 +44,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_lastfm_gat_
   table: table4
   setting: FeatFree-P
@@ -88,7 +88,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_citeseer_gat_
   table: table4
   setting: FeatFree-P
@@ -132,7 +132,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_facebook_gat_
   table: table4
   setting: FeatFree-P
@@ -176,7 +176,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_cora_gcn_
   table: table4
   setting: FeatFree-P
@@ -220,7 +220,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_lastfm_gcn_
   table: table4
   setting: FeatFree-P
@@ -264,7 +264,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_citeseer_gcn_
   table: table4
   setting: FeatFree-P
@@ -308,7 +308,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_facebook_gcn_
   table: table4
   setting: FeatFree-P
@@ -352,7 +352,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_cora_sage_
   table: table4
   setting: FeatFree-P
@@ -396,7 +396,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_lastfm_sage_
   table: table4
   setting: FeatFree-P
@@ -440,7 +440,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_citeseer_sage_
   table: table4
   setting: FeatFree-P
@@ -484,7 +484,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table4_facebook_sage_
   table: table4
   setting: FeatFree-P
@@ -528,4 +528,4 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3

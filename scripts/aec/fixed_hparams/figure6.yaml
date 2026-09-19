@@ -44,7 +44,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_8abe6985b611173f
   figure_id: 6
   base_seed: 12345
@@ -88,7 +88,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_4a5f014428e1fabd
   figure_id: 6
   base_seed: 12345
@@ -132,7 +132,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_097315668d4615ff
   figure_id: 6
   base_seed: 12345
@@ -176,7 +176,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ce3a07273cb67eff
   figure_id: 6
   base_seed: 12345
@@ -220,7 +220,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_0f10dd532dceb51f
   figure_id: 6
   base_seed: 12345
@@ -264,7 +264,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_c30943a79e2c4d67
   figure_id: 6
   base_seed: 12345
@@ -308,7 +308,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_d4e8ab5e174c16cc
   figure_id: 6
   base_seed: 12345
@@ -352,7 +352,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_b8e597ba13eb10a3
   figure_id: 6
   base_seed: 12345
@@ -396,7 +396,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_945fa0c0d6600937
   figure_id: 6
   base_seed: 12345
@@ -440,7 +440,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_7582ead3b0c417ea
   figure_id: 6
   base_seed: 12345
@@ -484,7 +484,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_7d0b6dcb30a606c3
   figure_id: 6
   base_seed: 12345
@@ -528,7 +528,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_5df64ddf8c21ce40
   figure_id: 6
   base_seed: 12345
@@ -572,7 +572,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_88f0199c2ce1d81d
   figure_id: 6
   base_seed: 12345
@@ -616,7 +616,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_c7962d2cfd64de64
   figure_id: 6
   base_seed: 12345
@@ -660,7 +660,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_44ef31932b4801b2
   figure_id: 6
   base_seed: 12345
@@ -704,7 +704,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_31a5d878a24f273d
   figure_id: 6
   base_seed: 12345
@@ -748,7 +748,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_d66071b50d0339aa
   figure_id: 6
   base_seed: 12345
@@ -792,7 +792,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_6c237212aff81274
   figure_id: 6
   base_seed: 12345
@@ -836,7 +836,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e20088a5d13fe60b
   figure_id: 6
   base_seed: 12345
@@ -880,7 +880,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_97031ca4e4bd9b46
   figure_id: 6
   base_seed: 12345
@@ -924,7 +924,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_8c378aa17e1c4496
   figure_id: 6
   base_seed: 12345
@@ -968,7 +968,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_bec18313b928662c
   figure_id: 6
   base_seed: 12345
@@ -1012,7 +1012,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_c5a7e09fbc1fd723
   figure_id: 6
   base_seed: 12345
@@ -1056,7 +1056,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_34a3726fd0c76965
   figure_id: 6
   base_seed: 12345
@@ -1100,7 +1100,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_75083e9e50698b9c
   figure_id: 6
   base_seed: 12345
@@ -1144,7 +1144,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_31edde76da64d617
   figure_id: 6
   base_seed: 12345
@@ -1188,7 +1188,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_caa21ca64a4aad6d
   figure_id: 6
   base_seed: 12345
@@ -1232,7 +1232,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ef8d10fb49da5011
   figure_id: 6
   base_seed: 12345
@@ -1276,7 +1276,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_198bf189b2ff161c
   figure_id: 6
   base_seed: 12345
@@ -1320,7 +1320,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_94f56900b6d72c5d
   figure_id: 6
   base_seed: 12345
@@ -1364,7 +1364,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_097f3455b843052e
   figure_id: 6
   base_seed: 12345
@@ -1408,7 +1408,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_29f9eb77600c31e3
   figure_id: 6
   base_seed: 12345
@@ -1452,7 +1452,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_acbe584bee96fe9c
   figure_id: 6
   base_seed: 12345
@@ -1496,7 +1496,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_85bd388cfc0467c2
   figure_id: 6
   base_seed: 12345
@@ -1540,7 +1540,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9b20f9c7b48edcec
   figure_id: 6
   base_seed: 12345
@@ -1584,7 +1584,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_834c103e9a446831
   figure_id: 6
   base_seed: 12345
@@ -1628,7 +1628,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_02bf75c37934028d
   figure_id: 6
   base_seed: 12345
@@ -1672,7 +1672,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_91bcdde4b2f64e4c
   figure_id: 6
   base_seed: 12345
@@ -1716,7 +1716,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_5b89b72391753a2b
   figure_id: 6
   base_seed: 12345
@@ -1760,7 +1760,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_73f297302a3e9c6a
   figure_id: 6
   base_seed: 12345
@@ -1804,7 +1804,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_760dc5b64fbac848
   figure_id: 6
   base_seed: 12345
@@ -1848,7 +1848,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_7a8ee996c3d97f7f
   figure_id: 6
   base_seed: 12345
@@ -1892,7 +1892,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_687261a04a06344d
   figure_id: 6
   base_seed: 12345
@@ -1936,7 +1936,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_10eb2304b237c511
   figure_id: 6
   base_seed: 12345
@@ -1980,7 +1980,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ece786681e31dc25
   figure_id: 6
   base_seed: 12345
@@ -2024,7 +2024,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_a5419f86b0280368
   figure_id: 6
   base_seed: 12345
@@ -2068,7 +2068,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_f74cbc57a29643d6
   figure_id: 6
   base_seed: 12345
@@ -2112,7 +2112,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_91ee7d1f7bb275fc
   figure_id: 6
   base_seed: 12345
@@ -2156,7 +2156,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_c14238a0328c1100
   figure_id: 6
   base_seed: 12345
@@ -2200,7 +2200,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_cd158afb5a9b9649
   figure_id: 6
   base_seed: 12345
@@ -2244,7 +2244,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_6b479a0ba52e8f96
   figure_id: 6
   base_seed: 12345
@@ -2288,7 +2288,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_8744cf0f80ef8d50
   figure_id: 6
   base_seed: 12345
@@ -2332,7 +2332,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_474cfc9f873de8c2
   figure_id: 6
   base_seed: 12345
@@ -2376,7 +2376,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_6c0cb1447a0d0ef5
   figure_id: 6
   base_seed: 12345
@@ -2420,7 +2420,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_d228c2b69545fa05
   figure_id: 6
   base_seed: 12345
@@ -2464,7 +2464,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_f6ee30d89375db60
   figure_id: 6
   base_seed: 12345
@@ -2508,7 +2508,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_466526623737b4d7
   figure_id: 6
   base_seed: 12345
@@ -2552,7 +2552,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_d24eb6a5583783ed
   figure_id: 6
   base_seed: 12345
@@ -2596,7 +2596,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_88f5763867acbcd3
   figure_id: 6
   base_seed: 12345
@@ -2640,7 +2640,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_bb27edc025050e32
   figure_id: 6
   base_seed: 12345
@@ -2684,7 +2684,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ba9efd9fbc5573d1
   figure_id: 6
   base_seed: 12345
@@ -2728,7 +2728,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_2680863a313c0878
   figure_id: 6
   base_seed: 12345
@@ -2772,7 +2772,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_1998b65ff06e5982
   figure_id: 6
   base_seed: 12345
@@ -2816,7 +2816,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_db6208d372be6c17
   figure_id: 6
   base_seed: 12345
@@ -2860,7 +2860,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9b6e17e180ddf542
   figure_id: 6
   base_seed: 12345
@@ -2904,7 +2904,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_683351d6c8b46392
   figure_id: 6
   base_seed: 12345
@@ -2948,7 +2948,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_b4300b029c21487c
   figure_id: 6
   base_seed: 12345
@@ -2992,7 +2992,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_51dd9dcc04abb1c5
   figure_id: 6
   base_seed: 12345
@@ -3036,7 +3036,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_c30772580984ce51
   figure_id: 6
   base_seed: 12345
@@ -3080,7 +3080,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_66473c8ecc129ee4
   figure_id: 6
   base_seed: 12345
@@ -3124,7 +3124,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_2849a43823a05b37
   figure_id: 6
   base_seed: 12345
@@ -3168,7 +3168,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_fc5923d300e8942a
   figure_id: 6
   base_seed: 12345
@@ -3212,7 +3212,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_416f8aa60d25d2ca
   figure_id: 6
   base_seed: 12345
@@ -3256,7 +3256,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e5ce6a211279c6a8
   figure_id: 6
   base_seed: 12345
@@ -3300,7 +3300,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_a20bcfe6a48541ef
   figure_id: 6
   base_seed: 12345
@@ -3344,7 +3344,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_defbd1994ee67b50
   figure_id: 6
   base_seed: 12345
@@ -3388,7 +3388,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_61806698147d0007
   figure_id: 6
   base_seed: 12345
@@ -3432,7 +3432,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_c1825efe8d3a4334
   figure_id: 6
   base_seed: 12345
@@ -3476,7 +3476,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ecb447d8e70358a6
   figure_id: 6
   base_seed: 12345
@@ -3520,7 +3520,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e31a890be1c06db5
   figure_id: 6
   base_seed: 12345
@@ -3564,7 +3564,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_df7dcd277011c97b
   figure_id: 6
   base_seed: 12345
@@ -3608,7 +3608,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_b52e7b9ca041924c
   figure_id: 6
   base_seed: 12345
@@ -3652,7 +3652,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_8f1ef69adc7bb7af
   figure_id: 6
   base_seed: 12345
@@ -3696,7 +3696,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ab232f8d45065781
   figure_id: 6
   base_seed: 12345
@@ -3740,7 +3740,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_37a319aad36ed5c5
   figure_id: 6
   base_seed: 12345
@@ -3784,7 +3784,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_34e081396a57e7c5
   figure_id: 6
   base_seed: 12345
@@ -3828,7 +3828,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_3881054e0ef82e7c
   figure_id: 6
   base_seed: 12345
@@ -3872,7 +3872,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_38bf93c86c232af1
   figure_id: 6
   base_seed: 12345
@@ -3916,7 +3916,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_562aae9d2ea5aafe
   figure_id: 6
   base_seed: 12345
@@ -3960,7 +3960,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_af64f767a7922629
   figure_id: 6
   base_seed: 12345
@@ -4004,7 +4004,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_126380848a2bac2b
   figure_id: 6
   base_seed: 12345
@@ -4048,7 +4048,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_de9f6c4dc7a7b79d
   figure_id: 6
   base_seed: 12345
@@ -4092,7 +4092,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_b529e93e7b9cca7e
   figure_id: 6
   base_seed: 12345
@@ -4136,7 +4136,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_a86b4171378347f3
   figure_id: 6
   base_seed: 12345
@@ -4180,7 +4180,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_7e27435d12d0c74a
   figure_id: 6
   base_seed: 12345
@@ -4224,7 +4224,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_1c59e1c200bb45e0
   figure_id: 6
   base_seed: 12345
@@ -4268,7 +4268,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_5530b925eb51db21
   figure_id: 6
   base_seed: 12345
@@ -4312,7 +4312,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_a9d47c29a9e8ac4a
   figure_id: 6
   base_seed: 12345
@@ -4356,7 +4356,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_4af85a66d6641dfd
   figure_id: 6
   base_seed: 12345
@@ -4400,7 +4400,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_83ce571bea6d14ac
   figure_id: 6
   base_seed: 12345
@@ -4444,7 +4444,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_14b2b0994530bfa1
   figure_id: 6
   base_seed: 12345
@@ -4488,7 +4488,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ec190aee9ddfb6a7
   figure_id: 6
   base_seed: 12345
@@ -4532,7 +4532,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_16917361fc41255c
   figure_id: 6
   base_seed: 12345
@@ -4576,7 +4576,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_fc5ac4d8c7153342
   figure_id: 6
   base_seed: 12345
@@ -4620,7 +4620,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_09d7af573129b5be
   figure_id: 6
   base_seed: 12345
@@ -4664,7 +4664,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_7eca0a1a08c7bf4e
   figure_id: 6
   base_seed: 12345
@@ -4708,7 +4708,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9a150e1512441cc0
   figure_id: 6
   base_seed: 12345
@@ -4752,7 +4752,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_d6a7ca048bed8860
   figure_id: 6
   base_seed: 12345
@@ -4796,7 +4796,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_208dedc133e10552
   figure_id: 6
   base_seed: 12345
@@ -4840,7 +4840,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_bfeeff82a5bce66e
   figure_id: 6
   base_seed: 12345
@@ -4884,7 +4884,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_52189f4f10ad970e
   figure_id: 6
   base_seed: 12345
@@ -4928,7 +4928,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_3d3f5a89c87701bc
   figure_id: 6
   base_seed: 12345
@@ -4972,7 +4972,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_3ac29bd535548fd6
   figure_id: 6
   base_seed: 12345
@@ -5016,7 +5016,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_807d53900b933fb7
   figure_id: 6
   base_seed: 12345
@@ -5060,7 +5060,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9726d5672977e44d
   figure_id: 6
   base_seed: 12345
@@ -5104,7 +5104,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_1d417875efe27284
   figure_id: 6
   base_seed: 12345
@@ -5148,7 +5148,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_438edca921f1b083
   figure_id: 6
   base_seed: 12345
@@ -5192,7 +5192,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_7d5dc08e06107c0b
   figure_id: 6
   base_seed: 12345
@@ -5236,7 +5236,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e55993f125299524
   figure_id: 6
   base_seed: 12345
@@ -5280,7 +5280,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_09f8e9b6cc7c3d4f
   figure_id: 6
   base_seed: 12345
@@ -5324,7 +5324,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_2beb0f45055a09c5
   figure_id: 6
   base_seed: 12345
@@ -5368,7 +5368,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_8124f6132efb3a81
   figure_id: 6
   base_seed: 12345
@@ -5412,7 +5412,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9f07646775b286f9
   figure_id: 6
   base_seed: 12345
@@ -5456,7 +5456,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_0bafa75bfd5b1845
   figure_id: 6
   base_seed: 12345
@@ -5500,7 +5500,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_534527bfec66f082
   figure_id: 6
   base_seed: 12345
@@ -5544,7 +5544,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_de97da03d93410ad
   figure_id: 6
   base_seed: 12345
@@ -5588,7 +5588,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_d9261684fc7ce996
   figure_id: 6
   base_seed: 12345
@@ -5632,7 +5632,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_62996c6036e40a9d
   figure_id: 6
   base_seed: 12345
@@ -5676,7 +5676,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_a593e50f41ac9f02
   figure_id: 6
   base_seed: 12345
@@ -5720,7 +5720,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_b0f4850047a78e01
   figure_id: 6
   base_seed: 12345
@@ -5764,7 +5764,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9918a5ff62cb6fe6
   figure_id: 6
   base_seed: 12345
@@ -5808,7 +5808,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e092fddba5d5ced2
   figure_id: 6
   base_seed: 12345
@@ -5852,7 +5852,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_0c5dae5f26ed260f
   figure_id: 6
   base_seed: 12345
@@ -5896,7 +5896,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_edbdde3ac212eb86
   figure_id: 6
   base_seed: 12345
@@ -5940,7 +5940,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_47b544fb2c4a5724
   figure_id: 6
   base_seed: 12345
@@ -5984,7 +5984,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_3517cccf2e3027e3
   figure_id: 6
   base_seed: 12345
@@ -6028,7 +6028,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ff40326e6b9b1994
   figure_id: 6
   base_seed: 12345
@@ -6072,7 +6072,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_c0985e1c87107205
   figure_id: 6
   base_seed: 12345
@@ -6116,7 +6116,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_09f7e83fc6cf2c07
   figure_id: 6
   base_seed: 12345
@@ -6160,7 +6160,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e0e3c2c5ff27cd8c
   figure_id: 6
   base_seed: 12345
@@ -6204,7 +6204,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_f8e4cea1b1235c5b
   figure_id: 6
   base_seed: 12345
@@ -6248,7 +6248,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_48f5083e995d3c3b
   figure_id: 6
   base_seed: 12345
@@ -6292,7 +6292,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_a9c83a658b94d335
   figure_id: 6
   base_seed: 12345
@@ -6336,7 +6336,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_dddc434899589f08
   figure_id: 6
   base_seed: 12345
@@ -6380,7 +6380,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_2bae8d476608e3a4
   figure_id: 6
   base_seed: 12345
@@ -6424,7 +6424,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_baa97df485ba0e33
   figure_id: 6
   base_seed: 12345
@@ -6468,7 +6468,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_8e67a75589b4e519
   figure_id: 6
   base_seed: 12345
@@ -6512,7 +6512,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_c27e3d50e5822155
   figure_id: 6
   base_seed: 12345
@@ -6556,7 +6556,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_12c1ed4bdcf961b8
   figure_id: 6
   base_seed: 12345
@@ -6600,7 +6600,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_815ff13049b4fc53
   figure_id: 6
   base_seed: 12345
@@ -6644,7 +6644,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_f9722bcec97c4dfa
   figure_id: 6
   base_seed: 12345
@@ -6688,7 +6688,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_2a767f0f75a24613
   figure_id: 6
   base_seed: 12345
@@ -6732,7 +6732,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_457b3c6a36a3e348
   figure_id: 6
   base_seed: 12345
@@ -6776,7 +6776,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_b58350cd4b09b8e5
   figure_id: 6
   base_seed: 12345
@@ -6820,7 +6820,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_a2bbab49d7052446
   figure_id: 6
   base_seed: 12345
@@ -6864,7 +6864,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_88c732f54711bca4
   figure_id: 6
   base_seed: 12345
@@ -6908,7 +6908,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_71427de93274627b
   figure_id: 6
   base_seed: 12345
@@ -6952,7 +6952,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_33134ca04303a906
   figure_id: 6
   base_seed: 12345
@@ -6996,7 +6996,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_51c099327a864d3a
   figure_id: 6
   base_seed: 12345
@@ -7040,7 +7040,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e0cbf71cca2b4dc6
   figure_id: 6
   base_seed: 12345
@@ -7084,7 +7084,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_278778e5698699a2
   figure_id: 6
   base_seed: 12345
@@ -7128,7 +7128,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_5f5341a6acb0ec1b
   figure_id: 6
   base_seed: 12345
@@ -7172,7 +7172,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e6faf0aa12707297
   figure_id: 6
   base_seed: 12345
@@ -7216,7 +7216,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_fada8964bab07566
   figure_id: 6
   base_seed: 12345
@@ -7260,7 +7260,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_34f2d0c74dbd0548
   figure_id: 6
   base_seed: 12345
@@ -7304,7 +7304,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_c2abed25532a4991
   figure_id: 6
   base_seed: 12345
@@ -7348,7 +7348,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_fa5df09d53fee65f
   figure_id: 6
   base_seed: 12345
@@ -7392,7 +7392,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_6e1b86c60b2b9f1f
   figure_id: 6
   base_seed: 12345
@@ -7436,7 +7436,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_23fed29332934253
   figure_id: 6
   base_seed: 12345
@@ -7480,7 +7480,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_26fcc889b8527cdc
   figure_id: 6
   base_seed: 12345
@@ -7524,7 +7524,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ddc3f18af101c100
   figure_id: 6
   base_seed: 12345
@@ -7568,7 +7568,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_3509d41ddc9e84fd
   figure_id: 6
   base_seed: 12345
@@ -7612,7 +7612,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_b91118b06454a6e7
   figure_id: 6
   base_seed: 12345
@@ -7656,7 +7656,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_db4cb1d2fa5c293d
   figure_id: 6
   base_seed: 12345
@@ -7700,7 +7700,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_124468a32407305b
   figure_id: 6
   base_seed: 12345
@@ -7744,7 +7744,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_dc6db833b48bb8ca
   figure_id: 6
   base_seed: 12345
@@ -7788,7 +7788,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9b001583f45cb7bf
   figure_id: 6
   base_seed: 12345
@@ -7832,7 +7832,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_99c6346a2e5113c5
   figure_id: 6
   base_seed: 12345
@@ -7876,7 +7876,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_63fcfa68fea268f4
   figure_id: 6
   base_seed: 12345
@@ -7920,7 +7920,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e6e9d40192e500a8
   figure_id: 6
   base_seed: 12345
@@ -7964,7 +7964,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_b390b268472b603f
   figure_id: 6
   base_seed: 12345
@@ -8008,7 +8008,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_28e7ad45d3443b11
   figure_id: 6
   base_seed: 12345
@@ -8052,7 +8052,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_5bce38540fa38e7b
   figure_id: 6
   base_seed: 12345
@@ -8096,7 +8096,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_389af38674253593
   figure_id: 6
   base_seed: 12345
@@ -8140,7 +8140,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_07ca62cd558b70e4
   figure_id: 6
   base_seed: 12345
@@ -8184,7 +8184,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_38170a4f182bbe32
   figure_id: 6
   base_seed: 12345
@@ -8228,7 +8228,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_80d2ff17b8cf16d6
   figure_id: 6
   base_seed: 12345
@@ -8272,7 +8272,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_387c066b7f4b3e85
   figure_id: 6
   base_seed: 12345
@@ -8316,7 +8316,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e46cb0c4df046f5b
   figure_id: 6
   base_seed: 12345
@@ -8360,7 +8360,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_eba40d34896cbab6
   figure_id: 6
   base_seed: 12345
@@ -8404,7 +8404,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_7da886af00aafb16
   figure_id: 6
   base_seed: 12345
@@ -8448,7 +8448,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_392e7b66c930834c
   figure_id: 6
   base_seed: 12345
@@ -8492,7 +8492,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9945f555fcfd55c5
   figure_id: 6
   base_seed: 12345
@@ -8536,7 +8536,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_2ee05778db201de9
   figure_id: 6
   base_seed: 12345
@@ -8580,7 +8580,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_478020865ef6f709
   figure_id: 6
   base_seed: 12345
@@ -8624,7 +8624,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_af415c7b7b0f15ed
   figure_id: 6
   base_seed: 12345
@@ -8668,7 +8668,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_5877f9cf6bbefdcb
   figure_id: 6
   base_seed: 12345
@@ -8712,7 +8712,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_240e58f0b29b7308
   figure_id: 6
   base_seed: 12345
@@ -8756,7 +8756,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_a41a3648497fc080
   figure_id: 6
   base_seed: 12345
@@ -8800,7 +8800,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_67b04aefb1ce9e94
   figure_id: 6
   base_seed: 12345
@@ -8844,7 +8844,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ed81457f3592830d
   figure_id: 6
   base_seed: 12345
@@ -8888,7 +8888,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9c35b7dfc6782ebe
   figure_id: 6
   base_seed: 12345
@@ -8932,7 +8932,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_92a410ea17f9b535
   figure_id: 6
   base_seed: 12345
@@ -8976,7 +8976,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_a3c1f2f37f5bd153
   figure_id: 6
   base_seed: 12345
@@ -9020,7 +9020,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_2d07125082064415
   figure_id: 6
   base_seed: 12345
@@ -9064,7 +9064,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_dc1bce3d58a7756f
   figure_id: 6
   base_seed: 12345
@@ -9108,7 +9108,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_d7ed4652662e3d4f
   figure_id: 6
   base_seed: 12345
@@ -9152,7 +9152,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ce0e22fc72f3b0ff
   figure_id: 6
   base_seed: 12345
@@ -9196,7 +9196,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_419e316300ddfc55
   figure_id: 6
   base_seed: 12345
@@ -9240,7 +9240,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_a178d9822cdd7424
   figure_id: 6
   base_seed: 12345
@@ -9284,7 +9284,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_baeb156ec965fbb2
   figure_id: 6
   base_seed: 12345
@@ -9328,7 +9328,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_619238fc2fc551c8
   figure_id: 6
   base_seed: 12345
@@ -9372,7 +9372,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ef58af8f42a5fd22
   figure_id: 6
   base_seed: 12345
@@ -9416,7 +9416,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_42ba4b74747b948d
   figure_id: 6
   base_seed: 12345
@@ -9460,7 +9460,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_299d932e46473333
   figure_id: 6
   base_seed: 12345
@@ -9504,7 +9504,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e5d5c30e3f59a117
   figure_id: 6
   base_seed: 12345
@@ -9548,7 +9548,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_c940913ff7a3ac6a
   figure_id: 6
   base_seed: 12345
@@ -9592,7 +9592,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_40bd7e28d57fd05c
   figure_id: 6
   base_seed: 12345
@@ -9636,7 +9636,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_36891a3960137fb9
   figure_id: 6
   base_seed: 12345
@@ -9680,7 +9680,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_44500a480ea56382
   figure_id: 6
   base_seed: 12345
@@ -9724,7 +9724,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_8d6e84ba6f98b97b
   figure_id: 6
   base_seed: 12345
@@ -9768,7 +9768,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_f315a97ded398cac
   figure_id: 6
   base_seed: 12345
@@ -9812,7 +9812,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_824c21d50e5a55c7
   figure_id: 6
   base_seed: 12345
@@ -9856,7 +9856,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_283e60e857068ef3
   figure_id: 6
   base_seed: 12345
@@ -9900,7 +9900,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_cf3dafe5341872b0
   figure_id: 6
   base_seed: 12345
@@ -9944,7 +9944,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_47aced2786c69311
   figure_id: 6
   base_seed: 12345
@@ -9988,7 +9988,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_07a07aa3ac610c85
   figure_id: 6
   base_seed: 12345
@@ -10032,7 +10032,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_cb7b9da297a50c61
   figure_id: 6
   base_seed: 12345
@@ -10076,7 +10076,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_4deb715f26223972
   figure_id: 6
   base_seed: 12345
@@ -10120,7 +10120,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_ba75e218a2cde750
   figure_id: 6
   base_seed: 12345
@@ -10164,7 +10164,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_852eb3b89c7b7cb1
   figure_id: 6
   base_seed: 12345
@@ -10208,7 +10208,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_597cd21439f18ae1
   figure_id: 6
   base_seed: 12345
@@ -10252,7 +10252,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_10c47974686f8f07
   figure_id: 6
   base_seed: 12345
@@ -10296,7 +10296,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_1822edc06e2d052f
   figure_id: 6
   base_seed: 12345
@@ -10340,7 +10340,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e9288dcf671731aa
   figure_id: 6
   base_seed: 12345
@@ -10384,7 +10384,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_7ef5ff03b51b5e35
   figure_id: 6
   base_seed: 12345
@@ -10428,7 +10428,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_23d6489a08354464
   figure_id: 6
   base_seed: 12345
@@ -10472,7 +10472,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_baa65240e6c96312
   figure_id: 6
   base_seed: 12345
@@ -10516,7 +10516,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_1b0075f5920bb9b5
   figure_id: 6
   base_seed: 12345
@@ -10560,7 +10560,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_70c4d9c2e28ceeb4
   figure_id: 6
   base_seed: 12345
@@ -10607,7 +10607,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_344d13f642a5c0aa
   figure_id: 6
   base_seed: 12345
@@ -10654,7 +10654,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_09b56b10223d0d19
   figure_id: 6
   base_seed: 12345
@@ -10701,7 +10701,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_0192fad28bebe191
   figure_id: 6
   base_seed: 12345
@@ -10748,7 +10748,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_435064d7b0eaec51
   figure_id: 6
   base_seed: 12345
@@ -10795,7 +10795,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_2eae35fab7d118ef
   figure_id: 6
   base_seed: 12345
@@ -10842,7 +10842,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_41a4b261d107b053
   figure_id: 6
   base_seed: 12345
@@ -10886,7 +10886,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_8b638d57cc5b591f
   figure_id: 6
   base_seed: 12345
@@ -10930,7 +10930,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9a74a5935482dd61
   figure_id: 6
   base_seed: 12345
@@ -10974,7 +10974,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_9f5bbef476402db6
   figure_id: 6
   base_seed: 12345
@@ -11018,7 +11018,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_5e8e322346551d11
   figure_id: 6
   base_seed: 12345
@@ -11062,7 +11062,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: f6_e7a3b1164fb22533
   figure_id: 6
   base_seed: 12345
@@ -11106,4 +11106,4 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3

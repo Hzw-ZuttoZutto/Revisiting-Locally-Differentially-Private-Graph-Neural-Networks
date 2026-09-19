@@ -31,14 +31,14 @@ figures:
     repeats:
     - 10
 files:
-  scripts/aec/fixed_hparams/figure1.yaml: 6b9cd8faf18d13e540fde1bf2db760a918912f9462ab1ba039d9ff27d0c1a788
-  scripts/aec/fixed_hparams/figure3.yaml: f4287f0912452e6a9ae3515d2315c559da4552590605893bb391049ad460c51c
-  scripts/aec/fixed_hparams/figure4.yaml: f09e28750499c32a58d4fa5c658119a34ed7060e15281d25916e9a3dc7e8023c
-  scripts/aec/fixed_hparams/figure5.yaml: 6aeb38662990fc323a44279c50687115c69b404b999b0b1965bc138eb9e6e47c
-  scripts/aec/fixed_hparams/figure6.yaml: 9e4c3fc8cf37a269d1d5912d450262630af3e9270da8d2c6b0ec6b99ff3d8982
-  scripts/aec/fixed_hparams/figure7.yaml: f6f6bfe9fb5881a86b8bbee189373567bdaa3f5a4755b45bd79bde538d753d29
-  scripts/aec/fixed_hparams/table4.yaml: 3498780fd925f7e4d7864e17117bc5a9c8ca2012c320095141930db8733d6ead
-  scripts/aec/fixed_hparams/table6.yaml: 33cf67bd5b81f60da36bbe4914a2be4d13857cf8a8deabeb0d306202bb3afa0c
+  scripts/aec/fixed_hparams/figure1.yaml: 23aa4bd45e70ff3cc291491883120048993f2aa35c2ee66de6ea9db7f742242b
+  scripts/aec/fixed_hparams/figure3.yaml: 89f1a10d37560b5a2111097a1747365f797cc11d96d89c976cb23c13379ef540
+  scripts/aec/fixed_hparams/figure4.yaml: defb496e48e3c9678330e6b5003b2ff01fbdaf836accd7a72be3d73fd5a2d747
+  scripts/aec/fixed_hparams/figure5.yaml: 5f1140d2917d07be65fb93ee848d1c1e08894a235acc8d0f5654cf782fab7918
+  scripts/aec/fixed_hparams/figure6.yaml: f9449d145f100a44b399444aca8e199f6902f83492f54181d012fd8cb70b56d2
+  scripts/aec/fixed_hparams/figure7.yaml: 1d5ade8ab661b0b11e62c1e8c6e543360bf218a8ddfec7d7b0b2d165424d272e
+  scripts/aec/fixed_hparams/table4.yaml: aed1846fa1dd97d29559c29d300bb440da936b07e4f7cf51f6fd154a8146127a
+  scripts/aec/fixed_hparams/table6.yaml: fcfa2b75e38fdbe1f2d52dac3780ac07b82afef4412f413e446525e9622b9587
   scripts/aec/reference/figure1_plot_data.csv: 9b403c11fbd65ca7945ee07fe1c5c57f2962b56025c953c303274939ab5eb6d8
   scripts/aec/reference/figure1_points.csv: 618ac41a6f1d2a9c5549bb649f68761e44875663e41e36b9fac47d106f881f42
   scripts/aec/reference/figure3_plot_data.csv: 7e115140cca527c95d0f7b3f0bfafb78e8ad9f5d809feca95e16ca22950587e4

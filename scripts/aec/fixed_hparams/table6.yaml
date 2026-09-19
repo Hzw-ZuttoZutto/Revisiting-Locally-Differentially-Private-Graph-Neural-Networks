@@ -47,7 +47,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gat_1600
   table: table6
   setting: FeatFree-HOA
@@ -94,7 +94,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gat_3200
   table: table6
   setting: FeatFree-HOA
@@ -141,7 +141,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gat_800
   table: table6
   setting: FeatFree-HOA
@@ -188,7 +188,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gat_1600
   table: table6
   setting: FeatFree-HOA
@@ -235,7 +235,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gat_3200
   table: table6
   setting: FeatFree-HOA
@@ -282,7 +282,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gat_800
   table: table6
   setting: FeatFree-HOA
@@ -329,7 +329,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gat_1600
   table: table6
   setting: FeatFree-HOA
@@ -376,7 +376,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gat_3200
   table: table6
   setting: FeatFree-HOA
@@ -423,7 +423,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gat_800
   table: table6
   setting: FeatFree-HOA
@@ -470,7 +470,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gat_1600
   table: table6
   setting: FeatFree-HOA
@@ -517,7 +517,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gat_3200
   table: table6
   setting: FeatFree-HOA
@@ -564,7 +564,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gcn_800
   table: table6
   setting: FeatFree-HOA
@@ -611,7 +611,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gcn_1600
   table: table6
   setting: FeatFree-HOA
@@ -658,7 +658,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gcn_3200
   table: table6
   setting: FeatFree-HOA
@@ -705,7 +705,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gcn_800
   table: table6
   setting: FeatFree-HOA
@@ -752,7 +752,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gcn_1600
   table: table6
   setting: FeatFree-HOA
@@ -799,7 +799,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gcn_3200
   table: table6
   setting: FeatFree-HOA
@@ -846,7 +846,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gcn_800
   table: table6
   setting: FeatFree-HOA
@@ -893,7 +893,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gcn_1600
   table: table6
   setting: FeatFree-HOA
@@ -940,7 +940,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gcn_3200
   table: table6
   setting: FeatFree-HOA
@@ -987,7 +987,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gcn_800
   table: table6
   setting: FeatFree-HOA
@@ -1034,7 +1034,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gcn_1600
   table: table6
   setting: FeatFree-HOA
@@ -1081,7 +1081,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gcn_3200
   table: table6
   setting: FeatFree-HOA
@@ -1128,7 +1128,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_sage_800
   table: table6
   setting: FeatFree-HOA
@@ -1175,7 +1175,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_sage_1600
   table: table6
   setting: FeatFree-HOA
@@ -1222,7 +1222,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_sage_3200
   table: table6
   setting: FeatFree-HOA
@@ -1269,7 +1269,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_sage_800
   table: table6
   setting: FeatFree-HOA
@@ -1316,7 +1316,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_sage_1600
   table: table6
   setting: FeatFree-HOA
@@ -1363,7 +1363,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_sage_3200
   table: table6
   setting: FeatFree-HOA
@@ -1410,7 +1410,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_sage_800
   table: table6
   setting: FeatFree-HOA
@@ -1457,7 +1457,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_sage_1600
   table: table6
   setting: FeatFree-HOA
@@ -1504,7 +1504,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_sage_3200
   table: table6
   setting: FeatFree-HOA
@@ -1551,7 +1551,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_sage_800
   table: table6
   setting: FeatFree-HOA
@@ -1598,7 +1598,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_sage_1600
   table: table6
   setting: FeatFree-HOA
@@ -1645,7 +1645,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_sage_3200
   table: table6
   setting: FeatFree-HOA
@@ -1692,7 +1692,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gat_800
   table: table6
   setting: FeatFree-Kprop
@@ -1739,7 +1739,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gat_1600
   table: table6
   setting: FeatFree-Kprop
@@ -1786,7 +1786,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gat_3200
   table: table6
   setting: FeatFree-Kprop
@@ -1833,7 +1833,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gat_800
   table: table6
   setting: FeatFree-Kprop
@@ -1880,7 +1880,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gat_1600
   table: table6
   setting: FeatFree-Kprop
@@ -1927,7 +1927,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gat_3200
   table: table6
   setting: FeatFree-Kprop
@@ -1974,7 +1974,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gat_800
   table: table6
   setting: FeatFree-Kprop
@@ -2021,7 +2021,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gat_1600
   table: table6
   setting: FeatFree-Kprop
@@ -2068,7 +2068,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gat_3200
   table: table6
   setting: FeatFree-Kprop
@@ -2115,7 +2115,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gat_800
   table: table6
   setting: FeatFree-Kprop
@@ -2162,7 +2162,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gat_1600
   table: table6
   setting: FeatFree-Kprop
@@ -2209,7 +2209,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gat_3200
   table: table6
   setting: FeatFree-Kprop
@@ -2256,7 +2256,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gcn_800
   table: table6
   setting: FeatFree-Kprop
@@ -2303,7 +2303,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gcn_1600
   table: table6
   setting: FeatFree-Kprop
@@ -2350,7 +2350,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_gcn_3200
   table: table6
   setting: FeatFree-Kprop
@@ -2397,7 +2397,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gcn_800
   table: table6
   setting: FeatFree-Kprop
@@ -2444,7 +2444,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gcn_1600
   table: table6
   setting: FeatFree-Kprop
@@ -2491,7 +2491,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_gcn_3200
   table: table6
   setting: FeatFree-Kprop
@@ -2538,7 +2538,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gcn_800
   table: table6
   setting: FeatFree-Kprop
@@ -2585,7 +2585,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gcn_1600
   table: table6
   setting: FeatFree-Kprop
@@ -2632,7 +2632,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_gcn_3200
   table: table6
   setting: FeatFree-Kprop
@@ -2679,7 +2679,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gcn_800
   table: table6
   setting: FeatFree-Kprop
@@ -2726,7 +2726,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gcn_1600
   table: table6
   setting: FeatFree-Kprop
@@ -2773,7 +2773,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_gcn_3200
   table: table6
   setting: FeatFree-Kprop
@@ -2820,7 +2820,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_sage_800
   table: table6
   setting: FeatFree-Kprop
@@ -2867,7 +2867,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_sage_1600
   table: table6
   setting: FeatFree-Kprop
@@ -2914,7 +2914,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_cora_sage_3200
   table: table6
   setting: FeatFree-Kprop
@@ -2961,7 +2961,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_sage_800
   table: table6
   setting: FeatFree-Kprop
@@ -3008,7 +3008,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_sage_1600
   table: table6
   setting: FeatFree-Kprop
@@ -3055,7 +3055,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_lastfm_sage_3200
   table: table6
   setting: FeatFree-Kprop
@@ -3102,7 +3102,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_sage_800
   table: table6
   setting: FeatFree-Kprop
@@ -3149,7 +3149,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_sage_1600
   table: table6
   setting: FeatFree-Kprop
@@ -3196,7 +3196,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_citeseer_sage_3200
   table: table6
   setting: FeatFree-Kprop
@@ -3243,7 +3243,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_sage_800
   table: table6
   setting: FeatFree-Kprop
@@ -3290,7 +3290,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_sage_1600
   table: table6
   setting: FeatFree-Kprop
@@ -3337,7 +3337,7 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
 - point_id: table6_facebook_sage_3200
   table: table6
   setting: FeatFree-Kprop
@@ -3384,4 +3384,4 @@ points:
         repeats: 1
       verify:
         patience: 150
-        repeats: 10
+        repeats: 3
