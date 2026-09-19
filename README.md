@@ -60,6 +60,8 @@ Notebook 2 uses the hyperparameters that we have already searched. It reruns the
 
 Edit the configuration cell to set `AEC_EXECUTE = True` when running the experiments. With `False`, the notebook only prints the execution plan. GPU selection and per-GPU concurrency are configured in the same cell.
 
+Each Figure or Table cell submits all of its fixed points to one shared GPU task pool. `AEC_MAX_PARALLEL_PER_GPU` is a global per-GPU limit for that cell, so points are scheduled across the available GPUs instead of running one outer point at a time.
+
 Open `notebooks/notebook_2_fixed_hparams.ipynb` from the Jupyter interface and run the configuration cell first.
 
 ### Notebook 3: Hyperparameter search

@@ -92,10 +92,16 @@ def _aggregate_search_output(figure_id, mode):
     ref=REFERENCE_ROOT/table
     if not ref.is_file(): return
     with ref.open(newline="",encoding="utf-8") as handle: rows=list(csv.DictReader(handle))
-    manifests=[]
     root=WORK_ROOT/"search"/f"figure{figure_id}"/mode
-    for path in root.rglob("manifest.csv"):
-        with path.open(newline="",encoding="utf-8") as handle: manifests.extend(csv.DictReader(handle))
+    batch_manifest = root/"manifest.csv"
+    manifests=[]
+    if batch_manifest.is_file():
+        with batch_manifest.open(newline="",encoding="utf-8") as handle:
+            manifests.extend(csv.DictReader(handle))
+    else:
+        for path in root.rglob("manifest.csv"):
+            with path.open(newline="",encoding="utf-8") as handle:
+                manifests.extend(csv.DictReader(handle))
     def eq(row,a,b): return str(row.get(a,"" )).lower()==str(b).lower()
     for out in rows:
         candidates=[]
