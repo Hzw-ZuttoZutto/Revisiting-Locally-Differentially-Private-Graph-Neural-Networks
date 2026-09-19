@@ -1,6 +1,7 @@
 # Python 3.10/3.11 is required; torch-sparse 0.6.18 has no Python 3.13 wheel.
 torch>=2.8,<2.9
 torch-geometric==2.8.0
+torch-scatter>=2.1.2,<2.2
 torch-sparse>=0.6.18,<0.6.19
 numpy==2.2.6
 pandas==2.3.3
