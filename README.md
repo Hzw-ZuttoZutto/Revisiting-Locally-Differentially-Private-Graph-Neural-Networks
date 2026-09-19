@@ -62,6 +62,8 @@ Edit the configuration cell to set `AEC_EXECUTE = True` when running the experim
 
 Each Figure or Table cell submits all of its fixed points to one shared GPU task pool. `AEC_MAX_PARALLEL_PER_GPU` is a global per-GPU limit for that cell, so points are scheduled across the available GPUs instead of running one outer point at a time.
 
+We encourage evaluators to increase `AEC_MAX_PARALLEL_PER_GPU` according to the available memory on each GPU to accelerate the experiments; lower it if the selected concurrency approaches the hardware memory limit.
+
 Open `notebooks/notebook_2_fixed_hparams.ipynb` from the Jupyter interface and run the configuration cell first.
 
 ### Notebook 3: Hyperparameter search
