@@ -11,7 +11,7 @@ from hparams_search_scripts import run_mechanism_hparam_search as search_impl
 from hparams_search_scripts import table_search_suite_core as core
 from hparams_search_scripts import mechanism_stage_utils
 
-from .paths import FIXED_ROOT, WORK_ROOT, max_parallel_per_gpu, parse_gpu_ids
+from .paths import FIXED_ROOT, REFERENCE_ROOT, WORK_ROOT, max_parallel_per_gpu, parse_gpu_ids
 from .search_runner import _aggregate_search_output
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -61,6 +61,31 @@ def plan_fixed_jobs(
         for point in points
     ]
     return jobs if limit is None else jobs[:limit]
+
+
+def reference_repeats(target: int | str) -> int:
+    """Return the repeat count used by the corresponding paper reference."""
+    if isinstance(target, str) and target.startswith("table"):
+        path = REFERENCE_ROOT / f"{target}_seed_rows.csv"
+        with path.open(newline="", encoding="utf-8") as handle:
+            rows = list(csv.DictReader(handle))
+        if not rows:
+            raise RuntimeError(f"Reference table is empty: {path}")
+        # Every fixed table point in the published reference uses the same
+        # seed count; count one complete setting rather than guessing a value.
+        first_key = tuple(rows[0].get(key, "") for key in ("setting", "dataset", "backbone", "feature_dim"))
+        count = sum(
+            tuple(row.get(key, "") for key in ("setting", "dataset", "backbone", "feature_dim")) == first_key
+            for row in rows
+        )
+        return int(count)
+
+    path = REFERENCE_ROOT / f"figure{target}_plot_data.csv"
+    with path.open(newline="", encoding="utf-8") as handle:
+        values = {int(row["n"]) for row in csv.DictReader(handle) if row.get("n")}
+    if len(values) != 1:
+        raise RuntimeError(f"Reference Figure {target} has inconsistent repeat counts: {sorted(values)}")
+    return values.pop()
 
 
 def _one_candidate_config(
@@ -132,7 +157,7 @@ def _one_candidate_config(
         "cpu_worker_count": None,
         "gpu_ids": selected_gpu_ids,
         "max_parallel_per_gpu": selected_parallel,
-        "gpu_launch_interval_sec": 0.01,
+        "gpu_launch_interval_sec": 0.1,
     }
 
     clean_defaults = dict(defaults)

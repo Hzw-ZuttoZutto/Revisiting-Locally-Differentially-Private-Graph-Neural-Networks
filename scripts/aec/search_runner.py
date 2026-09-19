@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import csv, json, math, re, subprocess, sys
+import csv, json, re, subprocess, sys
 from pathlib import Path
 from typing import Any
 import yaml
+import numpy as np
 from .paths import FIXED_ROOT, REFERENCE_ROOT, parse_gpu_ids, max_parallel_per_gpu, WORK_ROOT
 
 REPO_ROOT=Path(__file__).resolve().parents[2]
@@ -38,6 +39,95 @@ def _fixed_point_id_by_result_index(figure_id: int) -> dict[int, str]:
 def _result_index(job_dir: str) -> int | None:
     matches = re.findall(r"(?:^|/)result_(\d+)(?:/|$)", str(job_dir).replace("\\", "/"))
     return int(matches[-1]) if matches else None
+
+
+def _load_verify_values(manifest: dict[str, str]) -> tuple[list[float], list[float]]:
+    job_dir = Path(manifest["job_dir"])
+    candidate_id = int(manifest.get("best_candidate_id") or 0)
+    records = []
+    pattern = re.compile(r"rank=(\d+)__repeat=(\d+)__candidate=(\d+)__")
+    for child in sorted((job_dir / "verify_top5").glob("rank=*__repeat=*")):
+        match = pattern.match(child.name)
+        if not match or int(match.group(3)) != candidate_id:
+            continue
+        files = sorted(child.glob("*.csv"))
+        if len(files) != 1:
+            continue
+        with files[0].open(newline="", encoding="utf-8") as handle:
+            row = next(csv.DictReader(handle), None)
+        if row is None:
+            continue
+        records.append((int(match.group(2)), float(row["val/acc"]), float(row["test/acc"])))
+    records.sort(key=lambda item: item[0])
+    return [item[1] for item in records], [item[2] for item in records]
+
+
+def _bootstrap_stats(figure_id: int, row: dict[str, str], manifest: dict[str, str]) -> dict[str, float]:
+    val_values, test_values = _load_verify_values(manifest)
+    if not test_values:
+        raise RuntimeError(f"No raw verify records found under {manifest.get('job_dir')}")
+    bootstrap_samples = 1000
+    bootstrap_seed = 12345
+    if figure_id in {1, 6}:
+        from draw_figure import draw_figure1 as reference
+
+        key = (
+            row.get("source", ""),
+            row.get("backbone", ""),
+            row.get("dataset", ""),
+            row.get("pipeline", ""),
+            row.get("x_eps", ""),
+        )
+        stats = reference.metric_stats(
+            test_values,
+            bootstrap_samples=bootstrap_samples,
+            bootstrap_seed=bootstrap_seed,
+            key=("test", *key),
+        )
+        val_stats = reference.metric_stats(
+            val_values,
+            bootstrap_samples=bootstrap_samples,
+            bootstrap_seed=bootstrap_seed,
+            key=("val", *key),
+        )
+        return {
+            "mean": stats["mean"],
+            "std": stats["std"],
+            "low": stats["ci_low"],
+            "high": stats["ci_high"],
+            "val_mean": val_stats["mean"],
+            "n": len(test_values),
+        }
+
+    if figure_id == 3:
+        from draw_figure.draw_figure3 import bootstrap_ci
+        key = (row.get("source", ""), row.get("mechanism", ""), row.get("x_eps", ""))
+    elif figure_id == 4:
+        from draw_figure.draw_figure4 import bootstrap_ci
+        key = (row.get("epsilon", ""), row.get("scale_exponent", ""))
+    elif figure_id == 5:
+        from draw_figure.draw_figure5 import bootstrap_ci
+        key = (row.get("epsilon", ""), row.get("tao2", ""))
+    elif figure_id == 7:
+        from draw_figure.draw_figure4 import bootstrap_ci
+        key = (row.get("epsilon", ""), row.get("scale_exponent", ""))
+    else:
+        raise RuntimeError(f"Unsupported bootstrap figure: {figure_id}")
+
+    mean, low, high = bootstrap_ci(
+        test_values,
+        samples=bootstrap_samples,
+        seed=bootstrap_seed,
+        key=key,
+    )
+    return {
+        "mean": mean,
+        "std": float(np.std(test_values, ddof=1)),
+        "low": low,
+        "high": high,
+        "val_mean": float(np.mean(val_values)),
+        "n": len(test_values),
+    }
 
 def _configs(figure_id: int) -> list[Path]:
     roots={1:REPO_ROOT/"configs_AEC/figure1",3:REPO_ROOT/"configs_AEC/figure3",4:REPO_ROOT/"configs_AEC/figure4",5:REPO_ROOT/"configs_AEC/figure5",6:REPO_ROOT/"configs_AEC/figure6",7:REPO_ROOT/"configs_AEC/figure7","table4":REPO_ROOT/"configs_AEC/table4","table6":REPO_ROOT/"configs_AEC/table6"}
@@ -135,16 +225,13 @@ def _aggregate_search_output(figure_id, mode):
                 manifests.extend(csv.DictReader(handle))
     def eq(row,a,b): return str(row.get(a,"" )).lower()==str(b).lower()
     def apply_manifest(out, manifest):
-        mean=float(manifest["best_verify_test_acc_mean"])
-        std=float(manifest.get("best_verify_test_acc_std") or 0.0)
-        n=int(manifest.get("verify_done") or 1)
-        half=1.96*std/math.sqrt(max(n,1))
-        out["test_acc_mean"]=f"{mean:.12g}"
-        out["test_acc_std"]=f"{std:.12g}"
-        out["test_acc_ci_low"]=f"{mean-half:.12g}"
-        out["test_acc_ci_high"]=f"{mean+half:.12g}"
-        out["val_acc_mean"]=manifest.get("best_verify_val_acc_mean", out.get("val_acc_mean", ""))
-        out["n"]=str(n)
+        stats = _bootstrap_stats(figure_id, out, manifest)
+        out["test_acc_mean"] = f"{stats['mean']:.12g}"
+        out["test_acc_std"] = f"{stats['std']:.12g}"
+        out["test_acc_ci_low"] = f"{stats['low']:.12g}"
+        out["test_acc_ci_high"] = f"{stats['high']:.12g}"
+        out["val_acc_mean"] = f"{stats['val_mean']:.12g}"
+        out["n"] = str(int(stats["n"]))
 
     fixed_point_map = _fixed_point_id_by_result_index(figure_id) if mode == "fixed" else {}
     fixed_manifests = {}

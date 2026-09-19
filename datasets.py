@@ -13,8 +13,24 @@ from torch_geometric.datasets import (
 )
 from torch_geometric.transforms import ToSparseTensor
 from torch_geometric.utils import coalesce, to_undirected
+from torch_geometric.io import fs as pyg_filesystem
 
 from transforms import FilterTopClass, Normalize
+
+
+def _torch_load_with_legacy_pickle(path, *args, **kwargs):
+    """Load trusted PyG processed data across PyTorch 2.6+ defaults."""
+    kwargs.setdefault("weights_only", False)
+    try:
+        return torch.load(path, *args, **kwargs)
+    except TypeError:
+        kwargs.pop("weights_only", None)
+        return torch.load(path, *args, **kwargs)
+
+
+# PyG's InMemoryDataset.load delegates to this helper. The bundled benchmark
+# files are trusted dataset artifacts, not arbitrary model checkpoints.
+pyg_filesystem.torch_load = _torch_load_with_legacy_pickle
 
 try:
     from torch_geometric.transforms import AddTrainValTestMask
