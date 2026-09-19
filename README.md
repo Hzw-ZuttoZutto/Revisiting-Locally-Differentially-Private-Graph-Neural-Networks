@@ -1,7 +1,6 @@
-# Rethinking DP-GNN Artifact Evaluation
-
 ## Quick start
 
+Configuring enviroments: 
 ```bash
 bash scripts/setup_env.sh
 source .venv/bin/activate
@@ -20,10 +19,15 @@ python -m jupyter notebook notebooks/
 For Notebook 2 and Notebook 3, set the execution variables before opening Jupyter:
 
 ```bash
+# Actually run the training/search commands.
 export AEC_EXECUTE=1
+# Comma-separated GPU IDs available to the notebook.
 export AEC_GPU_IDS=0
+# Maximum number of concurrent jobs assigned to each GPU.
 export AEC_MAX_PARALLEL_PER_GPU=1
+# Use the claim-coverage scaled search mode for Notebook 3.
 export AEC_MODE=scaled
+# Open all three notebooks in Jupyter for manual execution.
 python -m jupyter notebook notebooks/
 ```
 
@@ -74,10 +78,10 @@ Open `notebooks/notebook_2_fixed_hparams.ipynb` from the Jupyter interface after
 
 Notebook 3 runs our hyperparameter search scripts and has two modes:
 
-- **claim-coverage scaled mode** includes the core results needed to support the experimental conclusions.
-- **full mode** runs the complete experiment configuration and is the complete reproduction path.
+- **claim-coverage scaled mode** includes the core results needed to support the experimental conclusions.  
+- **full mode** runs the complete experiment configuration and is the complete reproduction path.           
 
-Both modes run the same YAML-driven hyperparameter search pipeline used by the repository. They produce the hyperparameters needed for the data points rerun by Notebook 2, and then generate the corresponding figures and tables.
+Both modes run the same YAML-driven hyperparameter search pipeline used by our experiments. They produce the hyperparameters needed for the data points rerun by Notebook 2, and then generate the corresponding figures and tables.
 
 The default mode is `claim-coverage scaled`. In manual mode, leave `AEC_MODE` unset or set it to `scaled`. Set `AEC_MODE=full` when manually running the complete search.
 
