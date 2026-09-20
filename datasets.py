@@ -1,11 +1,14 @@
 import os
+import time
+import tempfile
 from functools import partial
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import requests
 import torch
-from torch_geometric.data import Data, InMemoryDataset, download_url
+from torch_geometric.data import Data, InMemoryDataset, download_url, extract_zip
 from torch_geometric.datasets import (
     Actor,
     AttributedGraphDataset,
@@ -43,6 +46,70 @@ except ImportError:
     RandomNodeSplit = None
 
 
+def _download_with_retry(
+    url: str,
+    folder: str,
+    attempts: int = 3,
+    filename: str | None = None,
+) -> str:
+    """Download with bounded waits; publish only complete files."""
+    if attempts < 1:
+        raise ValueError("attempts must be positive")
+    target = Path(folder) / (filename or url.rsplit("/", 1)[-1].split("?", 1)[0])
+    marker = target.with_name(target.name + ".complete")
+    if target.exists() and marker.exists():
+        if marker.read_text().strip() == str(target.stat().st_size):
+            return str(target)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    for attempt in range(1, attempts + 1):
+        temporary = None
+        try:
+            print(f"Downloading {url} (attempt {attempt}/{attempts}; timeout 30s)", flush=True)
+            started = last_report = time.monotonic()
+            with requests.get(
+                url,
+                headers={"Accept-Encoding": "identity"},
+                stream=True,
+                timeout=(30, 30),
+            ) as response:
+                response.raise_for_status()
+                expected = response.headers.get("Content-Length")
+                expected = int(expected) if expected is not None else None
+                received = 0
+                with tempfile.NamedTemporaryFile(dir=target.parent, prefix=target.name + ".", suffix=".part", delete=False) as output:
+                    temporary = Path(output.name)
+                    for chunk in response.iter_content(chunk_size=64 * 1024):
+                        if not chunk:
+                            continue
+                        output.write(chunk)
+                        received += len(chunk)
+                        now = time.monotonic()
+                        if now - last_report >= 5:
+                            total = f" / {expected / 1048576:.1f} MiB" if expected is not None else ""
+                            print(f"[download] {target.name}: {received / 1048576:.1f} MiB{total}", flush=True)
+                            last_report = now
+                        if now - started > 900:
+                            raise TimeoutError("download exceeded 15 minutes per attempt")
+                if expected is not None and received != expected:
+                    raise OSError(f"incomplete download: {received}/{expected} bytes")
+                if received == 0:
+                    raise OSError("empty download")
+            os.replace(temporary, target)
+            temporary = None
+            marker.write_text(str(received))
+            print(f"[download] {target.name}: complete ({received / 1048576:.1f} MiB)", flush=True)
+            return str(target)
+        except (OSError, requests.RequestException) as exc:
+            if attempt == attempts:
+                raise
+            delay = 2 ** attempt
+            print(f"[download] {target.name}: {type(exc).__name__}: {exc}; retrying in {delay}s", flush=True)
+            time.sleep(delay)
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+
+
 class KarateClub(InMemoryDataset):
     """Local wrapper around the KarateClub node-classification benchmark format."""
 
@@ -78,7 +145,10 @@ class KarateClub(InMemoryDataset):
 
     def download(self):
         for part in self.raw_parts:
-            download_url(f"{self.url}/{self.name}/{part}.csv", self.raw_dir)
+            _download_with_retry(
+                f"{self.url}/{self.name}/{part}.csv",
+                self.raw_dir,
+            )
 
     def process(self):
         target_file = os.path.join(self.raw_dir, self.raw_file_names[2])
@@ -107,12 +177,72 @@ class KarateClub(InMemoryDataset):
         return f"KarateClub-{self.name}()"
 
 
+class ReliableActor(Actor):
+    """Actor dataset with the maintained Geom-GCN source and requests retries."""
+
+    url = "https://raw.githubusercontent.com/bingzhewei/geom-gcn/master"
+
+    @property
+    def raw_file_names(self):
+        return ["out1_node_feature_label.txt", "out1_graph_edges.txt"]
+
+    def download(self):
+        for filename in self.raw_file_names:
+            _download_with_retry(
+                f"{self.url}/new_data/film/{filename}",
+                self.raw_dir,
+            )
+
+    def process(self):
+        with open(self.raw_paths[0]) as f:
+            node_data = [row.split("\t") for row in f.read().split("\n")[1:-1]]
+        rows, cols = [], []
+        for node_id, feature_ids, _ in node_data:
+            indices = [int(value) for value in feature_ids.split(",")]
+            rows.extend([int(node_id)] * len(indices))
+            cols.extend(indices)
+        row, col = torch.tensor(rows), torch.tensor(cols)
+        x = torch.zeros(int(row.max()) + 1, int(col.max()) + 1)
+        x[row, col] = 1.0
+        y = torch.empty(len(node_data), dtype=torch.long)
+        for node_id, _, label in node_data:
+            y[int(node_id)] = int(label)
+
+        with open(self.raw_paths[1]) as f:
+            edge_data = f.read().split("\n")[1:-1]
+        edge_index = torch.tensor(
+            [[int(value) for value in line.split("\t")] for line in edge_data]
+        ).t().contiguous()
+        edge_index = coalesce(edge_index, num_nodes=x.size(0))
+        data = Data(x=x, edge_index=edge_index, y=y)
+        data = data if self.pre_transform is None else self.pre_transform(data)
+        self.save([data], self.processed_paths[0])
+
+
+class ReliableFlickr(AttributedGraphDataset):
+    """Flickr downloader using the standard environment proxy settings."""
+
+    def download(self):
+        archive = _download_with_retry(
+            f"https://drive.usercontent.google.com/download?id={self.datasets[self.name]}&confirm=t",
+            self.raw_dir,
+            filename="data.zip",
+        )
+        extract_zip(archive, self.raw_dir)
+        Path(archive).unlink(missing_ok=True)
+        extracted = Path(self.raw_dir) / f"{self.name}.attr"
+        for filename in self.raw_file_names:
+            (extracted / filename).replace(Path(self.raw_dir) / filename)
+        import shutil
+        shutil.rmtree(extracted, ignore_errors=True)
+
+
 DATASET_BUILDERS = {
-    "actor": Actor,
+    "actor": ReliableActor,
     "citeseer": partial(Planetoid, name="citeseer"),
     "cora": partial(Planetoid, name="cora"),
     "facebook": partial(KarateClub, name="facebook"),
-    "flickr": partial(AttributedGraphDataset, name="Flickr"),
+    "flickr": partial(ReliableFlickr, name="Flickr"),
     "lastfm": partial(KarateClub, name="lastfm", transform=FilterTopClass(10)),
 }
 
