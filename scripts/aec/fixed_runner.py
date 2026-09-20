@@ -230,7 +230,9 @@ def _build_fixed_batch(
 
     jobs: list[core.BatchJob] = []
     execution = None
-    for index, config in enumerate(configs):
+    if len(points) != len(configs):
+        raise RuntimeError(f"Fixed point/config count mismatch: points={len(points)} configs={len(configs)}")
+    for index, (point, config) in enumerate(zip(points, configs)):
         search_config = search_impl.load_search_config(config)
         point_root = root / f"result_{index:05d}"
         point_batch = search_impl.build_batch_spec(
@@ -246,7 +248,23 @@ def _build_fixed_batch(
             execution = point_batch.execution
         elif execution != point_batch.execution:
             raise RuntimeError("Fixed-point configurations disagree on execution settings")
-        jobs.extend(point_batch.jobs)
+        # stable_job_id is based only on fixed parameters. Figure 5 has
+        # multiple tao2 points with identical fixed params, so merging the
+        # per-point batches without a namespace causes rows_by_job_id to
+        # overwrite jobs and corrupt the global scheduler state.
+        point_id = str(point.get("point_id") or f"point_{index:05d}")
+        for job in point_batch.jobs:
+            namespaced_id = f"{point_id}__{job.job_id}"
+            job_spec = dict(job.job_spec)
+            job_spec["job_id"] = namespaced_id
+            jobs.append(
+                core.BatchJob(
+                    job_id=namespaced_id,
+                    job_dir=job.job_dir,
+                    display_name=job.display_name,
+                    job_spec=job_spec,
+                )
+            )
 
     assert execution is not None
     return (
