@@ -136,7 +136,10 @@ def _bootstrap_stats(figure_id: int, row: dict[str, str], manifest: dict[str, st
 def _configs(figure_id: int) -> list[Path]:
     roots={1:REPO_ROOT/"configs_AEC/figure1",3:REPO_ROOT/"configs_AEC/figure3",4:REPO_ROOT/"configs_AEC/figure4",5:REPO_ROOT/"configs_AEC/figure5",6:REPO_ROOT/"configs_AEC/figure6",7:REPO_ROOT/"configs_AEC/figure7","table4":REPO_ROOT/"configs_AEC/table4","table6":REPO_ROOT/"configs_AEC/table6"}
     if figure_id == 5:
-        return sorted(p for base in REPO_ROOT.glob("configs_AEC/figure5/*") for p in base.rglob("*.yaml"))
+        # Figure 5 is one tao2 sweep. Keep its AEC inputs flat; the old
+        # figure6/figure6_add/figure6_add_again directories were author-side
+        # export batches and are not part of the runnable configuration.
+        return sorted((REPO_ROOT / "configs_AEC/figure5").glob("tao2=*.yaml"))
     return sorted(roots[figure_id].rglob("*.yaml")) if figure_id in roots else []
 
 def _claim_paths(figure_id):
