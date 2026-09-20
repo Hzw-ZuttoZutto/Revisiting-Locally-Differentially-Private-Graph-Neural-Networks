@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-import csv, json, re, subprocess, sys
+import csv, json, math, re, sys
 from pathlib import Path
 from typing import Any
 import yaml
 import numpy as np
+from hparams_search_scripts import run_mechanism_hparam_search as search_impl
+from hparams_search_scripts import table_search_suite_core as core
+from hparams_search_scripts import mechanism_stage_utils
 from .paths import FIXED_ROOT, REFERENCE_ROOT, parse_gpu_ids, max_parallel_per_gpu, WORK_ROOT
 
 REPO_ROOT=Path(__file__).resolve().parents[2]
@@ -101,7 +104,8 @@ def _bootstrap_stats(figure_id: int, row: dict[str, str], manifest: dict[str, st
 
     if figure_id == 3:
         from draw_figure.draw_figure3 import bootstrap_ci
-        key = (row.get("source", ""), row.get("mechanism", ""), row.get("x_eps", ""))
+        epsilon_key = row.get("sim_reference_eps", "") or row.get("x_eps", "")
+        key = (row.get("source", ""), row.get("mechanism", ""), epsilon_key)
     elif figure_id == 4:
         from draw_figure.draw_figure4 import bootstrap_ci
         key = (row.get("epsilon", ""), row.get("scale_exponent", ""))
@@ -157,21 +161,107 @@ def _claim_paths(figure_id):
 def load_config(path: Path) -> dict[str, Any]:
     with path.open(encoding="utf-8") as handle: return yaml.safe_load(handle)
 
-def scaled_config(path: Path, *, output: Path) -> Path:
-    data=load_config(path)
-    datasets=data.get("search_space",{}).get("dataset",{}).get("datasets",[])
-    if "figure1" in str(path): data["search_space"]["dataset"]["datasets"]=[x for x in datasets if str(x).lower() in {"cora","facebook"}]
-    elif "configs_AEC/figure6" in str(path): data["search_space"]["dataset"]["datasets"]=[x for x in datasets if str(x).lower() in {"actor","flickr"}]
-    data["device"]["gpu_ids"]=parse_gpu_ids(); data["device"]["max_parallel_per_gpu"]=max_parallel_per_gpu()
-    data.setdefault("defaults",{}).setdefault("stage",{}).setdefault("verify",{})["repeats"]=3
-    output.parent.mkdir(parents=True,exist_ok=True); output.write_text(yaml.safe_dump(data,sort_keys=False),encoding="utf-8"); return output
+def _config_token(path: Path) -> str:
+    return path.relative_to(REPO_ROOT).with_suffix("").as_posix().replace("/", "__")
 
-def run_search(config: Path, *, mode: str="scaled", output_root: Path|None=None, dry_run: bool=True) -> dict[str,object]:
-    output_root=output_root or WORK_ROOT/"search"/config.stem/mode; actual=config
-    if mode=="scaled": actual=scaled_config(config,output=WORK_ROOT/"scaled_configs"/config.name)
-    command=[sys.executable,"-u","-m","hparams_search_scripts.run_mechanism_hparam_search","--config",str(actual),"--output_root_dir",str(output_root)]
-    result={"mode":mode,"config":str(actual),"output_root":str(output_root),"command":command,"dry_run":dry_run}
-    if not dry_run: subprocess.run(command,check=True,cwd=str(REPO_ROOT))
+
+def _search_root_name(figure_id: int | str) -> str:
+    if isinstance(figure_id, str) and figure_id.startswith("table"):
+        return figure_id
+    return f"figure{figure_id}"
+
+
+def _runtime_config(path: Path, *, mode: str, output: Path) -> Path:
+    """Materialize a runtime config controlled by the notebook configuration cell."""
+    data = load_config(path)
+    datasets = data.get("search_space", {}).get("dataset", {}).get("datasets", [])
+    path_text = path.as_posix().lower()
+    if mode == "scaled":
+        if "configs_aec/figure1" in path_text:
+            data["search_space"]["dataset"]["datasets"] = [
+                value for value in datasets if str(value).lower() in {"cora", "facebook"}
+            ]
+        elif "configs_aec/figure6" in path_text:
+            data["search_space"]["dataset"]["datasets"] = [
+                value for value in datasets if str(value).lower() in {"actor", "flickr"}
+            ]
+        # Keep the repeat count declared by each YAML.  The reference plot
+        # validators require Figure 3 to use 20 repeats and the other
+        # statistical figures/tables to use 10; reducing every scaled run to
+        # three would make the generated artifacts invalid and change their CI.
+
+    device = data["device"]
+    if device["device"] == "gpu":
+        device["gpu_ids"] = parse_gpu_ids()
+        device["max_parallel_per_gpu"] = max_parallel_per_gpu()
+        device["gpu_launch_interval_sec"] = 0.01
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    return output
+
+
+def scaled_config(path: Path, *, output: Path) -> Path:
+    return _runtime_config(path, mode="scaled", output=output)
+
+
+def _build_runtime_batch(
+    config: Path,
+    *,
+    mode: str,
+    output_root: Path,
+) -> tuple[Path, core.BatchSpec]:
+    token = _config_token(config)
+    actual = _runtime_config(
+        config,
+        mode=mode,
+        output=WORK_ROOT / "runtime_configs" / mode / f"{token}.yaml",
+    )
+    search_config = search_impl.load_search_config(actual)
+    batch = search_impl.build_batch_spec(
+        search_config=search_config,
+        output_root=output_root / token,
+        config_copy_source=actual,
+    )
+    return actual, batch
+
+
+def run_search(
+    config: Path,
+    *,
+    mode: str = "scaled",
+    output_root: Path | None = None,
+    dry_run: bool = True,
+) -> dict[str, object]:
+    output_root = output_root or WORK_ROOT / "search" / config.stem / mode
+    actual, batch = _build_runtime_batch(config, mode=mode, output_root=output_root.parent)
+    result = {
+        "mode": mode,
+        "config": str(actual),
+        "output_root": str(batch.output_root),
+        "jobs_planned": len(batch.jobs),
+        "training_tasks_planned": sum(
+            len(job.job_spec["candidates"])
+            + min(
+                mechanism_stage_utils.VERIFY_TOPK,
+                len(job.job_spec["candidates"]),
+            )
+            * int(job.job_spec["defaults"]["stage"]["verify"]["repeats"])
+            for job in batch.jobs
+        ),
+        "dry_run": dry_run,
+    }
+    if not dry_run:
+        completed, skipped, failed, manifest = core.run_batch_search(
+            batch,
+            repo_root=REPO_ROOT,
+        )
+        result.update(
+            completed=completed,
+            skipped=skipped,
+            failed=failed,
+            manifest=str(manifest),
+        )
     return result
 
 def _select_paths(figure_id, paths, mode):
@@ -195,16 +285,199 @@ def _select_paths(figure_id, paths, mode):
     return selected or paths
 
 
-def run_search_for_figure(figure_id: int|str, *, mode: str="scaled", execute: bool=False) -> dict[str,object]:
-    if figure_id in (2,8): return {"figure_id":figure_id,"mode":"analytic","configs":0}
-    paths=_configs(figure_id); selected=_select_paths(figure_id, paths, mode)
-    results=[]
-    for p in selected:
-        rel=p.relative_to(REPO_ROOT).with_suffix("").as_posix().replace("/","__")
-        results.append(run_search(p,mode=mode,output_root=WORK_ROOT/"search"/f"figure{figure_id}"/mode/rel,dry_run=not execute))
-    if execute: _aggregate_search_output(figure_id, mode)
-    return {"figure_id":figure_id,"mode":mode,"configs_total":len(paths),"configs_selected":len(selected),"runs":results}
+def _planned_task_count(batch: core.BatchSpec) -> int:
+    total = 0
+    for job in batch.jobs:
+        candidate_count = len(job.job_spec["candidates"])
+        repeats = int(job.job_spec["defaults"]["stage"]["verify"]["repeats"])
+        total += candidate_count + min(mechanism_stage_utils.VERIFY_TOPK, candidate_count) * repeats
+    return total
 
+
+def _table_setting_from_config(path: Path) -> str:
+    # Configs are stored as table4_FeatFree-P/... and
+    # table6_FeatFree-HOA/...; the backbone directory is not the table setting.
+    for part in path.parts:
+        for prefix in ("table4_", "table6_"):
+            if part.startswith(prefix):
+                return part[len(prefix):]
+    raise ValueError(f"Cannot derive table setting from config path: {path}")
+
+
+def _manifest_rows(root: Path) -> list[dict[str, str]]:
+    path = root / mechanism_stage_utils.ROOT_MANIFEST_FILENAME
+    if not path.is_file():
+        return []
+    with path.open(newline="", encoding="utf-8") as handle:
+        return list(csv.DictReader(handle))
+
+
+def _aggregate_table_seed_rows(
+    table: str,
+    mode: str,
+    *,
+    setting_by_job_id: dict[str, str],
+) -> Path:
+    root = WORK_ROOT / "search" / table / mode
+    rows: list[dict[str, str]] = []
+    for manifest in _manifest_rows(root):
+        if manifest.get("search_status") not in {"completed", "skipped_existing_result"}:
+            continue
+        setting = setting_by_job_id.get(manifest.get("job_id", ""))
+        if not setting:
+            continue
+        job = Path(manifest["job_dir"])
+        best_path = job / "best_config.yaml"
+        if not best_path.is_file():
+            continue
+        best = yaml.safe_load(best_path.read_text(encoding="utf-8")) or {}
+        candidate_id = int(best.get("best_candidate", {}).get("candidate_id", 0))
+        fixed = {
+            key: manifest.get(key, "")
+            for key in ("dataset", "backbone", "feature_dim", "smoother")
+        }
+        for child in sorted((job / "verify_top5").glob("rank=*__repeat=*")):
+            match = re.match(r"rank=(\d+)__repeat=(\d+)__candidate=(\d+)__", child.name)
+            if not match or int(match.group(3)) != candidate_id:
+                continue
+            files = sorted(child.glob("*.csv"))
+            if len(files) != 1:
+                continue
+            with files[0].open(newline="", encoding="utf-8") as handle:
+                record = next(csv.DictReader(handle), None)
+            if not record:
+                continue
+            rows.append(
+                {
+                    "table": table,
+                    "setting": setting,
+                    "dataset": fixed["dataset"],
+                    "backbone": fixed["backbone"],
+                    "feature_dim": fixed["feature_dim"],
+                    "smoother": fixed["smoother"],
+                    "seed": record.get("seed", ""),
+                    "val_acc": record.get("val/acc", ""),
+                    "test_acc": record.get("test/acc", ""),
+                }
+            )
+
+    if not rows:
+        raise RuntimeError(f"No completed seed rows were found for {table} mode={mode}")
+    output = root / f"{table}_seed_rows.csv"
+    with output.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+    return output
+
+
+def run_search_for_figure(
+    figure_id: int | str,
+    *,
+    mode: str = "scaled",
+    execute: bool = False,
+) -> dict[str, object]:
+    if figure_id in (2, 8):
+        return {"figure_id": figure_id, "mode": "analytic", "configs": 0}
+
+    paths = _configs(figure_id)
+    selected = _select_paths(figure_id, paths, mode)
+    root = WORK_ROOT / "search" / _search_root_name(figure_id) / mode
+    jobs: list[core.BatchJob] = []
+    execution = None
+    config_results: list[dict[str, object]] = []
+    setting_by_job_id: dict[str, str] = {}
+
+    for config in selected:
+        actual, batch = _build_runtime_batch(config, mode=mode, output_root=root)
+        if execution is None:
+            execution = batch.execution
+        elif execution != batch.execution:
+            raise RuntimeError(
+                f"Selected configs do not share one execution pool: {config}"
+            )
+        # stable_job_id is based only on fixed parameters. Separate YAMLs
+        # such as Figure 5's tao2 files can therefore produce the same ID
+        # while intentionally having different candidate spaces. Namespace the
+        # ID with the source config before merging batches so the global
+        # manifest and scheduler cannot overwrite one another.
+        namespaced_jobs = []
+        config_token = _config_token(config)
+        for job in batch.jobs:
+            namespaced_id = f"{config_token}__{job.job_id}"
+            job_spec = dict(job.job_spec)
+            job_spec["job_id"] = namespaced_id
+            namespaced_jobs.append(
+                core.BatchJob(
+                    job_id=namespaced_id,
+                    job_dir=job.job_dir,
+                    display_name=job.display_name,
+                    job_spec=job_spec,
+                )
+            )
+        jobs.extend(namespaced_jobs)
+        if isinstance(figure_id, str) and figure_id.startswith("table"):
+            setting = _table_setting_from_config(config)
+            for job in namespaced_jobs:
+                setting_by_job_id[job.job_id] = setting
+        config_results.append(
+            {
+                "source_config": str(config),
+                "runtime_config": str(actual),
+                "jobs_planned": len(batch.jobs),
+                "training_tasks_planned": _planned_task_count(batch),
+            }
+        )
+
+    if execution is None:
+        return {
+            "figure_id": figure_id,
+            "mode": mode,
+            "configs_total": len(paths),
+            "configs_selected": 0,
+            "jobs_planned": 0,
+            "training_tasks_planned": 0,
+            "configs": [],
+        }
+
+    batch = core.BatchSpec(
+        output_root=root,
+        execution=execution,
+        jobs=jobs,
+        config_copy_source=Path(config_results[0]["runtime_config"]),
+    )
+    result: dict[str, object] = {
+        "figure_id": figure_id,
+        "mode": mode,
+        "configs_total": len(paths),
+        "configs_selected": len(selected),
+        "jobs_planned": len(jobs),
+        "training_tasks_planned": _planned_task_count(batch),
+        "configs": config_results,
+        "execute": execute,
+    }
+    if execute:
+        completed, skipped, failed, manifest = core.run_batch_search(
+            batch,
+            repo_root=REPO_ROOT,
+        )
+        result.update(
+            completed=completed,
+            skipped=skipped,
+            failed=failed,
+            manifest=str(manifest),
+        )
+        if isinstance(figure_id, str) and figure_id.startswith("table"):
+            result["seed_rows"] = str(
+                _aggregate_table_seed_rows(
+                    figure_id,
+                    mode,
+                    setting_by_job_id=setting_by_job_id,
+                )
+            )
+        else:
+            _aggregate_search_output(figure_id, mode)
+    return result
 
 def _aggregate_search_output(figure_id, mode):
     from .paths import REFERENCE_ROOT
@@ -223,7 +496,50 @@ def _aggregate_search_output(figure_id, mode):
         for path in root.rglob("manifest.csv"):
             with path.open(newline="",encoding="utf-8") as handle:
                 manifests.extend(csv.DictReader(handle))
-    def eq(row,a,b): return str(row.get(a,"" )).lower()==str(b).lower()
+    def same_value(a: object, b: object) -> bool:
+        left = "" if a is None else str(a).strip().lower()
+        right = "" if b is None else str(b).strip().lower()
+        if left == right:
+            return True
+        try:
+            return math.isclose(float(left), float(right), rel_tol=0.0, abs_tol=1e-9)
+        except (TypeError, ValueError):
+            return False
+
+    def manifest_matches_row(out: dict[str, str], manifest: dict[str, str]) -> bool:
+        if manifest.get("search_status") not in {"completed", "skipped_existing_result"}:
+            return False
+        for field in (
+            "dataset", "backbone", "mechanism", "smoother", "feature_dim",
+            "norm", "norm_scale", "use_nfr",
+        ):
+            expected = out.get(field, "")
+            if expected and not same_value(manifest.get(field, ""), expected):
+                return False
+
+        figure_source = out.get("source", "").strip().lower()
+        if figure_id == 3:
+            # SIM stores the plotted epsilon in sim_reference_eps and uses
+            # x_eps=inf for the perturbation stage. Matching x_eps here would
+            # merge SIM rows with the wrong LDP rows.
+            expected_feature = {"ldp": "raw", "sim": "sim"}.get(figure_source)
+            if expected_feature and not same_value(manifest.get("feature", ""), expected_feature):
+                return False
+            epsilon = out.get("x_eps", "")
+            manifest_field = "sim_reference_eps" if figure_source == "sim" else "x_eps"
+            if epsilon and not same_value(manifest.get(manifest_field, ""), epsilon):
+                return False
+        elif out.get("x_eps") and not same_value(manifest.get("x_eps", ""), out["x_eps"]):
+            return False
+
+        if out.get("epsilon") and not same_value(manifest.get("x_eps", ""), out["epsilon"]):
+            return False
+        if out.get("tao2"):
+            actual_tao2 = manifest.get("best_tao2", manifest.get("tao2", ""))
+            if not same_value(actual_tao2, out["tao2"]):
+                return False
+        return True
+
     def apply_manifest(out, manifest):
         stats = _bootstrap_stats(figure_id, out, manifest)
         out["test_acc_mean"] = f"{stats['mean']:.12g}"
@@ -267,26 +583,26 @@ def _aggregate_search_output(figure_id, mode):
         # must never be replaced by a privacy-method manifest.
         if figure_id in {1, 6} and expected_axes is None:
             continue
-        candidates=[]
-        for m in manifests:
-            if out.get("dataset") and not eq(m,"dataset",out["dataset"]): continue
-            if out.get("backbone") and not eq(m,"backbone",out["backbone"]): continue
-            if out.get("x_eps") and not eq(m,"x_eps",out["x_eps"]): continue
-            if out.get("mechanism") and not eq(m,"mechanism",out["mechanism"]): continue
-            if out.get("smoother") and not eq(m,"smoother",out["smoother"]): continue
-            if out.get("norm") and not eq(m,"norm",out["norm"]): continue
-            if out.get("norm_scale") and not eq(m,"norm_scale",out["norm_scale"]): continue
-            if expected_axes:
-                if any(not eq(m, key, value) for key, value in expected_axes.items()): continue
-            if m.get("best_verify_test_acc_mean","")=="": continue
-            candidates.append(m)
-        if not candidates:
+        candidates = []
+        for manifest in manifests:
+            if expected_axes and any(
+                not same_value(manifest.get(key, ""), value)
+                for key, value in expected_axes.items()
+            ):
+                continue
+            if manifest_matches_row(out, manifest):
+                candidates.append(manifest)
+        if len(candidates) != 1:
             missing.append({
                 "source": out.get("source", ""),
                 "pipeline": out.get("pipeline", ""),
                 "dataset": out.get("dataset", ""),
                 "backbone": out.get("backbone", ""),
                 "x_eps": out.get("x_eps", ""),
+                "epsilon": out.get("epsilon", ""),
+                "norm_scale": out.get("norm_scale", ""),
+                "tao2": out.get("tao2", ""),
+                "candidate_manifests": len(candidates),
             })
             continue
         apply_manifest(out, candidates[0])
