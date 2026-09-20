@@ -65,6 +65,11 @@ def plan_fixed_jobs(
 
 def reference_repeats(target: int | str) -> int:
     """Return the repeat count used by the corresponding paper reference."""
+    if target in {2, 8}:
+        raise ValueError(
+            f"Figure {target} is analytic and has no fixed-training reference repeats; "
+            "render it with scripts.aec.figures.render_reference."
+        )
     if isinstance(target, str) and target.startswith("table"):
         path = REFERENCE_ROOT / f"{target}_seed_rows.csv"
         with path.open(newline="", encoding="utf-8") as handle:

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 
 try:
     from hparams_search_scripts.mechanism_stage_context import build_recommended_command_parts, resolve_job_context
@@ -23,7 +24,34 @@ def main() -> None:
     ctx = resolve_job_context(args.job_dir)
     job_dir = ctx.job_dir
 
-    summary_rows = mechanism_stage_utils.aggregate_verify_results(ctx.job_spec, job_dir)
+    expected_candidates = min(
+        int(ctx.job_spec.get("verify_topk", mechanism_stage_utils.VERIFY_TOPK)),
+        len(mechanism_stage_utils.job_candidates(ctx.job_spec)),
+    )
+    expected_repeats = int(ctx.defaults["stage"]["verify"]["repeats"])
+    deadline = time.monotonic() + 30.0
+    last_error: Exception | None = None
+    summary_rows = []
+    while True:
+        try:
+            summary_rows = mechanism_stage_utils.aggregate_verify_results(ctx.job_spec, job_dir)
+            if len(summary_rows) >= expected_candidates and all(
+                int(row.get("n", 0)) >= expected_repeats for row in summary_rows
+            ):
+                break
+            last_error = RuntimeError(
+                f"Verify results are still incomplete: expected {expected_candidates} candidates "
+                f"with {expected_repeats} repeats, found {len(summary_rows)} summaries"
+            )
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
+        if time.monotonic() >= deadline:
+            raise RuntimeError(
+                f"Timed out waiting for verify outputs under "
+                f"{mechanism_stage_utils.verify_stage_dir(job_dir)}"
+            ) from last_error
+        time.sleep(1.0)
+
     mechanism_stage_utils.write_verify_summary(job_dir, summary_rows)
     winner = summary_rows[0]
     candidate = mechanism_stage_utils.job_candidate_by_id(ctx.job_spec, int(winner["candidate_id"]))
