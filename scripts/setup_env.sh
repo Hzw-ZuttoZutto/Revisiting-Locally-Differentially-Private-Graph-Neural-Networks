@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 REPO_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 CONDA_EXE="${CONDA_EXE:-conda}"
-CONDA_ENV="${AEC_CONDA_ENV:-rethinking-dp-gnn-aec}"
+CONDA_ENV="${AEC_CONDA_ENV:-revisit-ldpgnn}"
 
 if ! command -v "$CONDA_EXE" >/dev/null 2>&1; then
   echo "ERROR: conda is required. Load/install Conda before running this script." >&2
@@ -26,5 +26,5 @@ TEMP_REQUIREMENTS="$(mktemp)"
 trap 'rm -f "$TEMP_REQUIREMENTS"' EXIT
 grep -Ev '^(torch|torch-geometric|torch-scatter|torch-sparse)([<>=]|$)' "$REPO_ROOT/requirements.txt" > "$TEMP_REQUIREMENTS"
 conda run -n "$CONDA_ENV" python -m pip install -r "$TEMP_REQUIREMENTS"
-conda run -n "$CONDA_ENV" python -m ipykernel install --user --name "$CONDA_ENV" --display-name "Rethinking DP-GNN AEC"
+conda run -n "$CONDA_ENV" python -m ipykernel install --user --name "$CONDA_ENV" --display-name "revisit-ldpgnn"
 echo "Environment ready: conda activate $CONDA_ENV"

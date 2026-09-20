@@ -4,7 +4,7 @@ Create the isolated Conda environment and install all dependencies:
 
 ```bash
 bash scripts/setup_env.sh
-conda activate rethinking-dp-gnn-aec
+conda activate revisit-ldpgnn
 ```
 
 The setup script creates the environment with Python 3.10 and installs the PyTorch, PyG, notebook, and experiment dependencies. Then open the notebooks:
