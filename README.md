@@ -23,11 +23,20 @@ Open `notebooks/notebook_1_direct.ipynb` from the Jupyter interface.
 
 ### Notebook 2: Fixed hyperparameters
 
-Notebook 2 uses the hyperparameters that we have already searched. It reruns the data points needed by the paper and then generates the same figures and corresponding tables.
+Notebook 2 reruns all training-based figure points and baselines using the supplied fixed hyperparameters, including every dataset and backbone in Figures 1 and 6. The figures use these rerun results. It also generates Tables 4 and 6.
 
 Edit the configuration cell to set `AEC_EXECUTE = True` when running the experiments. With `False`, the notebook only prints the execution plan. GPU selection and per-GPU concurrency are configured in the same cell.
 
-Each Figure or Table cell submits all of its fixed points to one shared GPU task pool. `AEC_MAX_PARALLEL_PER_GPU` is a global per-GPU limit for that cell, so points are scheduled across the available GPUs instead of running one outer point at a time.
+In the configuration cell of Notebooks 2 and 3, both `AEC_GPU_IDS` and `AEC_MAX_PARALLEL_PER_GPU` default to `'default'`. This selects all visible GPUs and sets the maximum simultaneous training tasks on each GPU to its total VRAM divided by 6 GiB, rounded down.
+
+To choose GPUs and concurrency manually, edit those variables in the same cell:
+
+```python
+AEC_GPU_IDS = [0, 2]
+AEC_MAX_PARALLEL_PER_GPU = [3, 5]
+```
+
+This example selects GPU indices 0 and 2 (the first and third GPUs visible to the notebook), allowing up to 3 training tasks on GPU 0 and 5 on GPU 2 at the same time. Setting `AEC_MAX_PARALLEL_PER_GPU = 3` applies a limit of 3 tasks to every selected GPU.
 
 Open `notebooks/notebook_2_fixed_hparams.ipynb` from the Jupyter interface and run the configuration cell first.
 
@@ -35,7 +44,7 @@ Open `notebooks/notebook_2_fixed_hparams.ipynb` from the Jupyter interface and r
 
 Notebook 3 runs our hyperparameter search scripts and has two modes:
 
-- **claim-coverage scaled mode** includes the core results needed to support the experimental conclusions.
+- **claim-coverage scaled mode** includes the core results: Figure 1 and Table 4 display Cora and Facebook, and Figure 6 displays GraphSAGE.
 - **full mode** runs the complete experiment configuration and is the complete reproduction path.
 
 Both modes run the same YAML-driven hyperparameter search pipeline used by our experiments. They produce the hyperparameters needed for the data points rerun by Notebook 2, and then generate the corresponding figures and tables.
@@ -43,6 +52,15 @@ Both modes run the same YAML-driven hyperparameter search pipeline used by our e
 The default mode is `claim-coverage scaled`. Set `AEC_MODE = "full"` in the configuration cell when manually running the complete search.
 
 Each notebook displays the generated PNG figures and Table 4/Table 6 directly in the notebook.
+
+PNG and PDF files are saved under `outputs/`. Notebook 3 ends with a check of figure/table data completeness and statistics. You can also run it from the repository root:
+
+```bash
+python -m scripts.aec.validate_outputs --mode scaled
+```
+
+Use `--mode full` for a full search.
+
 ## Two ways to run the notebooks
 
 ### Run manually in Jupyter
@@ -75,5 +93,3 @@ For Notebook 3, set `AEC_EXECUTE = True` and choose `AEC_MODE = "scaled"` or `AE
 python -m jupyter nbconvert --execute --to notebook --inplace \
   notebooks/notebook_3_full_search.ipynb
 ```
-
-We encourage evaluators to increase `AEC_MAX_PARALLEL_PER_GPU` according to the available memory on each GPU to accelerate the experiments; lower it if the selected concurrency approaches the hardware memory limit.

@@ -718,9 +718,9 @@ def validate_plot_rows(rows: list[dict[str, Any]]) -> None:
             raise RuntimeError(f"CI does not contain mean for {row}")
 
 
-def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
+def build_figure(rows: list[dict[str, Any]], *, datasets=DATASETS, backbones=BACKBONES) -> tuple[Any, np.ndarray]:
     df = pd.DataFrame(rows)
-    fig, axes = plt.subplots(len(BACKBONES), len(DATASETS), figsize=(FIGSIZE_X, FIGSIZE_Y), sharex=False, sharey=False)
+    fig, axes = plt.subplots(len(backbones), len(datasets), figsize=(FIGSIZE_X, FIGSIZE_Y), sharex=False, sharey=False, squeeze=False)
     baseline_axes = np.empty_like(axes)
     fig.subplots_adjust(
         bottom=BOTTOM,
@@ -731,8 +731,8 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
         wspace=WSPACE,
     )
 
-    for row_idx, backbone in enumerate(BACKBONES):
-        for col_idx, dataset in enumerate(DATASETS):
+    for row_idx, backbone in enumerate(backbones):
+        for col_idx, dataset in enumerate(datasets):
             ax = axes[row_idx, col_idx]
             if row_idx == 0:
                 letter = chr(97 + col_idx)
@@ -895,8 +895,8 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
     return fig, axes
 
 
-def plot_panels(rows: list[dict[str, Any]], output_dir: Path) -> None:
-    fig, _ = build_figure(rows)
+def plot_panels(rows: list[dict[str, Any]], output_dir: Path, *, datasets=DATASETS, backbones=BACKBONES) -> None:
+    fig, _ = build_figure(rows, datasets=datasets, backbones=backbones)
 
     output_dir.mkdir(parents=True, exist_ok=True)
     pdf_path = output_dir / f"{OUTPUT_STEM}.pdf"

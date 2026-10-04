@@ -9,22 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, TextIO
 
-
-TEMP_GPU2_CAP15_ENV = "REBUTTAL_TEMP_GPU2_CAP15"
-TEMP_GPU2_WORKER_ID = 2
-TEMP_GPU2_PARALLEL_CAP = 15
-
-
-def _temporary_gpu2_cap15_enabled() -> bool:
-    raw = os.environ.get(TEMP_GPU2_CAP15_ENV, "0").strip().lower()
-    if raw in {"", "0", "false", "no", "off"}:
-        return False
-    if raw in {"1", "true", "yes", "on"}:
-        return True
-    raise ValueError(
-        f"{TEMP_GPU2_CAP15_ENV} must be a boolean flag "
-        f"(0/1, false/true, no/yes, off/on), got {raw!r}"
-    )
+from hparams_search_scripts.gpu_resources import gpu_device_tokens, resolve_gpu_concurrency
 
 
 @dataclass(frozen=True)
@@ -72,15 +57,15 @@ class MultiPoolScheduler:
         self,
         *,
         worker_ids: list[int],
-        max_parallel_per_worker: int,
+        max_parallel_per_worker: int | dict[int, int],
         poll_interval_sec: float,
         launch_interval_sec: float,
         device: str,
     ) -> None:
         if len(worker_ids) == 0:
             raise ValueError("worker_ids must be non-empty")
-        if max_parallel_per_worker < 1:
-            raise ValueError("max_parallel_per_worker must be >= 1")
+        if len(set(worker_ids)) != len(worker_ids):
+            raise ValueError("worker_ids must be unique")
         if poll_interval_sec <= 0:
             raise ValueError("poll_interval_sec must be > 0")
         if launch_interval_sec < 0:
@@ -89,24 +74,18 @@ class MultiPoolScheduler:
             raise ValueError("device must be one of {'cpu', 'gpu'}")
 
         self._worker_ids = list(worker_ids)
-        self._max_parallel_per_worker = int(max_parallel_per_worker)
         self._poll_interval_sec = float(poll_interval_sec)
         self._launch_interval_sec = float(launch_interval_sec)
         self._device = device
-        temporary_gpu2_cap15 = device == "gpu" and _temporary_gpu2_cap15_enabled()
-        self._parallel_limit_by_worker = {
-            worker_id: (
-                min(self._max_parallel_per_worker, TEMP_GPU2_PARALLEL_CAP)
-                if temporary_gpu2_cap15 and worker_id == TEMP_GPU2_WORKER_ID
-                else self._max_parallel_per_worker
-            )
-            for worker_id in self._worker_ids
-        }
-        if temporary_gpu2_cap15 and TEMP_GPU2_WORKER_ID in self._parallel_limit_by_worker:
+        limits = resolve_gpu_concurrency(self._worker_ids, max_parallel_per_worker)
+        self._parallel_limit_by_worker = (
+            dict(limits) if isinstance(limits, dict)
+            else {worker_id: limits for worker_id in self._worker_ids}
+        )
+        self._gpu_tokens = gpu_device_tokens(self._worker_ids) if device == "gpu" else {}
+        if device == "gpu":
             print(
-                f"[Scheduler] {TEMP_GPU2_CAP15_ENV}=1: GPU {TEMP_GPU2_WORKER_ID} "
-                f"parallel cap={self._parallel_limit_by_worker[TEMP_GPU2_WORKER_ID]}; "
-                f"other GPUs cap={self._max_parallel_per_worker}",
+                f"[Scheduler] GPU concurrency: {self._parallel_limit_by_worker}",
                 flush=True,
             )
 
@@ -302,7 +281,7 @@ class MultiPoolScheduler:
         env.setdefault("TEMP", temp_root)
 
         if self._device == "gpu":
-            env["CUDA_VISIBLE_DEVICES"] = str(worker_id)
+            env["CUDA_VISIBLE_DEVICES"] = self._gpu_tokens[worker_id]
         else:
             env.pop("CUDA_VISIBLE_DEVICES", None)
             env["OMP_NUM_THREADS"] = "1"

@@ -501,11 +501,11 @@ def write_plot_data(path: Path, rows: list[dict[str, Any]]) -> None:
         writer.writerows(rows)
 
 
-def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
+def build_figure(rows: list[dict[str, Any]], *, datasets=DATASETS, backbones=BACKBONES) -> tuple[Any, np.ndarray]:
     df = pd.DataFrame(rows)
     fig, axes = plt.subplots(
-        len(BACKBONES),
-        len(DATASETS),
+        len(backbones),
+        len(datasets),
         figsize=(FIGSIZE_X, FIGSIZE_Y),
         sharex=False,
         sharey=False,
@@ -520,8 +520,8 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
         wspace=WSPACE,
     )
 
-    for row_index, backbone in enumerate(BACKBONES):
-        for column_index, dataset in enumerate(DATASETS):
+    for row_index, backbone in enumerate(backbones):
+        for column_index, dataset in enumerate(datasets):
             ax = axes[row_index, column_index]
             if row_index == 0:
                 majority_baseline = MAJORITY_BASELINE_PCT[dataset]
@@ -633,8 +633,8 @@ def build_figure(rows: list[dict[str, Any]]) -> tuple[Any, np.ndarray]:
     return fig, axes
 
 
-def save_figure(rows: list[dict[str, Any]], output_dir: Path) -> tuple[Path, Path]:
-    fig, _ = build_figure(rows)
+def save_figure(rows: list[dict[str, Any]], output_dir: Path, *, datasets=DATASETS, backbones=BACKBONES) -> tuple[Path, Path]:
+    fig, _ = build_figure(rows, datasets=datasets, backbones=backbones)
     output_dir.mkdir(parents=True, exist_ok=True)
     pdf_path = output_dir / f"{OUTPUT_STEM}.pdf"
     png_path = output_dir / f"{OUTPUT_STEM}.png"

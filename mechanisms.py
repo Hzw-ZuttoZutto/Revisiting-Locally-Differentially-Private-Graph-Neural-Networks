@@ -225,16 +225,16 @@ class FourStageMechanism(Mechanism):
         return float(base_output_range / self.norm_scale)
 
     def __call__(self, x):
-        x_unit = self.to_unit_interval(x)               # 归一化到[-1,1]区间内
-        state = self.perturb(x_unit)                    # 使用对应机制扰动： MBM->{-1,0,1}, HDS-> [-1-b,1+b],PM->[-1,1]
+        x_unit = self.to_unit_interval(x)               # Map inputs to [-1, 1].
+        state = self.perturb(x_unit)                    # Perturb using the selected mechanism: MBM -> {-1, 0, 1}, HDS -> [-1-b, 1+b], PM -> [-1, 1].
 
         
         self._update_diagnostics(state)             
-        x_unit_hat = self.rectify(state)                # 纠偏
-        # noisy_x = self.restore_scale(x_unit_hat)      # 删掉以保证未采样维度为0
+        x_unit_hat = self.rectify(state)                # Correct the estimator's bias.
+        # noisy_x = self.restore_scale(x_unit_hat)      # Leave disabled to keep unsampled dimensions at zero.
         output = x_unit_hat
         if self.norm:
-            output = self.normalize_output(x_unit_hat,state)    # 归一化
+            output = self.normalize_output(x_unit_hat,state)    # Normalize the output.
         self.output_range = self.compute_output_range(state)
         return output
 

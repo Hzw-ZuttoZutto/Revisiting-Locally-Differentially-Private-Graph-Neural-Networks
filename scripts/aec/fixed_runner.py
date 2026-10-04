@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 import csv
+import math
 import re
+import stat
+import tempfile
+import uuid
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -10,11 +15,18 @@ import yaml
 from hparams_search_scripts import run_mechanism_hparam_search as search_impl
 from hparams_search_scripts import table_search_suite_core as core
 from hparams_search_scripts import mechanism_stage_utils
+from hparams_search_scripts.gpu_resources import GpuConcurrency, resolve_gpu_concurrency
 
 from .paths import FIXED_ROOT, REFERENCE_ROOT, WORK_ROOT, max_parallel_per_gpu, parse_gpu_ids
-from .search_runner import _aggregate_search_output
+from .result_io import read_csv
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+@dataclass(frozen=True)
+class _FixedPointJob:
+    point: dict[str, Any]
+    job: core.BatchJob
 
 
 def fixed_points(figure_id: int | str) -> list[dict[str, Any]]:
@@ -25,29 +37,14 @@ def fixed_points(figure_id: int | str) -> list[dict[str, Any]]:
     return list(data.get("points", []))
 
 
-def _coverage(figure_id: int, points: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    result: list[dict[str, Any]] = []
-    for point in points:
-        fixed = point.get("fixed_params", point)
-        dataset = str(fixed.get("dataset", "")).lower()
-        backbone = str(fixed.get("backbone", "")).lower()
-        if figure_id == 1 and dataset not in {"cora", "facebook"}:
-            continue
-        if figure_id == 6 and (dataset not in {"actor", "flickr"} or backbone != "sage"):
-            continue
-        if not fixed.get("mechanism"):
-            continue
-        result.append(point)
-    return result
-
-
 def plan_fixed_jobs(
     figure_id: int,
     *,
-    repeats: int = 3,
+    repeats: int | None = None,
     limit: int | None = None,
 ) -> list[dict[str, Any]]:
-    points = _coverage(figure_id, fixed_points(figure_id))
+    repeats = reference_repeats(figure_id) if repeats is None else repeats
+    points = fixed_points(figure_id)
     jobs = [
         {
             "figure_id": figure_id,
@@ -97,7 +94,7 @@ def _one_candidate_config(
     point: dict[str, Any],
     repeats: int,
     gpu_ids: list[int] | None = None,
-    max_parallel: int | None = None,
+    max_parallel: GpuConcurrency | None = None,
 ) -> dict[str, Any]:
     fixed = point.get("fixed_params", point)
     candidate = point.get("candidate", {})
@@ -156,7 +153,10 @@ def _one_candidate_config(
     }
 
     selected_gpu_ids = parse_gpu_ids() if gpu_ids is None else list(gpu_ids)
-    selected_parallel = max_parallel_per_gpu() if max_parallel is None else int(max_parallel)
+    selected_parallel = (
+        max_parallel_per_gpu(selected_gpu_ids) if max_parallel is None
+        else resolve_gpu_concurrency(selected_gpu_ids, max_parallel)
+    )
     device = {
         "device": "gpu",
         "cpu_worker_count": None,
@@ -204,14 +204,22 @@ def _write_point_configs(
     *,
     root: Path,
     repeats: int,
+    device: dict[str, Any] | None = None,
 ) -> list[Path]:
     config_root = root / "configs"
     config_root.mkdir(parents=True, exist_ok=True)
     configs: list[Path] = []
+    if not points:
+        return configs
+    gpu_ids = parse_gpu_ids() if device is None else parse_gpu_ids(device["gpu_ids"])
+    parallel = max_parallel_per_gpu(gpu_ids) if device is None else device["max_parallel_per_gpu"]
     for index, point in enumerate(points):
         path = config_root / f"point_{index:05d}.yaml"
+        config = _one_candidate_config(point, repeats, gpu_ids=gpu_ids, max_parallel=parallel)
+        if device is not None:
+            config["device"] = dict(device)
         path.write_text(
-            yaml.safe_dump(_one_candidate_config(point, repeats), sort_keys=False),
+            yaml.safe_dump(config, sort_keys=False),
             encoding="utf-8",
         )
         configs.append(path)
@@ -223,12 +231,27 @@ def _build_fixed_batch(
     *,
     root: Path,
     repeats: int,
-) -> tuple[core.BatchSpec | None, list[Path]]:
-    configs = _write_point_configs(points, root=root, repeats=repeats)
+    config_root: Path | None = None,
+    device: dict[str, Any] | None = None,
+) -> tuple[core.BatchSpec | None, list[Path], dict[str, _FixedPointJob]]:
+    configs = _write_point_configs(points, root=config_root or root, repeats=repeats, device=device)
     if not configs:
-        return None, configs
+        return None, configs, {}
 
     jobs: list[core.BatchJob] = []
+    point_jobs: dict[str, _FixedPointJob] = {}
+    existing_dirs: dict[str, Path] = {}
+    manifest_path = root / mechanism_stage_utils.ROOT_MANIFEST_FILENAME
+    if manifest_path.is_file():
+        for record in read_csv(manifest_path):
+            job_id = record["job_id"]
+            directory = Path(record["job_dir"])
+            if job_id in existing_dirs:
+                raise ValueError(f"Duplicate job_id {job_id!r} in {manifest_path}")
+            if not directory.resolve().is_relative_to(root.resolve()):
+                raise ValueError(f"Job directory is outside the fixed result directory: {directory}")
+            existing_dirs[job_id] = directory
+    assigned_dirs: set[Path] = set()
     execution = None
     if len(points) != len(configs):
         raise RuntimeError(f"Fixed point/config count mismatch: points={len(points)} configs={len(configs)}")
@@ -248,23 +271,29 @@ def _build_fixed_batch(
             execution = point_batch.execution
         elif execution != point_batch.execution:
             raise RuntimeError("Fixed-point configurations disagree on execution settings")
-        # stable_job_id is based only on fixed parameters. Figure 5 has
-        # multiple tao2 points with identical fixed params, so merging the
-        # per-point batches without a namespace causes rows_by_job_id to
-        # overwrite jobs and corrupt the global scheduler state.
+        # point_id distinguishes points with identical fixed parameters but different candidate hyperparameters.
         point_id = str(point.get("point_id") or f"point_{index:05d}")
         for job in point_batch.jobs:
             namespaced_id = f"{point_id}__{job.job_id}"
+            if namespaced_id in point_jobs:
+                raise ValueError(f"Duplicate fixed job_id {namespaced_id!r} at point {index}")
+            if len(mechanism_stage_utils.job_candidates(job.job_spec)) != 1:
+                raise ValueError(f"Fixed point {point_id!r} must have exactly one candidate")
             job_spec = dict(job.job_spec)
             job_spec["job_id"] = namespaced_id
-            jobs.append(
-                core.BatchJob(
-                    job_id=namespaced_id,
-                    job_dir=job.job_dir,
-                    display_name=job.display_name,
-                    job_spec=job_spec,
-                )
+            directory = existing_dirs.get(namespaced_id, job.job_dir)
+            if directory.resolve() in assigned_dirs:
+                raise ValueError(f"Multiple fixed jobs use the same directory: {directory}")
+            assigned_dirs.add(directory.resolve())
+            fixed_job = core.BatchJob(
+                job_id=namespaced_id,
+                job_dir=directory,
+                display_name=job.display_name,
+                job_spec=job_spec,
             )
+            jobs.append(fixed_job)
+            # The full job_id also distinguishes HOA and Kprop entries sharing a point_id in Table 6.
+            point_jobs[namespaced_id] = _FixedPointJob(point=point, job=fixed_job)
 
     assert execution is not None
     return (
@@ -275,6 +304,7 @@ def _build_fixed_batch(
             config_copy_source=configs[0],
         ),
         configs,
+        point_jobs,
     )
 
 
@@ -285,10 +315,10 @@ def _run_fixed_batch(
     repeats: int,
     execute: bool,
 ) -> dict[str, Any]:
-    batch, configs = _build_fixed_batch(points, root=root, repeats=repeats)
+    batch, configs, point_jobs = _build_fixed_batch(points, root=root, repeats=repeats)
     if batch is None:
         print("planned 0 fixed jobs; execute=False")
-        return {"jobs": [], "configs": [], "completed": 0, "skipped": 0, "failed": 0}
+        return {"jobs": [], "configs": [], "point_jobs": {}, "completed": 0, "skipped": 0, "failed": 0}
 
     if not execute:
         print(
@@ -297,6 +327,7 @@ def _run_fixed_batch(
         return {
             "jobs": batch.jobs,
             "configs": configs,
+            "point_jobs": point_jobs,
             "completed": 0,
             "skipped": 0,
             "failed": 0,
@@ -309,6 +340,7 @@ def _run_fixed_batch(
     summary = {
         "jobs": batch.jobs,
         "configs": configs,
+        "point_jobs": point_jobs,
         "completed": completed,
         "skipped": skipped,
         "failed": failed,
@@ -326,104 +358,238 @@ def _run_fixed_batch(
 def run_fixed(
     figure_id: int,
     *,
-    repeats: int = 3,
+    repeats: int | None = None,
     limit: int | None = None,
     execute: bool = False,
 ) -> list[dict[str, Any]]:
-    points = _coverage(figure_id, fixed_points(figure_id))
+    from .fixed_results import collect_fixed_output, figure_templates
+
+    repeats = reference_repeats(figure_id) if repeats is None else repeats
+    points = fixed_points(figure_id)
     jobs = plan_fixed_jobs(figure_id, repeats=repeats, limit=limit)
     selected_ids = {job["point_id"] for job in jobs}
     selected_points = [point for point in points if point.get("point_id") in selected_ids]
-    root = WORK_ROOT / "search" / f"figure{figure_id}" / "fixed"
-    _run_fixed_batch(selected_points, root=root, repeats=repeats, execute=execute)
     if execute:
-        _aggregate_search_output(figure_id, "fixed")
+        figure_templates(figure_id, selected_points, repeats=repeats)
+    root = WORK_ROOT / "search" / f"figure{figure_id}" / "fixed"
+    summary = _run_fixed_batch(selected_points, root=root, repeats=repeats, execute=execute)
+    if execute:
+        collect_fixed_output(figure_id, summary["point_jobs"], root)
     return jobs
 
 
-def _point_matches_manifest(point: dict[str, Any], manifest: dict[str, str]) -> bool:
-    fixed = point.get("fixed_params", {})
-    for key in (
-        "dataset",
-        "feature",
-        "feature_dim",
-        "mechanism",
-        "x_eps",
-        "m",
-        "norm",
-        "norm_scale",
-        "smoother",
-        "backbone",
-        "use_nfr",
+def _table_job_rows(binding: _FixedPointJob, manifest: dict[str, str]) -> list[dict[str, str]]:
+    """Read a fixed job only after checking its resolved config and every repeat."""
+    job = binding.job
+    spec = job.job_spec
+    fixed = spec["fixed_params"]
+    if manifest.get("search_status") not in {"completed", "skipped_existing_result"}:
+        raise ValueError(f"job is not complete: search_status={manifest.get('search_status')!r}")
+    if not manifest.get("job_dir") or Path(manifest["job_dir"]).resolve() != job.job_dir.resolve():
+        raise ValueError(
+            f"manifest job_dir does not match the planned directory: {manifest.get('job_dir')!r}"
+        )
+
+    # An ID does not include the candidate or repeat count. Retain the same
+    # compatibility rules as resume, but never rewrite a spec while collecting.
+    saved_spec = mechanism_stage_utils.load_job_spec(job.job_dir)
+    expected_spec = core._normalized_job_spec_for_comparison(spec)
+    existing_spec = core._normalized_job_spec_for_comparison(saved_spec)
+    if (
+        mechanism_stage_utils.canonical_yaml_text(existing_spec)
+        != mechanism_stage_utils.canonical_yaml_text(expected_spec)
     ):
-        expected = "" if fixed.get(key) is None else str(fixed.get(key))
-        actual = str(manifest.get(key, ""))
-        if expected.lower() != actual.lower():
-            return False
-    return True
+        raise ValueError(f"saved job_spec.yaml does not match the current configuration: {job.job_dir}")
+
+    for key in mechanism_stage_utils.OUTER_AXIS_NAMES:
+        expected = mechanism_stage_utils.canonical_search_value(fixed.get(key))
+        if manifest.get(key, "") != expected:
+            raise ValueError(f"manifest field {key!r}: expected {expected!r}, got {manifest.get(key)!r}")
+
+    candidate, = mechanism_stage_utils.job_candidates(spec)
+    best = mechanism_stage_utils.load_best_config(job.job_dir)
+    if mechanism_stage_utils.CandidateSpec.from_dict(best["best_candidate"]) != candidate:
+        raise ValueError("best_config.yaml candidate does not match the planned fixed candidate")
+    # Older reusable artifacts may have an unnamespaced best_config.job_id;
+    # compare their experiment data instead of requiring that label to change.
+    for key in ("fixed_params", "defaults"):
+        saved = core._normalized_job_spec_for_comparison({key: best[key]})
+        expected = core._normalized_job_spec_for_comparison({key: spec[key]})
+        if (
+            mechanism_stage_utils.canonical_yaml_text(saved)
+            != mechanism_stage_utils.canonical_yaml_text(expected)
+        ):
+            raise ValueError(f"best_config.yaml {key} does not match the planned configuration")
+
+    repeats = int(spec["defaults"]["stage"]["verify"]["repeats"])
+    base_seed = int(spec["base_seed"])
+    records: dict[int, dict[str, str]] = {}
+    # Cached manifest rows can have verify_done=0. The resolved job spec and
+    # actual CSVs, not those progress counters, determine completeness.
+    for child in sorted(mechanism_stage_utils.verify_stage_dir(job.job_dir).glob("rank=*")):
+        match = re.match(r"rank=(\d+)__repeat=(\d+)__candidate=(\d+)__", child.name)
+        if not match:
+            raise ValueError(f"invalid verify result directory: {child}")
+        rank, repeat, candidate_id = map(int, match.groups())
+        if rank != 1 or candidate_id != candidate.candidate_id:
+            raise ValueError(f"unexpected rank or candidate in fixed result: {child}")
+        if repeat not in range(1, repeats + 1):
+            raise ValueError(f"unexpected repeat {repeat}; expected 1..{repeats}: {child}")
+        if repeat in records:
+            raise ValueError(f"duplicate repeat {repeat}: {child}")
+        files = sorted(child.glob("*.csv"))
+        if len(files) != 1:
+            raise ValueError(f"expected exactly one result CSV, found {len(files)}: {child}")
+        with files[0].open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            record = next(reader, None)
+            if record is None or next(reader, None) is not None:
+                raise ValueError(f"expected exactly one seed row: {files[0]}")
+        expected_seed = base_seed + repeat - 1
+        try:
+            valid_seed = float(record.get("seed", "")) == expected_seed
+        except (TypeError, ValueError):
+            valid_seed = False
+        if not valid_seed:
+            raise ValueError(
+                f"repeat {repeat} expected seed {expected_seed}, got {record.get('seed')!r}: {files[0]}"
+            )
+        try:
+            valid_candidate = (
+                float(record["x_steps"]) == candidate.x_steps
+                and mechanism_stage_utils.row_matches_candidate(record, candidate, expected_seed=expected_seed)
+            )
+        except (KeyError, TypeError, ValueError, mechanism_stage_utils.StageError):
+            valid_candidate = False
+        if not valid_candidate:
+            raise ValueError(f"result candidate does not match the planned fixed candidate: {files[0]}")
+        for key in ("val/acc", "test/acc"):
+            try:
+                valid = math.isfinite(float(record[key]))
+            except (KeyError, TypeError, ValueError):
+                valid = False
+            if not valid:
+                raise ValueError(f"missing or non-finite metric {key!r}: {files[0]}")
+        records[repeat] = record
+
+    missing = sorted(set(range(1, repeats + 1)) - records.keys())
+    if missing:
+        raise ValueError(f"missing verify repeats {missing}; expected {repeats}, found {len(records)}")
+
+    return [
+        {
+            "setting": str(binding.point["setting"]),
+            "dataset": str(fixed["dataset"]),
+            "backbone": str(fixed["backbone"]),
+            "feature_dim": mechanism_stage_utils.canonical_search_value(fixed.get("feature_dim")),
+            "seed": record["seed"],
+            "val_acc": record["val/acc"],
+            "test_acc": record["test/acc"],
+        }
+        for _, record in sorted(records.items())
+    ]
 
 
 def _collect_table_outputs(
     table: str,
-    points: list[dict[str, Any]],
+    point_jobs: dict[str, _FixedPointJob],
     root: Path,
 ) -> Path:
+    if not point_jobs:
+        raise ValueError(f"No fixed jobs were planned for {table}")
     manifest_path = root / mechanism_stage_utils.ROOT_MANIFEST_FILENAME
     if not manifest_path.is_file():
         raise FileNotFoundError(f"Batch manifest not found: {manifest_path}")
 
-    rows: list[dict[str, str]] = []
     with manifest_path.open(newline="", encoding="utf-8") as handle:
         manifests = list(csv.DictReader(handle))
 
+    by_id: dict[str, dict[str, str]] = {}
     for manifest in manifests:
-        if manifest.get("search_status") not in {"completed", "skipped_existing_result"}:
-            continue
-        job = Path(manifest["job_dir"])
-        best_path = job / "best_config.yaml"
-        if not best_path.is_file():
-            continue
-        best = yaml.safe_load(best_path.read_text(encoding="utf-8")) or {}
-        best_candidate = best.get("best_candidate", {})
-        candidate_id = int(best_candidate.get("candidate_id", 0))
-        point = next((item for item in points if _point_matches_manifest(item, manifest)), None)
-        if point is None:
-            continue
+        job_id = manifest.get("job_id", "")
+        if job_id not in point_jobs:
+            raise RuntimeError(f"Unexpected job_id {job_id!r} in {manifest_path}")
+        if job_id in by_id:
+            raise RuntimeError(f"Duplicate job_id {job_id!r} in {manifest_path}")
+        by_id[job_id] = manifest
 
-        fixed = point.get("fixed_params", {})
-        setting = point.get("setting", "")
-        for child in sorted((job / "verify_top5").glob("rank=*__repeat=*")):
-            match = re.match(r"rank=(\d+)__repeat=(\d+)__candidate=(\d+)__", child.name)
-            if not match or int(match.group(3)) != candidate_id:
-                continue
-            files = sorted(child.glob("*.csv"))
-            if len(files) != 1:
-                continue
-            with files[0].open(newline="", encoding="utf-8") as handle:
-                record = next(csv.DictReader(handle), None)
-            if not record:
-                continue
-            rows.append(
-                {
-                    "table": table,
-                    "setting": str(setting),
-                    "dataset": str(fixed.get("dataset", "")),
-                    "backbone": str(fixed.get("backbone", "")),
-                    "feature_dim": str(fixed.get("feature_dim", "") or ""),
-                    "seed": record.get("seed", ""),
-                    "val_acc": record.get("val/acc", ""),
-                    "test_acc": record.get("test/acc", ""),
-                }
-            )
+    rows: list[dict[str, str]] = []
+    for job_id, binding in point_jobs.items():
+        try:
+            if job_id not in by_id:
+                raise ValueError("missing manifest row")
+            rows.extend({"table": table, **row} for row in _table_job_rows(binding, by_id[job_id]))
+        except (OSError, ValueError, TypeError, KeyError, RuntimeError, yaml.YAMLError) as exc:
+            raise RuntimeError(
+                f"Cannot collect {table} point={binding.point.get('point_id')!r} "
+                f"job_id={job_id!r} under {binding.job.job_dir}: {exc}"
+            ) from exc
 
+    # Validate the entire table before atomically replacing a previous export.
     output = root / f"{table}_seed_rows.csv"
-    if not rows:
-        raise RuntimeError(f"No completed seed rows were found for {table}")
-    with output.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
+    try:
+        output_mode = stat.S_IMODE(output.stat().st_mode)
+    except FileNotFoundError:
+        output_mode = None
+    temporary_path = output.with_name(f".{output.name}.{uuid.uuid4().hex}.tmp")
+    temporary: Path | None = None
+    try:
+        # Exclusive creation uses normal file permissions (including umask)
+        # instead of NamedTemporaryFile's 0600. Preserve an existing export's
+        # mode so recollection does not remove access for collaborators.
+        with temporary_path.open("x", newline="", encoding="utf-8") as handle:
+            temporary = temporary_path
+            writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+            writer.writeheader()
+            writer.writerows(rows)
+        if output_mode is not None:
+            temporary.chmod(output_mode)
+        temporary.replace(output)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     return output
+
+
+def _fixed_table_points(table: str) -> list[dict[str, Any]]:
+    path = FIXED_ROOT / f"{table}.yaml"
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    points = data.get("points") if isinstance(data, dict) else None
+    if not isinstance(points, list) or not points:
+        raise ValueError(f"Fixed table must contain a nonempty points list: {path}")
+    for index, point in enumerate(points):
+        if (
+            not isinstance(point, dict)
+            or not isinstance(point.get("fixed_params"), dict)
+            or not isinstance(point.get("setting"), str)
+            or not point["setting"].strip()
+        ):
+            raise ValueError(
+                f"Fixed table point {index} requires fixed_params and a nonempty setting: {path}"
+            )
+    return points
+
+
+def collect_fixed_table(table: str, *, repeats: int | None = None) -> Path:
+    """Validate and export existing results without scheduling or changing jobs.
+
+    By default, expect the paper's seed count, as used by Notebook 2. For a
+    custom run, pass the same repeats value originally given to run_fixed_table.
+    """
+    points = _fixed_table_points(table)
+    root = WORK_ROOT / "search" / table / "fixed"
+    expected_repeats = reference_repeats(table) if repeats is None else repeats
+    saved_config = mechanism_stage_utils.read_yaml_file(root / mechanism_stage_utils.INPUT_CONFIG_COPY_FILENAME)
+    # Collection uses the experiment's saved device configuration and requires no local GPU.
+    with tempfile.TemporaryDirectory(prefix=f".collect-{table}-", dir=root) as tmp:
+        _, _, point_jobs = _build_fixed_batch(
+            points,
+            root=root,
+            repeats=expected_repeats,
+            config_root=Path(tmp),
+            device=saved_config["device"],
+        )
+        return _collect_table_outputs(table, point_jobs, root)
 
 
 def run_fixed_table(
@@ -432,12 +598,10 @@ def run_fixed_table(
     repeats: int = 3,
     execute: bool = False,
 ) -> dict[str, Any]:
-    path = FIXED_ROOT / f"{table}.yaml"
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) if path.is_file() else {}
-    points = list((data or {}).get("points", []))
+    points = _fixed_table_points(table)
     root = WORK_ROOT / "search" / table / "fixed"
     summary = _run_fixed_batch(points, root=root, repeats=repeats, execute=execute)
     if execute:
-        summary["seed_rows"] = _collect_table_outputs(table, points, root)
+        summary["seed_rows"] = _collect_table_outputs(table, summary["point_jobs"], root)
     summary["table"] = table
     return summary

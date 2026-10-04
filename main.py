@@ -228,8 +228,8 @@ def run_single_repeat(args, repeat_id, run_id, logger=None):
     if current_seed is not None:
         seed_everything(current_seed)
 
-    dataset = from_args(load_dataset, args)     # 加载数据
-    data = dataset.clone().to(args.device)      # 将训练数据搬到gpu
+    dataset = from_args(load_dataset, args)     # Load the dataset.
+    data = dataset.clone().to(args.device)      # Move training data to the selected device.
     data, _ = prepare_pre_smoothing_input(data, args, rewrite_seed=current_seed)
     input_dim = int(getattr(data, 'operator_num_features', data.num_features))
 

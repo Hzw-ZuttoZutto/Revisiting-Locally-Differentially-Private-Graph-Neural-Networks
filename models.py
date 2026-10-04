@@ -93,13 +93,13 @@ class KProp(MessagePassing):
         if self.add_self_loops:
             adj_t = adj_t.set_diag()
 
-        for k in range(self.K): # K次消息传播
+        for k in range(self.K): # Perform K message-passing steps.
             x = self.propagate(adj_t, x=x)
 
         x = self.transform(x)
         return x
 
-    def message_and_aggregate(self, adj_t, x):  #消息传播的方式
+    def message_and_aggregate(self, adj_t, x):  # Message-passing rule.
         return matmul(adj_t, x, reduce=self.aggr)
 
 
@@ -234,7 +234,7 @@ class NodeClassifier(torch.nn.Module):
         self.smoother = smoother_to_cls[self.smoother_name](
             steps=x_steps,
             aggregator='add',
-            add_self_loops=False, # LPGNN论文说去掉自环对于性能会更好
+            add_self_loops=False, # The LPGNN paper reports better performance without self-loops.
             normalize=True,
             cached=True,
         )

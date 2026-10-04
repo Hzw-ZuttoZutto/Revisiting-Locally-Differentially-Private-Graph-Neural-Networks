@@ -625,7 +625,7 @@ class FeaturePerturbation:
         if np.isinf(self.x_eps):
             if self.inf_eps_unit_map and self.mechanism in {'mbm', '1bm', 'pm', 'hds'}:
                 alpha, beta = self._resolve_input_range(data)
-                data.x = self._map_to_unit_interval(data.x, alpha=alpha, beta=beta)  # 做额外新型变化到堆成区间[-1,1]
+                data.x = self._map_to_unit_interval(data.x, alpha=alpha, beta=beta)  # Map features to the symmetric interval [-1, 1].
             return data
 
         if not np.isinf(self.x_eps):
@@ -636,10 +636,10 @@ class FeaturePerturbation:
                 'norm': self.norm,
                 'norm_scale': self.norm_scale,
             }
-            if self.mechanism in {'mbm', 'pm', 'hds'}: # 如果是四阶段机制，需要解析下采样维度参数m
+            if self.mechanism in {'mbm', 'pm', 'hds'}: # Four-stage mechanisms require the subsampling dimension parameter m.
                 mechanism_kwargs['m'] = self.m
             mechanism = supported_feature_mechanisms[self.mechanism](**mechanism_kwargs)
-            # 为data 在这里添加一个属性 data.output_range = mechanism.output_range,mechanism当中我期望计算output_range 的方法由集成的类重写
+            # Store the mechanism's computed output_range on data; subclasses define the range calculation.
             data.x = mechanism(data.x)
             data.output_range = mechanism.output_range
             data.feature_mechanism_resolved_m = getattr(mechanism, 'last_m', None)

@@ -7,16 +7,17 @@ import sys
 from pathlib import Path
 from typing import Any, Callable
 
-try:
-    from hparams_search_scripts import mechanism_stage_utils
-    from hparams_search_scripts import table_search_suite_core as core
-except ModuleNotFoundError:
-    import mechanism_stage_utils  # type: ignore
-    import table_search_suite_core as core  # type: ignore
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from hparams_search_scripts import mechanism_stage_utils
+from hparams_search_scripts import table_search_suite_core as core
 
 from datasets import list_supported_datasets, resolve_dataset_name
 from mechanisms import supported_feature_mechanisms
 from transforms import FeatureTransform
+from hparams_search_scripts.gpu_resources import parse_gpu_ids, resolve_gpu_concurrency
 
 
 TOP_LEVEL_KEYS = {"device", "defaults", "search_space", "seed"}
@@ -320,16 +321,8 @@ def _validate_device_section(raw: Any) -> mechanism_stage_utils.ExecutionSetting
 
     if mapping["cpu_worker_count"] not in (None, ""):
         raise SearchError("device.cpu_worker_count must not be set when device.device=gpu")
-    gpu_ids = _parse_list(
-        mapping["gpu_ids"],
-        "device.gpu_ids",
-        item_parser=lambda raw_value, path: _parse_nonnegative_int(raw_value, path),
-        allow_empty=False,
-    )
-    max_parallel_per_gpu = _parse_positive_int(
-        mapping["max_parallel_per_gpu"],
-        "device.max_parallel_per_gpu",
-    )
+    gpu_ids = parse_gpu_ids(mapping["gpu_ids"])
+    max_parallel_per_gpu = resolve_gpu_concurrency(gpu_ids, mapping["max_parallel_per_gpu"])
     launch_interval_sec = _parse_nonnegative_float(
         mapping["gpu_launch_interval_sec"],
         "device.gpu_launch_interval_sec",
@@ -938,6 +931,11 @@ def _validate_cross_constraints(search_space: dict[str, Any]) -> None:
 
 def load_search_config(config_path: Path) -> dict[str, Any]:
     raw = mechanism_stage_utils.read_yaml_file(config_path)
+    return parse_search_config(raw, source=str(config_path))
+
+
+def parse_search_config(raw: Any, *, source: str) -> dict[str, Any]:
+    config_path = source
     mapping = _expect_mapping(raw, str(config_path))
     if "seed" not in mapping:
         mapping = dict(mapping)

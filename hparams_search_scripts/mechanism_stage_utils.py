@@ -186,7 +186,7 @@ class RankedCandidate:
 class ExecutionSettings:
     device: str
     worker_ids: list[int]
-    max_parallel_per_worker: int
+    max_parallel_per_worker: int | dict[int, int]
     launch_interval_sec: float
     poll_interval_sec: float = POLL_INTERVAL_SEC
 
