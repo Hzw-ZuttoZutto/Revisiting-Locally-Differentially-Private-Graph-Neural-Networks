@@ -8,6 +8,7 @@ from hparams_search_scripts import run_mechanism_hparam_search as search_impl
 from hparams_search_scripts import table_search_suite_core as core
 from hparams_search_scripts import mechanism_stage_utils
 from .paths import parse_gpu_ids, max_parallel_per_gpu, WORK_ROOT, normalize_mode, result_root
+from .table_settings import TABLE6_FEATURE_DIM, table6_feature_dims
 
 REPO_ROOT=Path(__file__).resolve().parents[2]
 
@@ -60,11 +61,15 @@ def _search_root_name(figure_id: int | str) -> str:
     return f"figure{figure_id}"
 
 
-def _runtime_config_data(path: Path, *, mode: str, configure_devices: bool) -> dict[str, Any]:
+def _runtime_config_data(
+    path: Path, *, mode: str, configure_devices: bool, feature_dims: tuple[int, ...] | None = None,
+) -> dict[str, Any]:
     mode = normalize_mode(mode)
     if mode not in {"scaled", "full"}:
         raise ValueError(f"Search mode must be scaled or full: {mode}")
     data = load_config(path)
+    if feature_dims is not None:
+        data["search_space"]["feature_transformation"]["feature_dim"] = list(feature_dims)
     datasets = data.get("search_space", {}).get("dataset", {}).get("datasets", [])
     path_text = path.as_posix().lower()
     if mode == "scaled":
@@ -87,8 +92,10 @@ def _runtime_config_data(path: Path, *, mode: str, configure_devices: bool) -> d
     return data
 
 
-def _runtime_config(path: Path, *, mode: str, output: Path) -> Path:
-    data = _runtime_config_data(path, mode=mode, configure_devices=True)
+def _runtime_config(
+    path: Path, *, mode: str, output: Path, feature_dims: tuple[int, ...] | None = None,
+) -> Path:
+    data = _runtime_config_data(path, mode=mode, configure_devices=True, feature_dims=feature_dims)
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
@@ -104,12 +111,14 @@ def _build_runtime_batch(
     *,
     mode: str,
     output_root: Path,
+    feature_dims: tuple[int, ...] | None = None,
 ) -> tuple[Path, core.BatchSpec]:
     token = _config_token(config)
     actual = _runtime_config(
         config,
         mode=mode,
         output=WORK_ROOT / "runtime_configs" / mode / f"{token}.yaml",
+        feature_dims=feature_dims,
     )
     search_config = search_impl.load_search_config(actual)
     batch = search_impl.build_batch_spec(
@@ -210,10 +219,15 @@ class SearchPlan:
     batch: core.BatchSpec
     sources: dict[str, Path]
     configs: list[dict[str, object]]
+    feature_dims: tuple[int, ...] | None = None
 
 
-def build_search_plan(figure_id: int | str, mode: str, *, materialize: bool = False) -> SearchPlan:
+def build_search_plan(
+    figure_id: int | str, mode: str, *, materialize: bool = False,
+    feature_dim: int | list[int] = TABLE6_FEATURE_DIM,
+) -> SearchPlan:
     mode = normalize_mode(mode)
+    feature_dims = table6_feature_dims(feature_dim) if figure_id == "table6" else None
     paths = _configs(figure_id)
     selected = _select_paths(figure_id, paths, mode)
     root = result_root(figure_id, mode)
@@ -224,10 +238,10 @@ def build_search_plan(figure_id: int | str, mode: str, *, materialize: bool = Fa
 
     for config in selected:
         if materialize:
-            actual, batch = _build_runtime_batch(config, mode=mode, output_root=root)
+            actual, batch = _build_runtime_batch(config, mode=mode, output_root=root, feature_dims=feature_dims)
         else:
             actual = config
-            data = _runtime_config_data(config, mode=mode, configure_devices=False)
+            data = _runtime_config_data(config, mode=mode, configure_devices=False, feature_dims=feature_dims)
             parsed = search_impl.parse_search_config(data, source=str(config))
             batch = search_impl.build_batch_spec(
                 search_config=parsed, output_root=root / _config_token(config), config_copy_source=config,
@@ -275,7 +289,7 @@ def build_search_plan(figure_id: int | str, mode: str, *, materialize: bool = Fa
         jobs=jobs,
         config_copy_source=Path(config_results[0]["runtime_config"]),
     )
-    return SearchPlan(figure_id, mode, batch, sources, config_results)
+    return SearchPlan(figure_id, mode, batch, sources, config_results, feature_dims)
 
 
 def run_search_for_figure(
@@ -283,6 +297,7 @@ def run_search_for_figure(
     *,
     mode: str = "scaled",
     execute: bool = False,
+    feature_dim: int | list[int] = TABLE6_FEATURE_DIM,
 ) -> dict[str, object]:
     mode = normalize_mode(mode)
     if mode not in {"scaled", "full"}:
@@ -291,7 +306,7 @@ def run_search_for_figure(
         return {"figure_id": figure_id, "mode": "analytic", "configs": 0}
     from .search_results import collect_search_outputs, validate_search_plan
 
-    plan = build_search_plan(figure_id, mode, materialize=True)
+    plan = build_search_plan(figure_id, mode, materialize=True, feature_dim=feature_dim)
     validate_search_plan(plan)
     result: dict[str, object] = {
         "figure_id": figure_id,
@@ -303,6 +318,8 @@ def run_search_for_figure(
         "configs": plan.configs,
         "execute": execute,
     }
+    if plan.feature_dims is not None:
+        result["feature_dims"] = list(plan.feature_dims)
     if execute:
         completed, skipped, failed, manifest = core.run_batch_search(
             plan.batch,

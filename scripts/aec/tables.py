@@ -4,6 +4,7 @@ import csv
 from collections import defaultdict
 from pathlib import Path
 from .paths import REFERENCE_ROOT, normalize_mode, result_root
+from .table_settings import TABLE6_FEATURE_DIM, table6_feature_dims
 
 def _read(path):
     with Path(path).open(newline="",encoding="utf-8") as h: return list(csv.DictReader(h))
@@ -53,33 +54,52 @@ def table4_summary(mode="reference"):
             rows.append((backbone.upper(),setting,cells))
     return rows
 
-def table6_summary(mode="reference"):
-    raw=_table_seed_rows("table6",mode); grouped=defaultdict(list)
-    for r in raw: grouped[(r["setting"],r["backbone"],r["dataset"],r["feature_dim"])].append(r)
-    selected={}; datasets=["cora","lastfm","citeseer","facebook"]
-    for key,items in sorted(grouped.items(), key=lambda item: (*item[0][:3], int(item[0][3]))):
-        val=sum(float(r["val_acc"]) for r in items)/len(items);
-        if key[:3] not in selected or val>selected[key[:3]][0]: selected[key[:3]]=(val,key,items)
+def _select_table6_groups(raw, dimensions):
+    grouped = defaultdict(lambda: defaultdict(list))
+    for row in raw:
+        key = (row["setting"], row["backbone"], row["dataset"])
+        grouped[key][int(row["feature_dim"])].append(row)
+    selected = {}
+    for key, by_dim in grouped.items():
+        missing = set(dimensions) - by_dim.keys()
+        if missing:
+            raise ValueError(f"Table 6 {key} is missing dimensions: {sorted(missing)}")
+        dimension = dimensions[0]
+        if len(dimensions) > 1:
+            dimension = min(dimensions, key=lambda dim: (
+                -sum(float(row["val_acc"]) for row in by_dim[dim]) / len(by_dim[dim]), dim,
+            ))
+        selected[key] = (str(dimension), by_dim[dimension])
+    return selected
+
+
+def table6_summary(mode="reference", *, feature_dim=None):
+    mode = normalize_mode(mode)
+    dimensions = table6_feature_dims(TABLE6_FEATURE_DIM if feature_dim is None else feature_dim)
+    if mode in {"reference", "fixed"} and dimensions != (TABLE6_FEATURE_DIM,):
+        raise ValueError(f"Table 6 mode={mode} requires feature_dim={TABLE6_FEATURE_DIM}")
+    selected = _select_table6_groups(_table_seed_rows("table6", mode), dimensions)
+    datasets=["cora","lastfm","citeseer","facebook"]
     rows=[]
     for backbone in ["gcn","sage","gat"]:
         for setting in ["FeatFree-Kprop","FeatFree-HOA"]:
             label="Kprop" if setting.endswith("Kprop") else "HOA"; cells=[]
             for dataset in datasets:
-                _,key,items=selected[(setting,backbone,dataset)]; cells.append((*_stats(items),key[3]))
+                dimension,items=selected[(setting,backbone,dataset)]; cells.append((*_stats(items),dimension))
             rows.append((backbone.upper(),label,cells))
     return rows
 
-def render_table(table, *, mode="reference", destination=None):
+def render_table(table, *, mode="reference", destination=None, feature_dim=None):
     from .search_results import table_datasets, validate_search_output
 
     mode = normalize_mode(mode)
     if table not in {"table4", "table6"}:
         raise ValueError(f"Unsupported table: {table}")
     if mode in {"scaled", "full"}:
-        validate_search_output(table, mode)
+        validate_search_output(table, mode, feature_dim=TABLE6_FEATURE_DIM if feature_dim is None else feature_dim)
     labels = {"cora": "Cora", "lastfm": "LastFM", "citeseer": "CiteSeer", "facebook": "Facebook"}
     datasets=[labels[name] for name in table_datasets(table, mode)]
-    rows=table4_summary(mode) if table=="table4" else table6_summary(mode)
+    rows=table4_summary(mode) if table=="table4" else table6_summary(mode, feature_dim=feature_dim)
     lines=["| Backbone | Setting | "+" | ".join(datasets)+" |","|---|---|"+"---|"*len(datasets)]
     for backbone,setting,cells in rows:
         if table=="table6": values=[f"{m:.2f} ± {s:.2f}" for m,s,d in cells]

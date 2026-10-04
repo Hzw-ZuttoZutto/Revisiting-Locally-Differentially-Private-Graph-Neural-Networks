@@ -12,6 +12,7 @@ from hparams_search_scripts import table_search_suite_core as core
 from .paths import REFERENCE_ROOT, normalize_mode, result_root
 from .result_io import VerifiedResult, atomic_write_csv, manifest_index, read_completed_job, read_csv
 from .search_runner import PIPELINE_AXES, SearchPlan, _table_setting_from_config, build_search_plan
+from .table_settings import TABLE6_FEATURE_DIM
 
 
 TARGETS = (1, 3, 4, 5, 6, 7, "table4", "table6")
@@ -106,12 +107,17 @@ def plot_bindings(plan: SearchPlan) -> list[tuple[dict[str, str], core.BatchJob]
     return bindings
 
 
-def table_groups(table: str, mode: str) -> set[tuple[str, ...]]:
+def table_groups(
+    table: str, mode: str, *, feature_dims: tuple[int, ...] | None = None,
+) -> set[tuple[str, ...]]:
     datasets = table_datasets(table, mode)
-    return {
+    groups = {
         (row["setting"], row["dataset"], row["backbone"], row.get("feature_dim", ""))
         for row in read_csv(REFERENCE_ROOT / f"{table}_seed_rows.csv") if row["dataset"] in datasets
     }
+    if table == "table6" and feature_dims is not None:
+        return {(*group[:3], str(dim)) for group in groups for dim in feature_dims}
+    return groups
 
 
 def _table_group(plan: SearchPlan, job: core.BatchJob) -> tuple[str, ...]:
@@ -127,12 +133,16 @@ def validate_search_plan(plan: SearchPlan) -> None:
         plot_bindings(plan)
         expected_repeats = {int(row["n"]) for row in read_csv(REFERENCE_ROOT / f"figure{plan.target}_plot_data.csv")}
     else:
-        expected = table_groups(plan.target, plan.mode)
+        expected = table_groups(plan.target, plan.mode, feature_dims=plan.feature_dims)
         actual = Counter(_table_group(plan, job) for job in plan.batch.jobs)
         missing = expected - actual.keys()
+        unexpected = actual.keys() - expected if plan.target == "table6" else set()
         repeated = [key for key in expected if actual[key] > 1]
-        if missing or repeated:
-            raise RuntimeError(f"Invalid {plan.target} coverage: missing={sorted(missing)}, duplicate={repeated}")
+        if missing or unexpected or repeated:
+            raise RuntimeError(
+                f"Invalid {plan.target} coverage: missing={sorted(missing)}, "
+                f"unexpected={sorted(unexpected)}, duplicate={repeated}"
+            )
         counts = Counter(
             (row["setting"], row["dataset"], row["backbone"], row.get("feature_dim", ""))
             for row in read_csv(REFERENCE_ROOT / f"{plan.target}_seed_rows.csv")
@@ -285,9 +295,12 @@ def output_path(target: int | str, mode: str) -> Path:
     return result_root(target, mode) / (f"{target}_seed_rows.csv" if isinstance(target, str) else "plot_data.csv")
 
 
-def collect_search_outputs(target: int | str, mode: str, *, plan: SearchPlan | None = None) -> Path:
+def collect_search_outputs(
+    target: int | str, mode: str, *, plan: SearchPlan | None = None,
+    feature_dim: int | list[int] = TABLE6_FEATURE_DIM,
+) -> Path:
     mode = normalize_mode(mode)
-    plan = build_search_plan(target, mode) if plan is None else plan
+    plan = build_search_plan(target, mode, feature_dim=feature_dim) if plan is None else plan
     if plan.target != target or plan.mode != mode:
         raise ValueError("Search plan target/mode does not match the requested output")
     rows = build_output_rows(plan)
@@ -318,8 +331,11 @@ def validate_output_rows(target: int | str, expected: list[dict[str, Any]], actu
                 raise RuntimeError(f"Output differs from training results: {path}, point={_output_key(target, row)}, field={field}")
 
 
-def validate_search_output(target: int | str, mode: str, *, cache: dict | None = None) -> dict[str, Any]:
-    plan = build_search_plan(target, mode)
+def validate_search_output(
+    target: int | str, mode: str, *, cache: dict | None = None,
+    feature_dim: int | list[int] = TABLE6_FEATURE_DIM,
+) -> dict[str, Any]:
+    plan = build_search_plan(target, mode, feature_dim=feature_dim)
     expected = build_output_rows(plan, cache=cache)
     path = output_path(target, mode)
     actual = read_csv(path)

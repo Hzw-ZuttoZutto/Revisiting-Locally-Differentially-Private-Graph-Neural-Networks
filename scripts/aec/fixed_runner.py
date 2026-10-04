@@ -19,6 +19,7 @@ from hparams_search_scripts.gpu_resources import GpuConcurrency, resolve_gpu_con
 
 from .paths import FIXED_ROOT, REFERENCE_ROOT, WORK_ROOT, max_parallel_per_gpu, parse_gpu_ids
 from .result_io import read_csv
+from .table_settings import TABLE6_FEATURE_DIM
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -490,6 +491,22 @@ def _table_job_rows(binding: _FixedPointJob, manifest: dict[str, str]) -> list[d
     ]
 
 
+def _unselected_table6_job(manifest: dict[str, str], point_jobs: dict[str, _FixedPointJob]) -> bool:
+    dimension = manifest.get("feature_dim")
+    if dimension not in {"800", "3200"}:
+        return False
+    for binding in point_jobs.values():
+        fixed = {**binding.job.job_spec["fixed_params"], "feature_dim": int(dimension)}
+        point_id = f"table6_{fixed['dataset']}_{fixed['backbone']}_{dimension}"
+        job_id = f"{point_id}__{mechanism_stage_utils.stable_job_id(fixed)}"
+        if manifest.get("job_id") == job_id and all(
+            manifest.get(key, "") == mechanism_stage_utils.canonical_search_value(fixed.get(key))
+            for key in mechanism_stage_utils.OUTER_AXIS_NAMES
+        ):
+            return True
+    return False
+
+
 def _collect_table_outputs(
     table: str,
     point_jobs: dict[str, _FixedPointJob],
@@ -507,11 +524,13 @@ def _collect_table_outputs(
     by_id: dict[str, dict[str, str]] = {}
     for manifest in manifests:
         job_id = manifest.get("job_id", "")
-        if job_id not in point_jobs:
-            raise RuntimeError(f"Unexpected job_id {job_id!r} in {manifest_path}")
         if job_id in by_id:
             raise RuntimeError(f"Duplicate job_id {job_id!r} in {manifest_path}")
         by_id[job_id] = manifest
+        if job_id not in point_jobs:
+            if table == "table6" and _unselected_table6_job(manifest, point_jobs):
+                continue
+            raise RuntimeError(f"Unexpected job_id {job_id!r} in {manifest_path}")
 
     rows: list[dict[str, str]] = []
     for job_id, binding in point_jobs.items():
@@ -567,6 +586,9 @@ def _fixed_table_points(table: str) -> list[dict[str, Any]]:
             raise ValueError(
                 f"Fixed table point {index} requires fixed_params and a nonempty setting: {path}"
             )
+    if table == "table6":
+        if any(point["fixed_params"]["feature_dim"] != TABLE6_FEATURE_DIM for point in points):
+            raise ValueError(f"All fixed Table 6 points must use feature_dim={TABLE6_FEATURE_DIM}: {path}")
     return points
 
 
