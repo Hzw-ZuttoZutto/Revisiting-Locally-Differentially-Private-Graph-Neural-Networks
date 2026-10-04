@@ -61,6 +61,8 @@ python -m scripts.aec.validate_outputs --mode scaled
 
 Use `--mode full` for a full search.
 
+We completed Notebook 2 in approximately 19 hours on one NVIDIA L40 GPU using the default concurrency of 7 training tasks. We completed Notebook 3 in full mode in 56 hours on eight NVIDIA L40 GPUs, with at most 10 concurrent training tasks per GPU.
+
 ## Two ways to run the notebooks
 
 ### Run manually in Jupyter
