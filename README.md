@@ -23,7 +23,7 @@ Open `notebooks/notebook_1_direct.ipynb` from the Jupyter interface.
 
 ### Notebook 2: Fixed hyperparameters
 
-Notebook 2 reruns all training-based figure points and baselines using the supplied fixed hyperparameters, including every dataset and backbone in Figures 1 and 6. The figures use these rerun results. It also generates Tables 4 and 6.
+Notebook 2 reruns all training-based figure points and baselines using the supplied fixed hyperparameters.
 
 Edit the configuration cell to set `AEC_EXECUTE = True` when running the experiments. With `False`, the notebook only prints the execution plan. GPU selection and per-GPU concurrency are configured in the same cell.
 
