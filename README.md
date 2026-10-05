@@ -61,6 +61,10 @@ python -m scripts.aec.validate_outputs --mode scaled
 
 Use `--mode full` for a full search.
 
+Temporary GPU memory exhaustion, other transient runtime errors, or an interrupted run may leave some training tasks unfinished. Rerun the same code cell with the same experiment settings to continue. Completed training results are reused automatically, and failed or unfinished tasks are rerun before the figure or table is generated.
+
+The data completeness check before rendering also reports missing experiment results, helping you quickly identify incomplete runs. If it reports missing data points, rerun the same code cell to retry failed or unfinished tasks and complete the missing experiments.
+
 We completed Notebook 2 in approximately 19 hours on one NVIDIA L40 GPU using the default concurrency of 7 training tasks. We completed Notebook 3 in full mode in 56 hours on eight NVIDIA L40 GPUs, with at most 10 concurrent training tasks per GPU.
 
 ## Two ways to run the notebooks

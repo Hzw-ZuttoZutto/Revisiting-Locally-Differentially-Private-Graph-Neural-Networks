@@ -38,7 +38,14 @@ def table4_summary(mode="reference"):
             (backbone.upper(), setting, [_stats(groups[(setting, backbone, dataset)]) for dataset in datasets])
             for backbone in ("gcn", "sage", "gat") for setting in ("Best-LDP", "FeatFree-P")
         ]
-    plot=_read(REFERENCE_ROOT/"figure1_plot_data.csv"); best={}
+    if mode == "fixed":
+        from .fixed_results import validate_fixed_output
+
+        validate_fixed_output(1)
+        plot = _read(result_root(1, mode) / "plot_data.csv")
+    else:
+        plot = _read(REFERENCE_ROOT / "figure1_plot_data.csv")
+    best={}
     for r in plot:
         if not r.get("pipeline","").startswith("figure3_pipeline"): continue
         if str(r.get("x_eps")) not in {"10","10.0"}: continue
